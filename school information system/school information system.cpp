@@ -5,16 +5,29 @@
 #include <string>
 
 using namespace std;
+void Login(){}
+void News(){}
 int main()
 {
     string school = "Regular high school";
     int choice;
     do {
         cout << "\t" << school << endl;
-        cout << "************" << endl << endl;
+        for (int i = 0; i < school.length() + 16; i++) {
+            cout << "*";
+        }
+        cout << endl << endl;
         cout << "1. Log In/Register" << endl << "2. Events & News" << endl << "3. Exit" << endl << endl;
         cout << "Make your choice : ";
         cin >> choice;
+        switch (choice) {
+        case 1:{
+            Login();
+        }
+        case 2: {
+            News();
+        }
+        }
     } while(choice != 3);
 }
 

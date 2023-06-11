@@ -9,7 +9,7 @@ void Login(){}
 void News(){}
 int main()
 {
-    string school = "Regular high school";
+    string school = "Regular High School";
     int choice;
     do {
         cout << "\t" << school << endl;

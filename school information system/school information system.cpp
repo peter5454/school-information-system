@@ -5,11 +5,11 @@
 #include <string>
 
 using namespace std;
-void Login(){}
-void News(){}
+void login(){}
+void news();
 int main()
 {
-    string school = "Regular high school";
+    string school = "Regular High School";
     int choice;
     do {
         cout << "\t" << school << endl;
@@ -22,13 +22,18 @@ int main()
         cin >> choice;
         switch (choice) {
         case 1:{
-            Login();
+            login();
         }
         case 2: {
-            News();
+            news();
         }
         }
     } while(choice != 3);
+}
+
+void news()
+{
+    std::cout << "NEWS" << std::endl;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

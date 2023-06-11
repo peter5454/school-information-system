@@ -2,11 +2,20 @@
 //
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 int main()
 {
-    std::cout << "Hello World!\n";
+    string school = "Regular high school";
+    int choice;
+    do {
+        cout << "\t" << school << endl;
+        cout << "************" << endl << endl;
+        cout << "1. Log In/Register" << endl << "2. Events & News" << endl << "3. Exit" << endl << endl;
+        cout << "Make your choice : ";
+        cin >> choice;
+    } while(choice != 3);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -58,6 +58,7 @@ int main()
     } while(choice != 4);
 }
 
+// Menu to register accounts
 void registerAccount()
 {
     int choice;
@@ -191,7 +192,14 @@ std::vector<int> readExistingStudentIDs()
 
 void news()
 {
-    std::cout << "NEWS" << std::endl;
+    std::system("cls");
+    std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
+    std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
+
+    std::cout << "Press Enter to continue...";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
+    std::system("cls");
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

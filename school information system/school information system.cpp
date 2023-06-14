@@ -10,7 +10,11 @@
 #include <vector>
 
 using namespace std;
-void login(){}
+void login();
+void sLogin(int x) {}
+void pLogin(int x) {}
+void tLogin(int x) {}
+void aLogin(int x) {}
 void registerAccount();
 void registerStudentAccount();
 void registerTeacherAccount() {}
@@ -18,7 +22,26 @@ void registerParentAccount() {}
 int generateStudentID(const std::vector<int>&);
 std::vector<int> readExistingStudentIDs();
 void news();
-
+struct students {
+    string Name;
+    string Password;
+    int ID;
+};
+struct parents {
+    string Name;
+    string Password;
+    int ID;
+};
+struct teachers {
+    string Name;
+    string Password;
+    int ID;
+};
+struct admins {
+    string Name;
+    string Password;
+    int ID;
+};
 
 
 int main()
@@ -42,7 +65,7 @@ int main()
         }
 
         switch (choice) {
-        case 1:{
+        case 1: {
             login();
             break;
         }
@@ -50,12 +73,12 @@ int main()
             registerAccount();
             break;
         }
-        case 3:{
+        case 3: {
             news();
             break;
         }
         }
-    } while(choice != 4);
+    } while (choice != 4);
 }
 
 // Menu to register accounts
@@ -63,9 +86,9 @@ void registerAccount()
 {
     int choice;
 
-    std::system("cls");
-    std::cout << "\tRegister New Account" << std::endl;
-    std::cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl;
+    system("cls");
+    cout << "\tRegister New Account" << std::endl;
+    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl;
 
     while (!(std::cin >> choice) || choice < 1 || choice > 4) {
         std::cin.clear();
@@ -89,6 +112,184 @@ void registerAccount()
     case 4: {
         break;
     }
+    }
+}
+void login()
+{
+    int ID;
+    int t = 0;
+    vector<students> vS;
+    vector<parents> vP;
+    vector<teachers> vT;
+    vector<admins> vA;
+    string password;
+    int length;
+    ifstream inputFile(" ");
+    std::system("cls");
+    std::cout << "\tLogin" << std::endl;
+    std::cout << "\nEnter your ID" << std::endl;
+    cin >> ID;
+    std::cout << "\nEnter your Password" << std::endl;
+    cin >> password;
+
+    length = to_string(ID).length();
+    switch (length) {
+    case 6: {
+        ifstream sInputFile("students.txt");
+        if (sInputFile.is_open()) {
+            string line;
+            while (getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+                istringstream iss(line);
+                string value;
+
+                students s;
+                getline(iss, s.Name, ',');
+
+
+                getline(iss, s.Password, ',');
+
+                getline(iss, value, ',');
+                s.ID = stoi(value);
+
+                vS.push_back(s);
+            }
+            for (int i = 0; i < vS.size(); i++) {
+                cout << vS[i].ID << endl;
+                cout << vS[i].Password << endl;
+                if (vS[i].ID == ID && vS[i].Password == password) {
+                    sLogin(i);
+                    t++;
+                    system("cls");
+                    cout << "Successfully Logged In" << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "Failed to Login" << endl << endl;
+                break;
+            }
+        }
+        else {
+            std::cout << "Failed to open students.txt" << std::endl;
+        }
+        break;
+    }
+    case 5: {
+        ifstream pInputFile("parents.txt");
+        if (pInputFile.is_open()) {
+            string line;
+            while (getline(pInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+                istringstream iss(line);
+                string value;
+
+                parents p;
+                getline(iss, p.Name, ',');
+
+
+                getline(iss, p.Password, ',');
+
+                getline(iss, value, ',');
+                p.ID = stoi(value);
+
+                vP.push_back(p);
+            }
+            for (int i = 0; i < vP.size(); i++) {
+                if (vP[i].ID == ID && vP[i].Password == password) {
+                    pLogin(i);
+                    t++;
+                    system("cls");
+                    cout << "Successfully Logged In" << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "Failed to Login" << endl << endl;
+                break;
+            }
+        }
+        else {
+            std::cout << "Failed to open parents.txt" << std::endl;
+        }
+        break;
+    }
+    case 4: {
+        std::ifstream tInputFile("teachers.txt");
+        if (tInputFile.is_open()) {
+            string line;
+            while (getline(tInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+                istringstream iss(line);
+                string value;
+
+                teachers t;
+                getline(iss, t.Name, ',');
+
+
+                getline(iss, t.Password, ',');
+
+                getline(iss, value, ',');
+                t.ID = stoi(value);
+
+                vT.push_back(t);
+            }
+            for (int i = 0; i < vT.size(); i++) {
+                if (vT[i].ID == ID && vT[i].Password == password) {
+                    tLogin(i);
+                    t++;
+                    system("cls");
+                    cout << "Successfully Logged In" << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "Failed to Login" << endl << endl;
+                break;
+            }
+        }
+        else {
+            std::cout << "Failed to open teachers.txt" << std::endl;
+        }
+        break;
+    }
+    case 3: {
+        std::ifstream aInputFile("admins.txt");
+        if (aInputFile.is_open()) {
+            string line;
+            while (getline(aInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+                istringstream iss(line);
+                string value;
+
+                admins a;
+                getline(iss, a.Name, ',');
+
+
+                getline(iss, a.Password, ',');
+
+                getline(iss, value, ',');
+                a.ID = stoi(value);
+
+                vA.push_back(a);
+            }
+            for (int i = 0; i < vA.size(); i++) {
+                if (vA[i].ID == ID && vA[i].Password == password) {
+                    aLogin(i);
+                    t++;
+                    system("cls");
+                    cout << "Successfully Logged In" << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "Failed to Login" << endl << endl;
+                break;
+            }
+        }
+        else {
+
+            std::cout << "Failed to open admins.txt" << std::endl;
+        }
+        break;
+    } Default: {
+        cout << "Failed to login" << endl << endl;
+    }
+
+
+
     }
 }
 
@@ -170,7 +371,7 @@ std::vector<int> readExistingStudentIDs()
         std::string token;
 
         // Skip the first two values on the line
-        std::getline(iss, token, ','); 
+        std::getline(iss, token, ',');
         std::getline(iss, token, ',');
 
         // Get the third value (studentID)

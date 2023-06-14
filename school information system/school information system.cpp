@@ -118,7 +118,7 @@ void registerStudentAccount()
     if (outputFile.is_open())
     {
         // Write the account information to the file
-        outputFile << fname << " " << lname << "," << password << "," << studentID << std::endl;
+        outputFile << studentID << "," << fname << " " << lname << "," << password <<   std::endl;
 
         // Close the file
         outputFile.close();

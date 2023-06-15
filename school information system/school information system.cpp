@@ -8,6 +8,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <regex>
+#include <windows.h>
 
 using namespace std;
 void login();
@@ -19,9 +21,13 @@ void registerAccount();
 void registerStudentAccount();
 void registerTeacherAccount() {}
 void registerParentAccount() {}
+bool isAlphabet(const std::string&);
+bool containsNumber(const std::string&);
 int generateStudentID(const std::vector<int>&);
 std::vector<int> readExistingStudentIDs();
 void news();
+void placeCursor(HANDLE, int, int);
+
 struct students {
     string Name;
     string Password;
@@ -48,6 +54,7 @@ int main()
 {
     string school = "Regular High School";
     int choice;
+
     do {
         cout << "\t" << school << endl;
         for (int i = 0; i < school.length() + 16; i++) {
@@ -60,7 +67,7 @@ int main()
         // Perform numeric range check
         while (!(std::cin >> choice) || choice < 1 || choice > 4) {
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(1, '\n');
             std::cout << "Invalid choice. Please enter a number (1 - 4): ";
         }
 
@@ -92,7 +99,7 @@ void registerAccount()
 
     while (!(std::cin >> choice) || choice < 1 || choice > 4) {
         std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore(1, '\n');
         std::cout << "Invalid choice. Please enter a number (1 - 4): ";
     }
 
@@ -296,18 +303,81 @@ void login()
 void registerStudentAccount()
 {
     std::system("cls");
-    std::string fname, lname, password;
+    std::string fname, lname, password, addressNum, addressName;
+    HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
 
     std::cout << "\tStudent Registry" << std::endl;
     std::cout << "********************************" << std::endl;
-    std::cout << "Enter your first name: ";
+
+    placeCursor(screen, 3, 0);
+    std::cout << "First name:                    Last name:";
+ 
+    placeCursor(screen, 5, 0);
+    std::cout << "Address" << std::endl << "Street number:          Street name:";
+
+    placeCursor(screen, 8, 0);
+    std::cout << "Password: ";
+
+    // First name input
+    placeCursor(screen, 3, 12);
     std::getline(std::cin >> std::ws, fname);
+    while (!isAlphabet(fname)) {
+        placeCursor(screen, 10, 0);
+        std::cout << "Invalid name. Please only use alphabet characters.";
+        placeCursor(screen, 3, 0);
+        std::cout << "First name:                    Last name:";
+        placeCursor(screen, 3, 12);
+        std::getline(std::cin >> std::ws, fname);
+    }
+    placeCursor(screen, 10, 0);
+    std::cout << "                                                   ";
 
-    std::cout << "Enter your last name: ";
+    // Last name input
+    placeCursor(screen, 3, 42);
     std::getline(std::cin >> std::ws, lname);
+    while (!isAlphabet(lname)) {
+        placeCursor(screen, 10, 0);
+        std::cout << "Invalid name. Please only use alphabet characters.";
+        placeCursor(screen, 3, 30);
+        std::cout << " Last name:                                       ";
+        placeCursor(screen, 3, 42);
+        std::getline(std::cin >> std::ws, lname);
+    }
+    placeCursor(screen, 10, 0);
+    std::cout << "                                                   ";
 
-    std::cout << "Enter your password: ";
+    // Address number input
+    placeCursor(screen, 6, 15);
+    std::getline(std::cin >> std::ws, addressNum);
+    while (!containsNumber(addressNum)) {
+        placeCursor(screen, 10, 0);
+        std::cout << "Invalid input. Must contain at least one number.";
+        placeCursor(screen, 6, 0);
+        std::cout << "Street number:          ";
+        placeCursor(screen, 6, 15);
+        std::getline(std::cin >> std::ws, addressNum);
+    }
+    placeCursor(screen, 10, 0);
+    std::cout << "                                                   ";
+
+    // Address name input
+    placeCursor(screen, 6, 37);
+    std::getline(std::cin >> std::ws, addressName);
+    while (!isAlphabet(addressName)) {
+        placeCursor(screen, 10, 0);
+        std::cout << "Invalid name. Please only use alphabet characters. ";
+        placeCursor(screen, 6, 23);
+        std::cout << " Street name:                                       ";
+        placeCursor(screen, 6, 37);
+        std::getline(std::cin >> std::ws, addressName);
+    }
+    placeCursor(screen, 10, 0);
+    std::cout << "                                                   ";
+
+    // Password input
+    placeCursor(screen, 8, 10);
     std::getline(std::cin >> std::ws, password);
+
 
     std::vector<int> existingIDs = readExistingStudentIDs();
     int studentID = generateStudentID(existingIDs);
@@ -319,13 +389,16 @@ void registerStudentAccount()
     if (outputFile.is_open())
     {
         // Write the account information to the file
-        outputFile << studentID << "," << fname << " " << lname << "," << password <<   std::endl;
+        outputFile << studentID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName <<   std::endl;
 
         // Close the file
         outputFile.close();
 
-        std::system("cls");
         std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        std::system("cls");
+        std::cin.ignore(100, '\n');
     }
     else
     {
@@ -333,6 +406,23 @@ void registerStudentAccount()
         std::cout << "Error opening the file." << std::endl << std::endl;
     }
 
+}
+
+// Function to check if an input is alphabet characters and hyphen only
+bool isAlphabet(const std::string& input)
+{
+    std::regex pattern("^[a-zA-Z-]+$");
+    return std::regex_match(input, pattern);
+}
+
+// Function to check if input contains at least one number
+bool containsNumber(const std::string& input) {
+    for (char c : input) {
+        if (std::isdigit(c)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Function to generate a random 6-digit student ID
@@ -370,20 +460,18 @@ std::vector<int> readExistingStudentIDs()
         std::istringstream iss(line);
         std::string token;
 
-        // Skip the first two values on the line
-        std::getline(iss, token, ',');
-        std::getline(iss, token, ',');
-
-        // Get the third value (studentID)
-        std::getline(iss, token, ',');
-
-        try {
-            int studentID = std::stoi(token);
-            existingIDs.push_back(studentID);
-        }
-        catch (const std::exception& e) {
-            // Handle the exception (e.g., print an error message)
-            std::cerr << "Error converting string to integer: " << e.what() << std::endl;
+        // Get ID number
+        if (std::getline(iss, token, ',')) {
+            try {
+                // Convert string to int
+                int studentID = std::stoi(token);
+                // Add to ID vector
+                existingIDs.push_back(studentID);
+            }
+            catch (const std::exception& e) {
+                // Handle the exception (e.g., print an error message)
+                std::cerr << "Error converting string to integer: " << e.what() << std::endl;
+            }
         }
     }
 
@@ -398,9 +486,18 @@ void news()
     std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
 
     std::cout << "Press Enter to continue...";
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.ignore(1, '\n');
     std::cin.get();
     std::system("cls");
+}
+
+// Function to place the cursor
+void placeCursor(HANDLE screen, int row, int col)
+{
+    COORD position;
+    position.Y = row;
+    position.X = col;
+    SetConsoleCursorPosition(screen, position);
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -538,6 +538,7 @@ void login()
 
     system("cls");
     cout << "\tLogin" << endl;
+    std::cout << "************************" << std::endl;
     cout << "\nEnter your ID" << endl;
     cin >> ID;
     cout << "\nEnter your Password" << endl;

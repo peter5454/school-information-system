@@ -96,6 +96,10 @@ void sSLogin(int p) {
     }
 }
 
+void viewChildReport() {}
+void viewMessages(){}
+void messageTeacher(){}
+void updatePersonalInformation() {}
 void sPLogin(int p) {
     int choice;
     vector<parents> vP;
@@ -158,6 +162,11 @@ void sPLogin(int p) {
     }
 }
 
+void viewClass() {}
+void updateReports(){}
+void updatePersonalInformation() {}
+void viewMessages() {}
+void sendMessages() {}
 void sTLogin(int p) {
     int choice = 0;
     vector<teachers> vT;
@@ -183,7 +192,7 @@ void sTLogin(int p) {
             system("cls");
             cout << "\t" << "Welcome " << vT[p].Name << "!";
             cout << endl << endl;
-            cout << "1. View Class/Students" << endl << "2. Add/Update Reports" << endl << "3. View Reports " << endl << "4. Update Personal Information " << endl << "5. View Messages " << endl << "6. Send Messages " << endl << "7. Logout" << endl << "8. Exit" << endl << endl;
+            cout << "1. View Class" << endl << "2. Add/Update Reports" << endl << "3. View Reports " << endl << "4. Update Personal Information " << endl << "5. View Messages " << endl << "6. Send Messages " << endl << "7. Logout" << endl << "8. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             // Perform numeric range check
@@ -223,6 +232,15 @@ void sTLogin(int p) {
     }
 }
 
+void manageSchool() {}
+void manageStudents() {}
+void manageTeachers() {}
+void manageParents() {}
+void viewMessages() {}
+void sendMessages() {}
+void viewReport() {}
+void updateEvents() {}
+void updatePersonalInformation() {}
 void sALogin(int p) {
     int choice = 0;
     vector<admins> vA;

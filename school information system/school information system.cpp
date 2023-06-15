@@ -97,9 +97,9 @@ void sSLogin(int p) {
 }
 
 void viewChildReport() {}
-void viewMessages(){}
+void pViewMessages(){}
 void messageTeacher(){}
-void updatePersonalInformation() {}
+void pUpdatePersonalInformation() {}
 void sPLogin(int p) {
     int choice;
     vector<parents> vP;
@@ -164,8 +164,8 @@ void sPLogin(int p) {
 
 void viewClass() {}
 void updateReports(){}
-void updatePersonalInformation() {}
-void viewMessages() {}
+void tUpdatePersonalInformation() {}
+void tViewMessages() {}
 void sendMessages() {}
 void sTLogin(int p) {
     int choice = 0;
@@ -237,10 +237,10 @@ void manageStudents() {}
 void manageTeachers() {}
 void manageParents() {}
 void viewMessages() {}
-void sendMessages() {}
+void aSendMessages() {}
 void viewReport() {}
 void updateEvents() {}
-void updatePersonalInformation() {}
+void aUpdatePersonalInformation() {}
 void sALogin(int p) {
     int choice = 0;
     vector<admins> vA;

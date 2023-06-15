@@ -1,6 +1,7 @@
 // school information system.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,24 +10,8 @@
 #include <ctime>
 #include <vector>
 #include <regex>
-#include <windows.h>
 
 using namespace std;
-void login();
-void sLogin(int x) {}
-void pLogin(int x) {}
-void tLogin(int x) {}
-void aLogin(int x) {}
-void registerAccount();
-void registerStudentAccount();
-void registerTeacherAccount() {}
-void registerParentAccount() {}
-bool isAlphabet(const std::string&);
-bool containsNumber(const std::string&);
-int generateStudentID(const std::vector<int>&);
-std::vector<int> readExistingStudentIDs();
-void news();
-void placeCursor(HANDLE, int, int);
 
 struct students {
     string Name;
@@ -48,7 +33,29 @@ struct admins {
     string Password;
     int ID;
 };
+enum class AccountType
+{
+    STUDENT,
+    TEACHER,
+    PARENT
+};
 
+void login();
+void sLogin(int x) {}
+void pLogin(int x) {}
+void tLogin(int x) {}
+void aLogin(int x) {}
+void registerAccount();
+void registerNewAccount(const AccountType);
+void registerTeacherAccount() {}
+void registerParentAccount() {}
+bool isAlphabet(const std::string&);
+bool containsNumber(const std::string&);
+bool onlyNumbers(const std::string&);
+int generateID(const std::vector<int>&, const AccountType);
+std::vector<int> readExistingIDs(const std::string&);
+void news();
+void placeCursor(HANDLE, int, int);
 
 int main()
 {
@@ -105,15 +112,15 @@ void registerAccount()
 
     switch (choice) {
     case 1: {
-        registerStudentAccount();
+        registerNewAccount(AccountType::STUDENT);
         break;
     }
     case 2: {
-        registerTeacherAccount();
+        registerNewAccount(AccountType::TEACHER);
         break;
     }
     case 3: {
-        registerParentAccount();
+        registerNewAccount(AccountType::PARENT);
         break;
     }
     case 4: {
@@ -300,118 +307,225 @@ void login()
     }
 }
 
-void registerStudentAccount()
+void registerNewAccount(const AccountType accountType)
 {
     std::system("cls");
-    std::string fname, lname, password, addressNum, addressName;
+    std::string fname, lname, password, addressNum, addressName, contactNum, childID;
     HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
 
-    std::cout << "\tStudent Registry" << std::endl;
-    std::cout << "********************************" << std::endl;
+    if (accountType == AccountType::STUDENT) {
+        std::cout << "\tStudent Registry" << std::endl;
+    }
+    else if (accountType == AccountType::TEACHER) {
+        std::cout << "\tTeacher Registry" << std::endl;
+    }
+    else if (accountType == AccountType::PARENT) {
+        std::cout << "\tParent Registry" << std::endl;
+    }
+    std::cout << "********************************" << std::endl << "Please Enter Your Details";
 
-    placeCursor(screen, 3, 0);
-    std::cout << "First name:                    Last name:";
- 
-    placeCursor(screen, 5, 0);
-    std::cout << "Address" << std::endl << "Street number:          Street name:";
+    placeCursor(screen, 4, 0);
+    std::cout << "NAME" << std::endl;
+    std::cout << "First Name:                    Last Name:" << std::endl;
+
+    if (accountType == AccountType::TEACHER || accountType == AccountType::PARENT) {
+        std::cout << "Contact Number:";
+    }
+    if (accountType == AccountType::PARENT) {
+        placeCursor(screen, 7, 0);
+        std::cout << "Child's Student ID:";
+    }
 
     placeCursor(screen, 8, 0);
+    std::cout << "ADDRESS" << std::endl;
+    std::cout << "Street Number:               Street Name:";
+
+    placeCursor(screen, 11, 0);
     std::cout << "Password: ";
 
     // First name input
-    placeCursor(screen, 3, 12);
+    placeCursor(screen, 5, 12);
     std::getline(std::cin >> std::ws, fname);
     while (!isAlphabet(fname)) {
-        placeCursor(screen, 10, 0);
+        placeCursor(screen, 13, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
-        placeCursor(screen, 3, 0);
-        std::cout << "First name:                    Last name:";
-        placeCursor(screen, 3, 12);
+        placeCursor(screen, 5, 0);
+        std::cout << "First Name:                    Last Name:";
+        placeCursor(screen, 5, 12);
         std::getline(std::cin >> std::ws, fname);
     }
-    placeCursor(screen, 10, 0);
+    placeCursor(screen, 13, 0);
     std::cout << "                                                   ";
 
     // Last name input
-    placeCursor(screen, 3, 42);
+    placeCursor(screen, 5, 42);
     std::getline(std::cin >> std::ws, lname);
     while (!isAlphabet(lname)) {
-        placeCursor(screen, 10, 0);
+        placeCursor(screen, 13, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
-        placeCursor(screen, 3, 30);
-        std::cout << " Last name:                                       ";
-        placeCursor(screen, 3, 42);
+        placeCursor(screen, 5, 30);
+        std::cout << " Last Name:                                       ";
+        placeCursor(screen, 5, 42);
         std::getline(std::cin >> std::ws, lname);
     }
-    placeCursor(screen, 10, 0);
+    placeCursor(screen, 13, 0);
     std::cout << "                                                   ";
 
+    // Teacher/Parent contact number input
+    if (accountType == AccountType::TEACHER || accountType == AccountType::PARENT) {
+        placeCursor(screen, 6, 16);
+        std::getline(std::cin >> std::ws, contactNum);
+        while (!onlyNumbers(contactNum) || contactNum.length() < 7) {
+            placeCursor(screen, 13, 0);
+            std::cout << "Invalid input. The input should consist of  only numbers with a minimum length of 7 digits.";
+            placeCursor(screen, 6, 0);
+            std::cout << "Contact Number:                                 ";
+            placeCursor(screen, 6, 16);
+            std::getline(std::cin >> std::ws, contactNum);
+        }
+        placeCursor(screen, 13, 0);
+        std::cout << "                                                                                                ";
+    }
+
+    // Parent: child ID input
+    if (accountType == AccountType::PARENT) {
+        placeCursor(screen, 7, 20);
+        std::getline(std::cin >> std::ws, childID);
+        while (!onlyNumbers(childID) || childID.length() != 6) {
+            placeCursor(screen, 13, 0);
+            std::cout << "Invalid input. The input should consist of only numbers with a length of 6 digits.";
+            placeCursor(screen, 7, 0);
+            std::cout << "Child's Student ID:                ";
+            placeCursor(screen, 7, 20);
+            std::getline(std::cin >> std::ws, childID);
+        }
+        placeCursor(screen, 13, 0);
+        std::cout << "                                                                                         ";
+    }
+
     // Address number input
-    placeCursor(screen, 6, 15);
+    placeCursor(screen, 9, 15);
     std::getline(std::cin >> std::ws, addressNum);
     while (!containsNumber(addressNum)) {
-        placeCursor(screen, 10, 0);
+        placeCursor(screen, 13, 0);
         std::cout << "Invalid input. Must contain at least one number.";
-        placeCursor(screen, 6, 0);
-        std::cout << "Street number:          ";
-        placeCursor(screen, 6, 15);
+        placeCursor(screen, 9, 0);
+        std::cout << "Street Number:          ";
+        placeCursor(screen, 9, 15);
         std::getline(std::cin >> std::ws, addressNum);
     }
-    placeCursor(screen, 10, 0);
+    placeCursor(screen, 13, 0);
     std::cout << "                                                   ";
 
     // Address name input
-    placeCursor(screen, 6, 37);
+    placeCursor(screen, 9, 42);
     std::getline(std::cin >> std::ws, addressName);
     while (!isAlphabet(addressName)) {
-        placeCursor(screen, 10, 0);
+        placeCursor(screen, 13, 0);
         std::cout << "Invalid name. Please only use alphabet characters. ";
-        placeCursor(screen, 6, 23);
-        std::cout << " Street name:                                       ";
-        placeCursor(screen, 6, 37);
+        placeCursor(screen, 9, 28);
+        std::cout << " Street Name:                                       ";
+        placeCursor(screen, 9, 42);
         std::getline(std::cin >> std::ws, addressName);
     }
-    placeCursor(screen, 10, 0);
+    placeCursor(screen, 13, 0);
     std::cout << "                                                   ";
 
     // Password input
-    placeCursor(screen, 8, 10);
+    placeCursor(screen, 11, 10);
     std::getline(std::cin >> std::ws, password);
-
-
-    std::vector<int> existingIDs = readExistingStudentIDs();
-    int studentID = generateStudentID(existingIDs);
-
-    // Open the file in append mode
-    std::ofstream outputFile("students.txt", std::ios_base::app);
-
-    // Check if the file was opened successfully
-    if (outputFile.is_open())
-    {
-        // Write the account information to the file
-        outputFile << studentID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName <<   std::endl;
-
-        // Close the file
-        outputFile.close();
-
-        std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
-        std::cout << "Press Enter to continue...";
-        std::cin.get();
-        std::system("cls");
-        std::cin.ignore(100, '\n');
+    while (password.length() < 8) {
+        placeCursor(screen, 13, 0);
+        std::cout << "Password needs to be at least 8 characters. ";
+        placeCursor(screen, 11, 0);
+        std::cout << "Password:         ";
+        placeCursor(screen, 11, 10);
+        std::getline(std::cin >> std::ws, password);
     }
-    else
-    {
-        std::system("cls");
-        std::cout << "Error opening the file." << std::endl << std::endl;
+    placeCursor(screen, 13, 0);
+    std::cout << "                                                   ";
+
+    int userID;
+    std::vector<int> existingIDs;
+    if (accountType == AccountType::STUDENT) {
+        existingIDs = readExistingIDs("students.txt");
+        userID = generateID(existingIDs, AccountType::STUDENT);
+    }
+    else if (accountType == AccountType::TEACHER) {
+        existingIDs = readExistingIDs("teachers.txt");
+        userID = generateID(existingIDs, AccountType::TEACHER);
+    }
+    else if (accountType == AccountType::PARENT) {
+        existingIDs = readExistingIDs("parents.txt");
+        userID = generateID(existingIDs, AccountType::PARENT);
     }
 
+    
+    // Open the file in append mode: STUDENT
+    if (accountType == AccountType::STUDENT) {
+        std::ofstream outputFile("students.txt", std::ios_base::app);
+
+        // Check if the file was opened successfully
+        if (outputFile.is_open())
+        {
+            // Write the account information to the file
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << std::endl;
+
+            // Close the file
+            outputFile.close();
+
+            placeCursor(screen, 13, 0);
+            std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+            std::system("cls");
+
+        }
+        else
+        {
+            std::system("cls");
+            std::cout << "Error opening the file." << std::endl << std::endl;
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+            std::system("cls");
+        }
+    }
+
+    // Open the file in append mode: TEACHER
+    if (accountType == AccountType::TEACHER) {
+        std::ofstream outputFile("teachers.txt", std::ios_base::app);
+
+        // Check if the file was opened successfully
+        if (outputFile.is_open())
+        {
+            // Write the account information to the file
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << std::endl;
+
+            // Close the file
+            outputFile.close();
+
+            placeCursor(screen, 13, 0);
+            std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+            std::system("cls");
+
+        }
+        else
+        {
+            std::system("cls");
+            std::cout << "Error opening the file." << std::endl << std::endl;
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+            std::system("cls");
+        }
+    }
 }
 
 // Function to check if an input is alphabet characters and hyphen only
 bool isAlphabet(const std::string& input)
 {
-    std::regex pattern("^[a-zA-Z-]+$");
+    std::regex pattern("^[a-zA-Z -]+$");
     return std::regex_match(input, pattern);
 }
 
@@ -425,8 +539,18 @@ bool containsNumber(const std::string& input) {
     return false;
 }
 
+// Function to check if input contains only numbers
+bool onlyNumbers(const std::string& input) {
+    for (char c : input) {
+        if (!std::isdigit(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Function to generate a random 6-digit student ID
-int generateStudentID(const std::vector<int>& existingIDs)
+int generateID(const std::vector<int>& existingIDs, const AccountType accountType)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
     int studentID;
@@ -449,10 +573,10 @@ int generateStudentID(const std::vector<int>& existingIDs)
 }
 
 // Function to read existing student IDs from the file
-std::vector<int> readExistingStudentIDs()
+std::vector<int> readExistingIDs(const std::string& fileName)
 {
     std::vector<int> existingIDs;
-    std::ifstream inputFile("students.txt");
+    std::ifstream inputFile(fileName);
     std::string line;
 
     while (std::getline(inputFile, line))
@@ -464,9 +588,9 @@ std::vector<int> readExistingStudentIDs()
         if (std::getline(iss, token, ',')) {
             try {
                 // Convert string to int
-                int studentID = std::stoi(token);
+                int userID = std::stoi(token);
                 // Add to ID vector
-                existingIDs.push_back(studentID);
+                existingIDs.push_back(userID);
             }
             catch (const std::exception& e) {
                 // Handle the exception (e.g., print an error message)

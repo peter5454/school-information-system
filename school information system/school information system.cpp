@@ -791,7 +791,45 @@ void aLogin(string password, int ID) {
         cout << "Failed to open admins.txt" << std::endl;
     }
 }
+void login()
+{
+    int ID;
+    string password;
+    int length;
 
+    system("cls");
+    cout << "\tLogin" << endl;
+    std::cout << "************************" << std::endl;
+    cout << "\nEnter your ID" << endl;
+    cin >> ID;
+    cout << "\nEnter your Password" << endl;
+    cin >> password;
+
+    length = to_string(ID).length();
+    switch (length) {
+    case 6: {
+        sLogin(password, ID);
+        break;
+    }
+    case 5: {
+        pLogin(password, ID);
+        break;
+    }
+    case 4: {
+        tLogin(password, ID);
+        break;
+    }
+    case 3: {
+        aLogin(password, ID);
+        break;
+    }
+    default: {
+        system("cls");
+        cout << "Failed to login" << endl << endl;
+    }
+
+    }
+}
 void registerAccount();
 void registerStudentAccount();
 void registerTeacherAccount() {}
@@ -870,45 +908,7 @@ void registerAccount()
     }
     }
 }
-void login()
-{
-    int ID;
-    string password;
-    int length;
 
-    system("cls");
-    cout << "\tLogin" << endl;
-    std::cout << "************************" << std::endl;
-    cout << "\nEnter your ID" << endl;
-    cin >> ID;
-    cout << "\nEnter your Password" << endl;
-    cin >> password;
-
-    length = to_string(ID).length();
-    switch (length) {
-    case 6: {
-        sLogin(password, ID);
-        break;
-    }
-    case 5: {
-        pLogin(password, ID);
-        break;
-    }
-    case 4: {
-        tLogin(password, ID);
-        break;
-    }
-    case 3: {
-        aLogin(password, ID);
-        break;
-    } 
-    default: {
-        system("cls");
-        cout << "Failed to login" << endl << endl;
-    }
-
-    }
-}
 
 void registerStudentAccount()
 {

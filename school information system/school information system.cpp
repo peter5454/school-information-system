@@ -102,7 +102,8 @@ void registerAccount()
 
     system("cls");
     cout << "\tRegister New Account" << std::endl;
-    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl;
+    cout << "\n1. Student\n2. Teacher\n3. Parent\n4. Cancel" << std::endl;
+    cout << "Choice: ";
 
     while (!(std::cin >> choice) || choice < 1 || choice > 4) {
         std::cin.clear();
@@ -312,15 +313,19 @@ void registerNewAccount(const AccountType accountType)
     std::system("cls");
     std::string fname, lname, password, addressNum, addressName, contactNum, childID;
     HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+    std::string fileName;
 
     if (accountType == AccountType::STUDENT) {
         std::cout << "\tStudent Registry" << std::endl;
+        fileName = "students.txt";
     }
     else if (accountType == AccountType::TEACHER) {
         std::cout << "\tTeacher Registry" << std::endl;
+        fileName = "teachers.txt";
     }
     else if (accountType == AccountType::PARENT) {
         std::cout << "\tParent Registry" << std::endl;
+        fileName = "parents.txt";
     }
     std::cout << "********************************" << std::endl << "Please Enter Your Details";
 
@@ -377,7 +382,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, contactNum);
         while (!onlyNumbers(contactNum) || contactNum.length() < 7) {
             placeCursor(screen, 13, 0);
-            std::cout << "Invalid input. The input should consist of  only numbers with a minimum length of 7 digits.";
+            std::cout << "Invalid input. The input should consist of only numbers with a minimum length of 7 digits.";
             placeCursor(screen, 6, 0);
             std::cout << "Contact Number:                                 ";
             placeCursor(screen, 6, 16);
@@ -391,16 +396,29 @@ void registerNewAccount(const AccountType accountType)
     if (accountType == AccountType::PARENT) {
         placeCursor(screen, 7, 20);
         std::getline(std::cin >> std::ws, childID);
-        while (!onlyNumbers(childID) || childID.length() != 6) {
+        std::vector<int> studentIDs = readExistingIDs("students.txt");
+        bool isValid = false;
+        int childIDInt;
+
+
+        while (!isValid) {
+            std::istringstream(childID) >> childIDInt;
+            for (int i : studentIDs) {
+                if (i == childIDInt) {
+                    isValid = true;
+                    break;
+                }
+            }
+            if (isValid) { break; }
             placeCursor(screen, 13, 0);
-            std::cout << "Invalid input. The input should consist of only numbers with a length of 6 digits.";
+            std::cout << "ID does not match any current students. (The input should consist of only numbers with a length of 6 digits)";
             placeCursor(screen, 7, 0);
             std::cout << "Child's Student ID:                ";
             placeCursor(screen, 7, 20);
             std::getline(std::cin >> std::ws, childID);
         }
         placeCursor(screen, 13, 0);
-        std::cout << "                                                                                         ";
+        std::cout << "                                                                                                                   ";
     }
 
     // Address number input
@@ -447,78 +465,45 @@ void registerNewAccount(const AccountType accountType)
 
     int userID;
     std::vector<int> existingIDs;
-    if (accountType == AccountType::STUDENT) {
-        existingIDs = readExistingIDs("students.txt");
-        userID = generateID(existingIDs, AccountType::STUDENT);
-    }
-    else if (accountType == AccountType::TEACHER) {
-        existingIDs = readExistingIDs("teachers.txt");
-        userID = generateID(existingIDs, AccountType::TEACHER);
-    }
-    else if (accountType == AccountType::PARENT) {
-        existingIDs = readExistingIDs("parents.txt");
-        userID = generateID(existingIDs, AccountType::PARENT);
-    }
 
+    existingIDs = readExistingIDs(fileName);
+    userID = generateID(existingIDs, accountType);
     
-    // Open the file in append mode: STUDENT
-    if (accountType == AccountType::STUDENT) {
-        std::ofstream outputFile("students.txt", std::ios_base::app);
+    // Open the file in append mode
+    std::ofstream outputFile(fileName, std::ios_base::app);
 
-        // Check if the file was opened successfully
-        if (outputFile.is_open())
-        {
-            // Write the account information to the file
+    // Check if the file was opened successfully
+    if (outputFile.is_open())
+    {
+        // Write the account information to the file
+        if (accountType == AccountType::STUDENT) {
             outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << std::endl;
-
-            // Close the file
-            outputFile.close();
-
-            placeCursor(screen, 13, 0);
-            std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
-            std::cout << "Press Enter to continue...";
-            std::cin.get();
-            std::system("cls");
-
         }
-        else
-        {
-            std::system("cls");
-            std::cout << "Error opening the file." << std::endl << std::endl;
-            std::cout << "Press Enter to continue...";
-            std::cin.get();
-            std::system("cls");
+        else if (accountType == AccountType::TEACHER) {
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << std::endl;
         }
+        else if (accountType == AccountType::PARENT) {
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << "," << childID << std::endl;
+        }
+
+        // Close the file
+        outputFile.close();
+
+        placeCursor(screen, 13, 0);
+        std::cout << "Account registered successfully!\nPlease wait while an administrator verifies your account." << std::endl << std::endl;
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        std::system("cls");
+
     }
-
-    // Open the file in append mode: TEACHER
-    if (accountType == AccountType::TEACHER) {
-        std::ofstream outputFile("teachers.txt", std::ios_base::app);
-
-        // Check if the file was opened successfully
-        if (outputFile.is_open())
-        {
-            // Write the account information to the file
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << std::endl;
-
-            // Close the file
-            outputFile.close();
-
-            placeCursor(screen, 13, 0);
-            std::cout << "Account registered successfully!\nPlease wait while an administrator assigns you to a class." << std::endl << std::endl;
-            std::cout << "Press Enter to continue...";
-            std::cin.get();
-            std::system("cls");
-
-        }
-        else
-        {
-            std::system("cls");
-            std::cout << "Error opening the file." << std::endl << std::endl;
-            std::cout << "Press Enter to continue...";
-            std::cin.get();
-            std::system("cls");
-        }
+    else
+    {
+        std::system("cls");
+        std::cout << "Error opening the file." << std::endl << std::endl;
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        std::system("cls");
+        
     }
 }
 
@@ -553,23 +538,30 @@ bool onlyNumbers(const std::string& input) {
 int generateID(const std::vector<int>& existingIDs, const AccountType accountType)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
-    int studentID;
+    int userID;
     bool idExists;
 
     do {
-        studentID = rand() % 900000 + 100000;
-
+        if (accountType == AccountType::STUDENT) {
+            userID = rand() % 900000 + 100000;
+        }
+        else if (accountType == AccountType::TEACHER) {
+            userID = rand() % 9000 + 1000;
+        }
+        else if (accountType == AccountType::PARENT) {
+            userID = rand() % 90000 + 10000;
+        }
         // Check if the generated ID already exists
         idExists = false;
         for (int id : existingIDs) {
-            if (id == studentID) {
+            if (id == userID) {
                 idExists = true;
                 break;
             }
         }
     } while (idExists);
 
-    return studentID;
+    return userID;
 }
 
 // Function to read existing student IDs from the file

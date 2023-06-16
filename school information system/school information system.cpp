@@ -57,10 +57,10 @@ std::vector<int> readExistingIDs(const std::string&);
 void news();
 void placeCursor(HANDLE, int, int);
 void login();
-void viewUnreadMessages(vector<Messages>&, int, int);
-void viewReceivedMessages(vector<Messages>& vM, int ID);
+void viewUnreadMessages(vector<Messages>&, int, int, int);
+void viewReceivedMessages(vector<Messages>& vM, int ID, int);
 void sPLogin(int p);
-void sendMessages(int ID);
+void sendMessages(int ID, int);
 void viewReport(int p) {}
 void viewClass(int p) {}
 void updatePersonalInformation(int p) {}
@@ -125,7 +125,7 @@ void sSLogin(int p) {
 }
 
 void viewChildReport() {}
-void viewMessages(int ID){
+void viewMessages(int ID, int p){
     vector<Messages> vM;
     int unreadMessages = 0;
     int choice;
@@ -156,15 +156,11 @@ void viewMessages(int ID){
                 unreadMessages++;
             }
         }
-        cout << "You have " << unreadMessages << endl;
+        system("cls");
+        cout << "You have " << unreadMessages << " messages" << endl;
             cout << "1. View Unread messages " << endl << "2. View all recieved Messages" << endl << "3. Send Messages" << endl << "4. View all sent messages " << endl << "5. Go back " << endl << endl;
             cout << "Make your choice : ";
             cin >> choice;
-            while (!(std::cin >> choice) || choice < 1 || choice > 5) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid choice. Please enter a number (1 - 5): ";
-            }
             switch (choice) {
             case 1: {
                 if (unreadMessages == 0) {
@@ -172,19 +168,20 @@ void viewMessages(int ID){
                     cout << "You have no unread Messages!";
                 }
                 else {
-                    viewUnreadMessages(vM, unreadMessages, ID);
+                    viewUnreadMessages(vM, unreadMessages, ID, p);
                 }
                 break;
             }
             case 2: {
-                viewReceivedMessages(vM, ID);
+                viewReceivedMessages(vM, ID, p);
                 break;
             }
             case 3: {
+                system("cls");
+                sendMessages(ID, p);
                 break;
             }
             case 4: {
-                sendMessages(ID);
                 break;
             }
 
@@ -192,7 +189,7 @@ void viewMessages(int ID){
                 sPLogin(ID);
     }
 }
-void viewReceivedMessages(vector<Messages>& vM, int ID){
+void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
     int t = 1;
     string input;
     cout << "\tUnread Messages" << endl;
@@ -216,9 +213,9 @@ void viewReceivedMessages(vector<Messages>& vM, int ID){
     }
     cout << "type anything to go back to messages : ";
     getline(cin, input);
-    viewMessages(ID);
+    viewMessages(ID, p);
 }
-void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID) {
+void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p) {
     int t = 1;
     string input;
     cout << "\tUnread Messages" << endl ;
@@ -238,11 +235,12 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID) {
     }
     cout << "type anything to go back to messages : ";
     getline(cin, input);
-    viewMessages(ID);
+    viewMessages(ID, p);
     
 
 }
-void sendMessages(int ID) {
+void sendMessages(int ID, int num) {
+    
     int pID;
     int t = 0;
     int r = 0;
@@ -254,6 +252,7 @@ void sendMessages(int ID) {
     cout << "************************" << endl << endl;
     if (length == 5) {
         cout << "Enter a message you want to send to (\\n) for new line): ";
+        cin.ignore();
         getline(cin, message);
         ifstream pInputFile("parents.txt");
         if (pInputFile.is_open()) {
@@ -273,9 +272,9 @@ void sendMessages(int ID) {
                 vP.push_back(p);
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "TeacherID" << ',' << 1 << ',' << message << std::endl;
+                    outputFile << ID << ',' << "1234" << ',' << 1 << ',' << message << std::endl;
                     outputFile.close();
-                    viewMessages(ID);
+                    viewMessages(ID, num);
                 }
 
             }
@@ -299,7 +298,7 @@ void sendMessages(int ID) {
             if (outputFile.is_open()) {
                 outputFile << ID << ',' << "adminID" << ',' << 1 << ',' << message << std::endl;
                 outputFile.close();
-                viewMessages(ID);
+                viewMessages(ID, num);
             }
         }
         else {
@@ -332,7 +331,7 @@ void sendMessages(int ID) {
                     cout << "Number not found. " << endl << "Please enter another ID  or type '0' to return: ";
                     cin >> pID;
                     if (pID == 0) {
-                        viewMessages(ID);
+                        viewMessages(ID, num);
                     }
                 }
             }
@@ -343,7 +342,7 @@ void sendMessages(int ID) {
                 if (outputFile.is_open()) {
                     outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << std::endl;
                     outputFile.close();
-                    viewMessages(ID);
+                    viewMessages(ID, num);
                 }
             }
         }
@@ -387,7 +386,7 @@ void sendMessages(int ID) {
                 cin >> pID;
                 length = to_string(pID).length();
                 if (pID == 0) {
-                    viewMessages(ID);
+                    viewMessages(ID, num);
                 }
             }
             else if (length == 6){
@@ -418,7 +417,7 @@ void sendMessages(int ID) {
             cout << "Number not found. " << endl << "Please enter another ID  or type '0' to return: ";
             cin >> pID;
             if (pID == 0) {
-                viewMessages(ID);
+                viewMessages(ID, num);
             }
             length = to_string(pID).length();
         }
@@ -434,7 +433,7 @@ void sendMessages(int ID) {
         if (outputFile.is_open()) {
             outputFile << ID << ',' << "pID" << ',' << 1 << ',' << message << std::endl;
             outputFile.close();
-            viewMessages(ID);
+            viewMessages(ID, num);
         }
     }
 }
@@ -450,17 +449,17 @@ void sPLogin(int p) {
             istringstream iss(line);
             string value;
 
-            Parents p;
+            Parents pa;
 
             getline(iss, value, ',');
-            p.ID = stoi(value);
+            pa.ID = stoi(value);
 
-            getline(iss, p.Name, ',');
+            getline(iss, pa.Name, ',');
 
 
-            getline(iss, p.Password, ',');
+            getline(iss, pa.Password, ',');
 
-            vP.push_back(p);
+            vP.push_back(pa);
         }
         do {
             system("cls");
@@ -484,7 +483,7 @@ void sPLogin(int p) {
                 break;
             }
             case 3: {
-                viewMessages(vP[p].ID);
+                viewMessages(vP[p].ID, p);
                 break;
             }
             case 4: {

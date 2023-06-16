@@ -1,6 +1,7 @@
 // school information system.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#define NOMINMAX
 #include <Windows.h>
 #include <iostream>
 #include <fstream>
@@ -12,28 +13,27 @@
 #include <regex>
 
 using namespace std;
-struct students {
+struct Students {
+    int ID;
     string Name;
     string Password;
-    int ID;
-
 };
-struct parents {
+struct Parents {
+    int ID;
     string Name;
     string Password;
-    int ID;
 };
-struct teachers {
+struct Teachers {
+    int ID;
     string Name;
     string Password;
-    int ID;
 };
-struct admins {
+struct Admins {
+    int ID;
     string Name;
     string Password;
-    int ID;
 };
-struct messages {
+struct Messages {
     int sentID;
     int recipientID;
     bool isRead;
@@ -46,15 +46,9 @@ enum class AccountType
     PARENT
 };
 
-void login();
-void sLogin(int x) {}
-void pLogin(int x) {}
-void tLogin(int x) {}
-void aLogin(int x) {}
+
 void registerAccount();
 void registerNewAccount(const AccountType);
-void registerTeacherAccount() {}
-void registerParentAccount() {}
 bool isAlphabet(const std::string&);
 bool containsNumber(const std::string&);
 bool onlyNumbers(const std::string&);
@@ -63,8 +57,8 @@ std::vector<int> readExistingIDs(const std::string&);
 void news();
 void placeCursor(HANDLE, int, int);
 void login();
-void viewUnreadMessages(vector<messages>&, int, int);
-void viewReceivedMessages(vector<messages>& vM, int ID);
+void viewUnreadMessages(vector<Messages>&, int, int);
+void viewReceivedMessages(vector<Messages>& vM, int ID);
 void sPLogin(int p);
 void sendMessages(int ID);
 void viewReport(int p) {}
@@ -72,7 +66,7 @@ void viewClass(int p) {}
 void updatePersonalInformation(int p) {}
 void sSLogin(int p) {
     int choice;
-    vector<students> vS;
+    vector<Students> vS;
     ifstream sInputFile("students.txt");
     if (sInputFile.is_open()) {
         string line;
@@ -80,14 +74,15 @@ void sSLogin(int p) {
             istringstream iss(line);
             string value;
 
-            students s;
+            Students s;
+
+            getline(iss, value, ',');
+            s.ID = stoi(value);
+
             getline(iss, s.Name, ',');
 
 
             getline(iss, s.Password, ',');
-
-            getline(iss, value, ',');
-            s.ID = stoi(value);
 
             vS.push_back(s);
         }
@@ -131,7 +126,7 @@ void sSLogin(int p) {
 
 void viewChildReport() {}
 void viewMessages(int ID){
-    vector<messages> vM;
+    vector<Messages> vM;
     int unreadMessages = 0;
     int choice;
     ifstream mInputFile("messages.txt");
@@ -141,7 +136,7 @@ void viewMessages(int ID){
             istringstream iss(line);
             string value;
 
-            messages m;
+            Messages m;
             getline(iss, value, ',');
             m.sentID = stoi(value);
 
@@ -197,7 +192,7 @@ void viewMessages(int ID){
                 sPLogin(ID);
     }
 }
-void viewReceivedMessages(vector<messages>& vM, int ID){
+void viewReceivedMessages(vector<Messages>& vM, int ID){
     int t = 1;
     string input;
     cout << "\tUnread Messages" << endl;
@@ -223,7 +218,7 @@ void viewReceivedMessages(vector<messages>& vM, int ID){
     getline(cin, input);
     viewMessages(ID);
 }
-void viewUnreadMessages(vector<messages>& vM, int unreadMessages, int ID) {
+void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID) {
     int t = 1;
     string input;
     cout << "\tUnread Messages" << endl ;
@@ -253,8 +248,8 @@ void sendMessages(int ID) {
     int r = 0;
     int length = to_string(ID).length();
     string message;
-    vector<parents> vP;
-    vector<teachers> vT;
+    vector<Parents> vP;
+    vector<Teachers> vT;
     cout << "\tSend Messages" << endl;
     cout << "************************" << endl << endl;
     if (length == 5) {
@@ -267,7 +262,7 @@ void sendMessages(int ID) {
                 istringstream iss(line);
                 string value;
 
-                parents p;
+                Parents p;
                 getline(iss, value, ',');
                 p.ID = stoi(value);
 
@@ -312,15 +307,15 @@ void sendMessages(int ID) {
             cout << "enter ID for parent (eg.01042) : ";
             cin >> pID;
             ifstream pInputFile("parents.txt");
-            vector<parents> vP;
+            vector<Parents> vP;
             if (pInputFile.is_open()) {
                 string line;
-                while (t = 0) {
+                while (t == 0) {
                     while (getline(pInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
                         istringstream iss(line);
                         string value;
 
-                        parents p;
+                        Parents p;
                         r++;
                         getline(iss, value, ',');
                         p.ID = stoi(value);
@@ -373,7 +368,7 @@ void sendMessages(int ID) {
                         istringstream iss(line);
                         string value;
 
-                        parents p;
+                        Parents p;
                         r++;
                         getline(iss, value, ',');
                         p.ID = stoi(value);
@@ -403,16 +398,16 @@ void sendMessages(int ID) {
                         istringstream iss(line);
                         string value;
 
-                        teachers te;
+                        Teachers te;
                         r++;
                         if (pID == te.ID) {
+                            getline(iss, value, ',');
+                            te.ID = stoi(value);
+
                             getline(iss, te.Name, ',');
                             t++;
 
                             getline(iss, te.Password, ',');
-
-                            getline(iss, value, ',');
-                            te.ID = stoi(value);
 
                             vT.push_back(te);
                         }
@@ -447,7 +442,7 @@ void messageTeacher(){}
 void pUpdatePersonalInformation() {}
 void sPLogin(int p) {
     int choice;
-    vector<parents> vP;
+    vector<Parents> vP;
     ifstream pInputFile("parents.txt");
     if (pInputFile.is_open()) {
         string line;
@@ -455,14 +450,15 @@ void sPLogin(int p) {
             istringstream iss(line);
             string value;
 
-            parents p;
+            Parents p;
+
+            getline(iss, value, ',');
+            p.ID = stoi(value);
+
             getline(iss, p.Name, ',');
 
 
             getline(iss, p.Password, ',');
-
-            getline(iss, value, ',');
-            p.ID = stoi(value);
 
             vP.push_back(p);
         }
@@ -515,7 +511,7 @@ void tViewMessages() {}
 
 void sTLogin(int p) {
     int choice = 0;
-    vector<teachers> vT;
+    vector<Teachers> vT;
     ifstream tInputFile("teachers.txt");
     if (tInputFile.is_open()) {
         string line;
@@ -523,14 +519,15 @@ void sTLogin(int p) {
             istringstream iss(line);
             string value;
 
-            teachers t;
+            Teachers t;
+
+            getline(iss, value, ',');
+            t.ID = stoi(value);
+
             getline(iss, t.Name, ',');
 
 
             getline(iss, t.Password, ',');
-
-            getline(iss, value, ',');
-            t.ID = stoi(value);
 
             vT.push_back(t);
         }
@@ -589,7 +586,7 @@ void updateEvents() {}
 void aUpdatePersonalInformation() {}
 void sALogin(int p) {
     int choice = 0;
-    vector<admins> vA;
+    vector<Admins> vA;
     ifstream aInputFile("admins.txt");
     if (aInputFile.is_open()) {
         string line;
@@ -597,14 +594,15 @@ void sALogin(int p) {
             istringstream iss(line);
             string value;
 
-            admins a;
+            Admins a;
+
+            getline(iss, value, ',');
+            a.ID = stoi(value);
+
             getline(iss, a.Name, ',');
 
 
             getline(iss, a.Password, ',');
-
-            getline(iss, value, ',');
-            a.ID = stoi(value);
 
             vA.push_back(a);
         }
@@ -667,7 +665,7 @@ void sALogin(int p) {
 
 void sLogin(string password, int ID) {
     int t = 0;
-    vector<students> vS;
+    vector<Students> vS;
     ifstream sInputFile("students.txt");
     if (sInputFile.is_open()) {
         string line;
@@ -675,14 +673,14 @@ void sLogin(string password, int ID) {
             istringstream iss(line);
             string value;
 
-            students s;
-            getline(iss, s.Name, ',');
-
-
-            getline(iss, s.Password, ',');
+            Students s;
 
             getline(iss, value, ',');
             s.ID = stoi(value);
+
+            getline(iss, s.Name, ',');
+
+            getline(iss, s.Password, ',');
 
             vS.push_back(s);
         }
@@ -704,7 +702,7 @@ void sLogin(string password, int ID) {
 }
 void pLogin(string password, int ID) {
     int t = 0;
-    vector<parents> vP;
+    vector<Parents> vP;
     ifstream pInputFile("parents.txt");
     if (pInputFile.is_open()) {
         string line;
@@ -712,14 +710,15 @@ void pLogin(string password, int ID) {
             istringstream iss(line);
             string value;
 
-            parents p;
+            Parents p;
+
+            getline(iss, value, ',');
+            p.ID = stoi(value);
+
             getline(iss, p.Name, ',');
 
 
             getline(iss, p.Password, ',');
-
-            getline(iss, value, ',');
-            p.ID = stoi(value);
 
             vP.push_back(p);
         }
@@ -741,8 +740,8 @@ void pLogin(string password, int ID) {
     }
 }
 void tLogin(string password, int ID) {
-    int t = 0;
-    vector<teachers> vT;
+    int tt = 0;
+    vector<Teachers> vT;
     ifstream tInputFile("teachers.txt");
     if (tInputFile.is_open()) {
         string line;
@@ -750,25 +749,26 @@ void tLogin(string password, int ID) {
             istringstream iss(line);
             string value;
 
-            teachers t;
+            Teachers t;
+
+            getline(iss, value, ',');
+            t.ID = stoi(value);
+
             getline(iss, t.Name, ',');
 
 
             getline(iss, t.Password, ',');
-
-            getline(iss, value, ',');
-            t.ID = stoi(value);
 
             vT.push_back(t);
         }
         for (int i = 0; i < vT.size(); i++) {
             if (vT[i].ID == ID && vT[i].Password == password) {
                 sTLogin(i);
-                t++;
+                tt++;
                 system("cls");
             }
         }
-        if (t == 0) {
+        if (tt == 0) {
             system("cls");
             cout << "Failed to Login" << endl << endl;
         }
@@ -779,7 +779,7 @@ void tLogin(string password, int ID) {
 }
 void aLogin(string password, int ID) {
     int t = 0;
-    vector<admins> vA;
+    vector<Admins> vA;
     ifstream aInputFile("admins.txt");
     if (aInputFile.is_open()) {
         string line;
@@ -787,14 +787,15 @@ void aLogin(string password, int ID) {
             istringstream iss(line);
             string value;
 
-            admins a;
+            Admins a;
+
+            getline(iss, value, ',');
+            a.ID = stoi(value);
+
             getline(iss, a.Name, ',');
 
 
             getline(iss, a.Password, ',');
-
-            getline(iss, value, ',');
-            a.ID = stoi(value);
 
             vA.push_back(a);
         }
@@ -854,14 +855,7 @@ void login()
 
     }
 }
-void registerAccount();
-void registerStudentAccount();
-void registerTeacherAccount() {}
-void registerParentAccount() {}
 
-int generateStudentID(const std::vector<int>&);
-std::vector<int> readExistingStudentIDs();
-void news();
 
 int main()
 {
@@ -916,15 +910,15 @@ void registerAccount()
 
     switch (choice) {
     case 1: {
-        registerStudentAccount();
+        registerNewAccount(AccountType::STUDENT);
         break;
     }
     case 2: {
-        registerTeacherAccount();
+        registerNewAccount(AccountType::TEACHER);
         break;
     }
     case 3: {
-        registerParentAccount();
+        registerNewAccount(AccountType::PARENT);
         break;
     }
     case 4: {

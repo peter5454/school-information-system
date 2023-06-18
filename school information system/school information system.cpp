@@ -48,6 +48,7 @@ enum class AccountType
 
 
 void registerAccount();
+void viewSentMessages(vector<Messages>& vM, int ID, int p);
 void registerNewAccount(const AccountType);
 bool isAlphabet(const std::string&);
 bool containsNumber(const std::string&);
@@ -129,6 +130,7 @@ void viewMessages(int ID, int p){
     vector<Messages> vM;
     int unreadMessages = 0;
     int choice;
+    string input;
     ifstream mInputFile("messages.txt");
     if (mInputFile.is_open()) {
         string line;
@@ -165,7 +167,11 @@ void viewMessages(int ID, int p){
             case 1: {
                 if (unreadMessages == 0) {
                     system("cls");
-                    cout << "You have no unread Messages!";
+                    cout << "You have no unread Messages!" << endl;
+                    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
+                    cout << "type anything to go back to messages : ";
+                    getline(cin, input);
+                    viewMessages(ID, p);
                 }
                 else {
                     viewUnreadMessages(vM, unreadMessages, ID, p);
@@ -182,11 +188,12 @@ void viewMessages(int ID, int p){
                 break;
             }
             case 4: {
+                viewSentMessages(vM, ID, p);
                 break;
             }
 
             } while (choice != 5)
-                sPLogin(ID);
+                sPLogin(p);
     }
 }
 void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
@@ -205,12 +212,16 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
             t++;
         }
     }
+    if (t = 0) {
+        cout << "No messages" << endl;
+    }
     ofstream file("messages.txt");
     if (file.is_open()) {
         for (int i = 0; i < vM.size(); i++) {
             file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl;
         }
     }
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
     cout << "type anything to go back to messages : ";
     getline(cin, input);
     viewMessages(ID, p);
@@ -233,6 +244,7 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p)
             file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl;
         }
     }
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
     cout << "type anything to go back to messages : ";
     getline(cin, input);
     viewMessages(ID, p);
@@ -436,6 +448,23 @@ void sendMessages(int ID, int num) {
             viewMessages(ID, num);
         }
     }
+}
+void viewSentMessages(vector<Messages>& vM, int ID, int p) {
+    int t = 1;
+    string input;
+    system("cls");
+    cout << "\tAll Sent Messages" << endl;
+    cout << "************************" << endl;
+    for (int i = 0; i < vM.size(); i++) {
+        if (vM[i].sentID == ID) {
+            cout << "Message " << t << ": " << vM[i].message << endl;
+            t++;
+        }
+    }
+    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
+    cout << "type anything to go back to messages : ";
+    getline(cin, input);
+    viewMessages(ID, p);
 }
 void messageTeacher(){}
 void pUpdatePersonalInformation() {}

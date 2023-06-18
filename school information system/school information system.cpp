@@ -466,7 +466,6 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p) {
     getline(cin, input);
     viewMessages(ID, p);
 }
-void messageTeacher(){}
 void pUpdatePersonalInformation() {}
 void sPLogin(int p) {
     int choice;
@@ -494,14 +493,14 @@ void sPLogin(int p) {
             system("cls");
             cout << "\t" << "Welcome " << vP[p].Name << "!";
             cout << endl << endl;
-            cout << "1. View Your Child's Report" << endl << "2. View your Child's Class" << endl << "3. View Messages " << endl << "4. Message Your Child's Teacher " << endl <<"5. Update Personal Information" << endl << "6. Logout" << endl << "7. Exit" << endl << endl;
+            cout << "1. View Your Child's Report" << endl << "2. View your Child's Class" << endl << "3. Messages " << endl <<"4. Update Personal Information" << endl << "5. Logout" << endl << "6. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             // Perform numeric range check
-            while (!(std::cin >> choice) || choice < 1 || choice > 7) {
+            while (!(std::cin >> choice) || choice < 1 || choice > 6) {
                 std::cin.clear();
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid choice. Please enter a number (1 - 7): ";
+                std::cout << "Invalid choice. Please enter a number (1 - 6): ";
             }
 
             switch (choice) {
@@ -518,13 +517,10 @@ void sPLogin(int p) {
             case 4: {
                 break;
             }
-            case 5: {
-                break;
-            }
             }
         } while (choice <= 5);
-        if (choice == 6) {
-
+        if (choice == 5) {
+            return;
         }
         else {
             exit(0);

@@ -465,6 +465,7 @@ void sPLogin(int p, vector<Parents>& vP) {
             break;
         }
         case 4: {
+            pUpdatePersonalInformation(vP[p].ID, p, vP);
             break;
         }
         }

@@ -466,8 +466,10 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p) {
     getline(cin, input);
     viewMessages(ID, p);
 }
-void pUpdatePersonalInformation() {}
-void sPLogin(int p) {
+void pUpdatePersonalInformation(int ID, int p, vector<Parents>& vP) {
+
+}
+void sPLogin(int p, vector<Parents>& vP) {
     int choice;
     vector<Parents> vP;
     ifstream pInputFile("parents.txt");
@@ -503,28 +505,28 @@ void sPLogin(int p) {
                 std::cout << "Invalid choice. Please enter a number (1 - 6): ";
             }
 
-            switch (choice) {
-            case 1: {
-                break;
-            }
-            case 2: {
-                break;
-            }
-            case 3: {
-                viewMessages(vP[p].ID, p);
-                break;
-            }
-            case 4: {
-                break;
-            }
-            }
-        } while (choice <= 5);
-        if (choice == 5) {
-            return;
+        switch (choice) {
+        case 1: {
+            break;
         }
-        else {
-            exit(0);
+        case 2: {
+            break;
         }
+        case 3: {
+            pViewMessages(vP[p].ID, p, vP);
+            break;
+        }
+        case 4: {
+            break;
+        }
+        }
+    } while (choice < 5);
+    if (choice == 5) {
+        system("cls");
+        mainMenu();
+    }
+    else {
+        exit(0);
     }
 }
 

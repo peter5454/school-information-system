@@ -12,26 +12,33 @@
 #include <vector>
 #include <regex>
 
+HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
+
 using namespace std;
 struct Students {
     int ID;
     string Name;
     string Password;
+    string Adress;
+    int Class;
 };
 struct Parents {
     int ID;
     string Name;
     string Password;
+    int childID;
 };
 struct Teachers {
     int ID;
     string Name;
     string Password;
+    int Class;
 };
 struct Admins {
     int ID;
     string Name;
     string Password;
+    string SchoolName;
 };
 struct Messages {
     int sentID;
@@ -45,10 +52,11 @@ enum class AccountType
     TEACHER,
     PARENT
 };
-
-
+void mainMenu();
+void pressEnter();
+int choiceCheck(int);
 void registerAccount();
-void viewSentMessages(vector<Messages>& vM, int ID, int p);
+void pViewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP);
 void registerNewAccount(const AccountType);
 bool isAlphabet(const std::string&);
 bool containsNumber(const std::string&);
@@ -57,11 +65,11 @@ int generateID(const std::vector<int>&, const AccountType);
 std::vector<int> readExistingIDs(const std::string&);
 void news();
 void placeCursor(HANDLE, int, int);
-void login();
-void viewUnreadMessages(vector<Messages>&, int, int, int);
-void viewReceivedMessages(vector<Messages>& vM, int ID, int);
-void sPLogin(int p);
-void sendMessages(int ID, int);
+void login(int, static int, int);
+void pViewUnreadMessages(vector<Messages>&, int, int, int, vector<Parents>& vP);
+void pViewReceivedMessages(vector<Messages>& vM, int ID, int, vector<Parents>& vP);
+void sPLogin(int p, vector<Parents>& vP);
+void pSendMessages(int ID, int, vector<Parents>& vP);
 void viewReport(int p) {}
 void viewClass(int p) {}
 void updatePersonalInformation(int p) {}
@@ -117,7 +125,8 @@ void sSLogin(int p) {
             }
         } while (choice <= 3);
         if (choice == 4) {
-
+            system("cls");
+            mainMenu();
         }
         else {
             exit(0);
@@ -126,7 +135,7 @@ void sSLogin(int p) {
 }
 
 void viewChildReport() {}
-void viewMessages(int ID, int p){
+void pViewMessages(int ID, int p, vector<Parents>& vP){
     vector<Messages> vM;
     int unreadMessages = 0;
     int choice;
@@ -171,34 +180,35 @@ void viewMessages(int ID, int p){
                     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
                     cout << "type anything to go back to messages : ";
                     getline(cin, input);
-                    viewMessages(ID, p);
+                    pViewMessages(ID, p, vP);
                 }
                 else {
-                    viewUnreadMessages(vM, unreadMessages, ID, p);
+                    pViewUnreadMessages(vM, unreadMessages, ID, p, vP);
                 }
                 break;
             }
             case 2: {
-                viewReceivedMessages(vM, ID, p);
+                pViewReceivedMessages(vM, ID, p, vP);
                 break;
             }
             case 3: {
                 system("cls");
-                sendMessages(ID, p);
+                pSendMessages(ID, p, vP);
                 break;
             }
             case 4: {
-                viewSentMessages(vM, ID, p);
+                pViewSentMessages(vM, ID, p, vP);
                 break;
             }
 
             } while (choice != 5)
-                sPLogin(p);
+                sPLogin(p, vP);
     }
 }
-void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
+void pViewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP){
     int t = 1;
     string input;
+    system("cls");
     cout << "\tUnread Messages" << endl;
     cout << "************************" << endl;
     for (int i = 0; i < vM.size(); i++) {
@@ -212,7 +222,7 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
             t++;
         }
     }
-    if (t = 0) {
+    if (t == 0) {
         cout << "No messages" << endl;
     }
     ofstream file("messages.txt");
@@ -224,11 +234,12 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p){
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
     cout << "type anything to go back to messages : ";
     getline(cin, input);
-    viewMessages(ID, p);
+    pViewMessages(ID, p, vP);
 }
-void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p) {
+void pViewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p, vector<Parents>& vP) {
     int t = 1;
     string input;
+    system("cls");
     cout << "\tUnread Messages" << endl ;
     cout << "************************" <<endl;
     for (int i = 0; i < vM.size(); i++) {
@@ -247,209 +258,166 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p)
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
     cout << "type anything to go back to messages : ";
     getline(cin, input);
-    viewMessages(ID, p);
+    pViewMessages(ID, p, vP);
     
 
 }
-void sendMessages(int ID, int num) {
-    
+void pSendMessages(int ID, int num, vector<Parents>& vP) {
+
     int pID;
     int t = 0;
     int r = 0;
     int length = to_string(ID).length();
     string message;
-    vector<Parents> vP;
     vector<Teachers> vT;
     cout << "\tSend Messages" << endl;
     cout << "************************" << endl << endl;
     if (length == 5) {
-        cout << "Enter a message you want to send to (\\n) for new line): ";
+        cout << "Enter a message you want to send (\\n for new line): ";
         cin.ignore();
         getline(cin, message);
-        ifstream pInputFile("parents.txt");
-        if (pInputFile.is_open()) {
-            string line;
-            while (getline(pInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
-                istringstream iss(line);
-                string value;
-
-                Parents p;
-                getline(iss, value, ',');
-                p.ID = stoi(value);
-
-                getline(iss, p.Name, ',');
-
-                getline(iss, p.Password, ',');
-
-                vP.push_back(p);
-                ofstream outputFile("messages.txt", ios_base::app);
-                if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "1234" << ',' << 1 << ',' << message << std::endl;
-                    outputFile.close();
-                    viewMessages(ID, num);
-                }
-
-            }
+        ofstream outputFile("messages.txt", ios_base::app);
+        if (outputFile.is_open()) {
+            outputFile << ID << ',' << "1234" << ',' << 1 << ',' << message << endl;
+            outputFile.close();
+            pViewMessages(ID, num, vP);
         }
     }
     else if (length == 4) {
         int choice;
-
         cout << "1. Admin" << endl << "2. Teacher" << endl;
-        cout << "Make your pick : ";
-        cin >> choice;
-        while (!(std::cin >> choice) || choice < 1 || choice > 2) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid choice. Please enter a number (1 - 2): ";
+        cout << "Make your pick: ";
+        while (!(cin >> choice) || choice < 1 || choice > 2) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid choice. Please enter a number (1 - 2): ";
         }
         if (choice == 1) {
-            cout << "Enter a message you want to send to (\\n) for new line): ";
+            cout << "Enter a message you want to send (\\n) for new line): ";
+            cin.ignore();
             getline(cin, message);
             ofstream outputFile("messages.txt", ios_base::app);
             if (outputFile.is_open()) {
-                outputFile << ID << ',' << "adminID" << ',' << 1 << ',' << message << std::endl;
+                outputFile << ID << ',' << "adminID" << ',' << 1 << ',' << message << endl;
                 outputFile.close();
-                viewMessages(ID, num);
+                pViewMessages(ID, num, vP);
             }
         }
         else {
-
-            cout << "enter ID for parent (eg.01042) : ";
-            cin >> pID;
-            ifstream pInputFile("parents.txt");
-            vector<Parents> vP;
-            if (pInputFile.is_open()) {
-                string line;
-                while (t == 0) {
-                    while (getline(pInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
-                        istringstream iss(line);
-                        string value;
-
-                        Parents p;
-                        r++;
-                        getline(iss, value, ',');
-                        p.ID = stoi(value);
-                        if (pID == p.ID) {
-                            t++;
-                            getline(iss, p.Name, ',');
-
-                            getline(iss, p.Password, ',');
-                        }
-                        vP.push_back(p);
+            while (t == 0) {
+                cout << "Enter ID for parent (e.g., 01042): ";
+                cin >> pID;
+                for (int i = 0; i < vP.size(); i++) {
+                    if (vP[i].ID == pID) {
+                        r = i;
+                        t++;
+                        break;
                     }
-                    r = 0;
+                }
+                if (t == 0) {
                     system("cls");
-                    cout << "Number not found. " << endl << "Please enter another ID  or type '0' to return: ";
+                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
                     cin >> pID;
                     if (pID == 0) {
-                        viewMessages(ID, num);
+                        pViewMessages(ID, num, vP);
+                        return;
                     }
                 }
             }
-            if (t > 0) {
-                cout << "Enter a message you want to send to" << vP[r].Name << " (\\n) for new line): ";
-                getline(cin, message);
-                ofstream outputFile("messages.txt", ios_base::app);
-                if (outputFile.is_open()) {
-                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << std::endl;
-                    outputFile.close();
-                    viewMessages(ID, num);
-                }
+            cout << "Enter a message you want to send to " << vP[r].Name << " (\\n for new line): ";
+            cin.ignore();
+            getline(cin, message);
+            ofstream outputFile("messages.txt", ios_base::app);
+            if (outputFile.is_open()) {
+                outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                outputFile.close();
+                pViewMessages(ID, num, vP);
             }
         }
     }
     else {
-
         cout << "Enter ID for parent or teacher you want to talk to: ";
         cin >> pID;
         length = to_string(pID).length();
-        while (!(std::cin >> pID) || length < 4 || length > 5) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid ID. Please enter another ID: ";
+        while (!(cin >> pID) || length < 4 || length > 5) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid ID. Please enter another ID: ";
         }
         do {
             if (length == 5) {
-                ifstream pInputFile("parents.txt");
-                
-                if (pInputFile.is_open()) {
-                    string line;
-                    while (getline(pInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
-                        istringstream iss(line);
-                        string value;
-
-                        Parents p;
-                        r++;
-                        getline(iss, value, ',');
-                        p.ID = stoi(value);
-                        if (pID == p.ID) {
-                            t++;
-                            getline(iss, p.Name, ',');
-
-                            getline(iss, p.Password, ',');
-                        }
-                        vP.push_back(p);
+                for (int i = 0; i < vP.size(); i++) {
+                    if (vP[i].ID == pID) {
+                        t++;
+                        r = i;
+                        break;
                     }
                 }
-                r = 0;
-                system("cls");
-                cout << "Number not found. " << endl << "Please enter another ID  or type '0' to return: ";
-                cin >> pID;
-                length = to_string(pID).length();
-                if (pID == 0) {
-                    viewMessages(ID, num);
+                if (t == 0) {
+                    system("cls");
+                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                    cin >> pID;
+                    length = to_string(pID).length();
+                    if (pID == 0) {
+                        pViewMessages(ID, num, vP);
+                        return;
+                    }
                 }
             }
-            else if (length == 6){
+            else if (length == 6) {
                 ifstream tInputFile("teachers.txt");
                 if (tInputFile.is_open()) {
                     string line;
-                    while (getline(tInputFile, line)) { //Gathers all of the teachers names, passwords and IDs then assigns them to their respected variables.
+                    while (getline(tInputFile, line)) {
                         istringstream iss(line);
                         string value;
-
                         Teachers te;
                         r++;
+                        getline(iss, value, ',');
+                        te.ID = stoi(value);
                         if (pID == te.ID) {
-                            getline(iss, value, ',');
-                            te.ID = stoi(value);
-
-                            getline(iss, te.Name, ',');
                             t++;
-
+                            getline(iss, te.Name, ',');
                             getline(iss, te.Password, ',');
-
-                            vT.push_back(te);
                         }
+                        vT.push_back(te);
+                    }
+                    tInputFile.close();
+                }
+                if (t == 0) {
+                    system("cls");
+                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                    cin >> pID;
+                    length = to_string(pID).length();
+                    if (pID == 0) {
+                        pViewMessages(ID, num, vP);
+                        return;
                     }
                 }
-            r = 0;
-            system("cls");
-            cout << "Number not found. " << endl << "Please enter another ID  or type '0' to return: ";
-            cin >> pID;
-            if (pID == 0) {
-                viewMessages(ID, num);
             }
-            length = to_string(pID).length();
+        } while (t != 1);
+        if (length == 5) {
+            cout << "Enter a message you want to send to " << vP[r].Name << " (\\n for new line): ";
         }
-    } while (t != 1);
-    if (length == 5) {
-        cout << "Enter a message you want to send to" << vP[r].Name<< "(\\n) for new line): ";
-    }
-    else {
-        cout << "Enter a message you want to send to" << vT[r].Name << "(\\n) for new line): ";
-    }
-    getline(cin, message);
-    ofstream outputFile("messages.txt", ios_base::app);
+        else {
+            cout << "Enter a message you want to send to " << vT[r].Name << " (\\n for new line): ";
+        }
+        cin.ignore();
+        getline(cin, message);
+        ofstream outputFile("messages.txt", ios_base::app);
         if (outputFile.is_open()) {
-            outputFile << ID << ',' << "pID" << ',' << 1 << ',' << message << std::endl;
+            if (length == 5) {
+                outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+            }
+            else {
+                outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl;
+            }
             outputFile.close();
-            viewMessages(ID, num);
+            pViewMessages(ID, num, vP);
         }
     }
 }
-void viewSentMessages(vector<Messages>& vM, int ID, int p) {
+void pViewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP) {
     int t = 1;
     string input;
     system("cls");
@@ -464,46 +432,26 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p) {
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
     cout << "type anything to go back to messages : ";
     getline(cin, input);
-    viewMessages(ID, p);
+    pViewMessages(ID, p, vP);
 }
 void pUpdatePersonalInformation(int ID, int p, vector<Parents>& vP) {
 
 }
 void sPLogin(int p, vector<Parents>& vP) {
     int choice;
-    vector<Parents> vP;
-    ifstream pInputFile("parents.txt");
-    if (pInputFile.is_open()) {
-        string line;
-        while (getline(pInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
-            istringstream iss(line);
-            string value;
+    do {
+        system("cls");
+        cout << "\t" << "Welcome " << vP[p].Name << "!";
+        cout << endl << endl;
+        cout << "1. View Your Child's Report" << endl << "2. View your Child's Class" << endl << "3. Messages " << endl << "4. Update Personal Information" << endl << "5. Logout" << endl << "6. Exit" << endl << endl;
+        cout << "Make your choice : ";
 
-            Parents pa;
-
-            getline(iss, value, ',');
-            pa.ID = stoi(value);
-
-            getline(iss, pa.Name, ',');
-
-
-            getline(iss, pa.Password, ',');
-
-            vP.push_back(pa);
+        // Perform numeric range check
+        while (!(std::cin >> choice) || choice < 1 || choice > 6) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid choice. Please enter a number (1 - 6): ";
         }
-        do {
-            system("cls");
-            cout << "\t" << "Welcome " << vP[p].Name << "!";
-            cout << endl << endl;
-            cout << "1. View Your Child's Report" << endl << "2. View your Child's Class" << endl << "3. Messages " << endl <<"4. Update Personal Information" << endl << "5. Logout" << endl << "6. Exit" << endl << endl;
-            cout << "Make your choice : ";
-
-            // Perform numeric range check
-            while (!(std::cin >> choice) || choice < 1 || choice > 6) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid choice. Please enter a number (1 - 6): ";
-            }
 
         switch (choice) {
         case 1: {
@@ -593,7 +541,8 @@ void sTLogin(int p) {
             }
         } while (choice <= 6);
         if (choice == 7) {
-
+            system("cls");
+            mainMenu();
         }
         else {
             exit(0);
@@ -601,7 +550,92 @@ void sTLogin(int p) {
     }
 }
 
-void manageSchool() {}
+Admins readAdmin()
+{
+    std::ifstream adminFile("admins.txt");
+    if (adminFile.is_open()) {
+        string line;
+        Admins admin;
+
+        if (std::getline(adminFile, line)) {
+            istringstream iss(line);
+            string value;
+
+            std::getline(iss, value, ',');
+            admin.ID = std::stoi(value);
+
+            std::getline(iss, admin.Name, ',');
+
+            std::getline(iss, admin.Password, ',');
+
+            std::getline(iss, admin.SchoolName, ',');
+        }
+        adminFile.close();
+
+        return admin;
+    }
+    else {
+        std::cout << "Failed to open admins.txt" << std::endl;
+    }
+    
+
+}
+
+void manageSchool() 
+{
+    Admins admin = readAdmin();
+    int choice;
+
+    std::ifstream inputFile("admins.txt");
+    if (!inputFile.is_open()) {
+        std::cout << "Failed to open admins.txt" << std::endl;
+        return;
+    }
+
+    std::vector<std::string> lines;
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        lines.push_back(line);
+    }
+    inputFile.close();
+
+    if (lines.empty()) {
+        std::cout << "File is empty." << std::endl;
+        return;
+    }
+
+    std::ofstream outputFile("admins.txt");
+    if (!outputFile.is_open()) {
+        std::cout << "Failed to open file for writing." << std::endl;
+        return;
+    }
+
+
+
+    do {
+        std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl;
+        std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Exit" << std::endl;
+
+        choice = choiceCheck(4);
+
+        switch (choice) {
+        case 1:
+            std::cout << "New Name: ";
+            std::getline(std::cin >> std::ws, admin.SchoolName);
+
+            std::string newLine = std::to_string(admin.ID) + "," + admin.Name + "," + admin.Password + "," + admin.SchoolName;
+            lines[0] = newLine;
+            for (const auto& line : lines) {
+                outputFile << line << std::endl;
+            }
+            outputFile.close();
+            std::cout << "Name changed successfully!" << std::endl;
+            pressEnter();
+            break;
+        }
+
+    } while (choice != 4);
+}
 void manageStudents() {}
 void manageTeachers() {}
 void manageParents() {}
@@ -610,78 +644,62 @@ void aSendMessages() {}
 void viewReport() {}
 void updateEvents() {}
 void aUpdatePersonalInformation() {}
-void sALogin(int p) {
+void sALogin() {
     int choice = 0;
-    vector<Admins> vA;
+    Admins admin = readAdmin();
     ifstream aInputFile("admins.txt");
-    if (aInputFile.is_open()) {
-        string line;
-        while (getline(aInputFile, line)) { //Gathers all of the admins names, passwords and IDs then assigns them to their respected variables.
-            istringstream iss(line);
-            string value;
+    do {
+        cout << "\t" << "Welcome " << admin.Name << "!";
+        cout << endl << endl;
+        cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Teachers " << endl << "4. Manage Parents " << endl << "5. Manage classes " << endl <<"6. View Messages " << endl << "7. Send Messages " << endl << "8. View Reports" << endl << "9. Update News/Events" << endl << "10. Update Personal Information " << endl << "11. Logout" << endl << "12. Exit" << endl << endl;
+        cout << "Make your choice : ";
 
-            Admins a;
-
-            getline(iss, value, ',');
-            a.ID = stoi(value);
-
-            getline(iss, a.Name, ',');
-
-
-            getline(iss, a.Password, ',');
-
-            vA.push_back(a);
+        // Perform numeric range check
+        while (!(std::cin >> choice) || choice < 1 || choice > 12) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid choice. Please enter a number (1 - 12): ";
         }
-        do {
-            system("cls");
-            cout << "\t" << "Welcome Admin!";
-            cout << endl << endl;
-            cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Teachers " << endl << "4. Manage Parents " << endl << "5. Manage classes " << endl <<"6. View Messages " << endl << "7. Send Messages " << endl << "8. View Reports" << endl << "9. Update News/Events" << endl << "10. Update Personal Information " << endl << "11. Logout" << endl << "12. Exit" << endl << endl;
-            cout << "Make your choice : ";
 
-            // Perform numeric range check
-            while (!(std::cin >> choice) || choice < 1 || choice > 12) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid choice. Please enter a number (1 - 12): ";
-            }
-
-            switch (choice) {
-            case 1: {
-                break;
-            }
-            case 2: {
-                break;
-            }
-            case 3: {
-                break;
-            }
-            case 4: {
-                break;
-            }
-            case 5: {
-                break;
-            }
-            case 6: {
-                break;
-            }
-            case 7: {
-                break;
-            }
-            case 8: {
-                break;
-            }
-            case 9: {
-                break;
-            }
-            case 10: {
-                break;
-            }
+        switch (choice) {
+        case 1: {
+            std::system("cls");
+            manageSchool();
+            break;
+        }
+        case 2: {
+            break;
+        }
+        case 3: {
+            break;
+        }
+        case 4: {
+            break;
+        }
+        case 5: {
+            break;
+        }
+        case 6: {
+            break;
+        }
+        case 7: {
+            break;
+        }
+        case 8: {
+            break;
+        }
+        case 9: {
+            break;
+        }
+        case 10: {
+            break;
+        }
 
             }
         } while (choice <= 10);
         if (choice == 11) {
-
+            system("cls");
+            mainMenu();
         }
         else {
             exit(0);
@@ -689,8 +707,8 @@ void sALogin(int p) {
     }
 }
 
-void sLogin(string password, int ID) {
-    int t = 0;
+void sLogin(string password, int ID, int& tries) {
+    int cUser = 0;
     vector<Students> vS;
     ifstream sInputFile("students.txt");
     if (sInputFile.is_open()) {
@@ -708,26 +726,27 @@ void sLogin(string password, int ID) {
 
             getline(iss, s.Password, ',');
 
+            getline(iss, s.Adress, ',');
+
             vS.push_back(s);
         }
         for (int i = 0; i < vS.size(); i++) {
             if (vS[i].ID == ID && vS[i].Password == password) {
                 sSLogin(i);
-                t++;
-                system("cls");
+
+            }else if (vS[i].ID == ID) {
+                cUser = 1;
             }
         }
-        if (t == 0) {
-            system("cls");
-            cout << "Failed to Login" << endl << endl;
-        }
+        tries++;
+        login(cUser, tries, ID);
     }
     else {
         cout << "Failed to open students.txt" << std::endl;
     }
 }
-void pLogin(string password, int ID) {
-    int t = 0;
+void pLogin(string password, int ID, int& tries) {
+    int cUser = 0;
     vector<Parents> vP;
     ifstream pInputFile("parents.txt");
     if (pInputFile.is_open()) {
@@ -750,23 +769,21 @@ void pLogin(string password, int ID) {
         }
         for (int i = 0; i < vP.size(); i++) {
             if (vP[i].ID == ID && vP[i].Password == password) {
-                sPLogin(i);
-                t++;
-                system("cls");
+                sPLogin(i, vP);
+
+            }else if (vP[i].ID == ID) {
+                cUser = 1;
             }
         }
-        if (t == 0) {
-            system("cls");
-            cout << "Failed to Login" << endl << endl;
-           
-        }
+        tries++;
+        login(cUser, tries, ID);
     }
     else {
         cout << "Failed to open parents.txt" << endl;
     }
 }
-void tLogin(string password, int ID) {
-    int tt = 0;
+void tLogin(string password, int ID, int& tries) {
+    int cUser = 0;
     vector<Teachers> vT;
     ifstream tInputFile("teachers.txt");
     if (tInputFile.is_open()) {
@@ -790,84 +807,91 @@ void tLogin(string password, int ID) {
         for (int i = 0; i < vT.size(); i++) {
             if (vT[i].ID == ID && vT[i].Password == password) {
                 sTLogin(i);
-                tt++;
-                system("cls");
+            } else if (vT[i].ID == ID) {
+                cUser = 1;
             }
         }
-        if (tt == 0) {
-            system("cls");
-            cout << "Failed to Login" << endl << endl;
-        }
+            tries++;
+            login(cUser, tries, ID);
     }
     else {
         cout << "Failed to open teachers.txt" << std::endl;
     }
 }
-void aLogin(string password, int ID) {
-    int t = 0;
-    vector<Admins> vA;
-    ifstream aInputFile("admins.txt");
-    if (aInputFile.is_open()) {
-        string line;
-        while (getline(aInputFile, line)) { //Gathers all of the admins names, passwords and IDs then assigns them to their respected variables.
-            istringstream iss(line);
-            string value;
-
-            Admins a;
-
-            getline(iss, value, ',');
-            a.ID = stoi(value);
-
-            getline(iss, a.Name, ',');
-
-
-            getline(iss, a.Password, ',');
-
-            vA.push_back(a);
-        }
-        for (int i = 0; i < vA.size(); i++) {
-            if (vA[i].ID == ID && vA[i].Password == password) {
-                sALogin(i);
-                t++;
-                system("cls");
-            }
-        }
-        if (t == 0) {
-            system("cls");
-            cout << "Failed to Login" << endl << endl;
-        }
+void aLogin(string password, int ID, int& tries) {
+    int cUser = 0;
+    Admins admin = readAdmin();
+    if (admin.ID == ID && admin.Password == password) {
+        sALogin(i);
     }
-    else {
-
-        cout << "Failed to open admins.txt" << std::endl;
+    else if (admin.ID == ID) {
+        cUser = 1;
+        
     }
+    tries++;
+    login(cUser, tries, ID);
 }
 void login()
 {
+    int t = 0;
     int ID;
     string password;
     int length;
-
     system("cls");
-    cout << "\tLogin" << endl;
-    std::cout << "************************" << std::endl;
-    cout << "\nEnter your ID" << endl;
-    cin >> ID;
-    cout << "\nEnter your Password" << endl;
-    cin >> password;
-
+    if (tries == 3) {
+        cout << "You failed to login 3 times exiting";
+        exit(0);
+    }
+    else if (cUser == 1) {
+        cout << "\tincorrect Password! You have " << 3 - tries << " tries left" << endl << endl;
+        placeCursor(screen, 2, 23);
+        cout << "Login";
+        placeCursor(screen, 3, 5);
+        std::cout << "********************************************";
+        placeCursor(screen, 4, 0);
+        cout << "Enter your ID : " << correctID;
+        ID = correctID;
+        placeCursor(screen, 5, 0);
+        cout << "Enter your Password : ";
+        cin >> password;
+    }
+    else if (tries > 0) {
+        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
+        placeCursor(screen, 2, 23);
+        cout << "Login";
+        placeCursor(screen, 3, 5);
+        std::cout << "********************************************";
+        placeCursor(screen, 4, 0);
+        cout << "Enter your ID : ";
+        cin >> ID;
+        placeCursor(screen, 5, 0);
+        cout << "Enter your Password : ";
+        cin >> password;
+    }
+    else if (tries == 0) {
+        placeCursor(screen, 0, 23);
+        cout << "Login";
+        placeCursor(screen, 1, 5);
+        std::cout << "********************************************";
+        placeCursor(screen, 2, 0);
+        cout << "Enter your ID : ";
+        cin >> ID;
+        placeCursor(screen, 3, 0);
+        cout << "Enter your Password : ";
+        cin >> password;
+    }
     length = to_string(ID).length();
     switch (length) {
     case 6: {
-        sLogin(password, ID);
+        sLogin(password, ID, tries);
         break;
     }
     case 5: {
-        pLogin(password, ID);
+        pLogin(password, ID, tries);
         break;
     }
     case 4: {
-        tLogin(password, ID);
+        tLogin(password, ID, tries);
         break;
     }
     case 3: {
@@ -875,19 +899,19 @@ void login()
         break;
     }
     default: {
-        system("cls");
-        cout << "Failed to login" << endl << endl;
+        tries++;
+        break;
     }
-
     }
 }
 
-
-int main()
+void mainMenu()
 {
-    string school = "Regular High School";
+    
     int choice;
     do {
+        Admins admin = readAdmin();
+        string school = admin.SchoolName;
         cout << "\t" << school << endl;
         for (int i = 0; i < school.length() + 16; i++) {
             cout << "*";
@@ -896,16 +920,11 @@ int main()
         cout << "1. Log In" << endl << "2. Register New Account" << endl << "3. Events & News" << endl << "4. Exit" << endl << endl;
         cout << "Make your choice : ";
 
-        // Perform numeric range check
-        while (!(std::cin >> choice) || choice < 1 || choice > 4) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid choice. Please enter a number (1 - 4): ";
-        }
+        choice = choiceCheck(4);
 
         switch (choice) {
         case 1: {
-            login();
+            login(0, 0, 0);
             break;
         }
         case 2: {
@@ -918,6 +937,29 @@ int main()
         }
         }
     } while (choice != 4);
+};
+int main()
+{
+    mainMenu();
+}
+
+void pressEnter()
+{
+    std::cout << "Press Enter to continue...";
+    std::cin.get();
+    std::system("cls");
+}
+
+// Function to perform numeric range check for choices
+int choiceCheck(int n)
+{
+    int choice;
+    while (!(std::cin >> choice) || choice < 1 || choice > n) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid choice. Please enter a number (1 - " << n << "): ";
+    }
+    return choice;
 }
 
 void registerAccount()
@@ -950,8 +992,8 @@ void registerAccount()
     case 4: {
         break;
     }
-    }
 }
+
 
 void registerNewAccount(const AccountType accountType)
 {
@@ -1056,14 +1098,14 @@ void registerNewAccount(const AccountType accountType)
             }
             if (isValid) { break; }
             placeCursor(screen, 13, 0);
-            std::cout << "ID does not match any current students. (The input should consist of only numbers with a length of 6 digits)";
+            std::cout << "ID does not match any current students. (The input should consist of 6 numbers only)";
             placeCursor(screen, 7, 0);
             std::cout << "Child's Student ID:                ";
             placeCursor(screen, 7, 20);
             std::getline(std::cin >> std::ws, childID);
         }
         placeCursor(screen, 13, 0);
-        std::cout << "                                                                                                                   ";
+        std::cout << "                                                                                             ";
     }
 
     // Address number input

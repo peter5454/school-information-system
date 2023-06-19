@@ -704,8 +704,8 @@ void sALogin() {
         else {
             exit(0);
         }
-    }
 }
+
 
 void sLogin(string password, int ID, int& tries) {
     int cUser = 0;
@@ -822,7 +822,7 @@ void aLogin(string password, int ID, int& tries) {
     int cUser = 0;
     Admins admin = readAdmin();
     if (admin.ID == ID && admin.Password == password) {
-        sALogin(i);
+        sALogin();
     }
     else if (admin.ID == ID) {
         cUser = 1;
@@ -831,11 +831,10 @@ void aLogin(string password, int ID, int& tries) {
     tries++;
     login(cUser, tries, ID);
 }
-void login()
+void login(int cUser, static int tries, int correctID)
 {
-    int t = 0;
-    int ID;
     string password;
+    int ID;
     int length;
     system("cls");
     if (tries == 3) {
@@ -895,7 +894,7 @@ void login()
         break;
     }
     case 3: {
-        aLogin(password, ID);
+        aLogin(password, ID, tries);
         break;
     }
     default: {
@@ -991,6 +990,7 @@ void registerAccount()
     }
     case 4: {
         break;
+    }
     }
 }
 

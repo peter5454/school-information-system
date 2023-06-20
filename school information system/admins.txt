@@ -1,2 +1,1 @@
-123,Administrator,admin123,Regular High School
-Rocket test today!
+123,Admin,admin123,Hero Academy

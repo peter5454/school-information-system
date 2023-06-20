@@ -15,6 +15,7 @@
 HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
 
 using namespace std;
+
 struct Students {
     int ID;
     string Name;
@@ -578,7 +579,34 @@ Admins readAdmin()
     
 
 }
+void saveToFile(const std::string& filename, const std::string& content)
+{
+    std::ofstream outputFile(filename);
+    if (!outputFile.is_open()) {
+        std::cout << "Failed to open file for writing." << std::endl;
+        return;
+    }
+    outputFile << content;
+    outputFile.close();
+    std::cout << "Content saved to file." << std::endl;
+    
+    pressEnter();
+}
+int displayFile(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        std::cout << "Failed to open file for reading." << std::endl;
+        return 1;
+    }
 
+    std::string line;
+    while (std::getline(inputFile, line)) {
+        std::cout << line << std::endl;
+    }
+
+    inputFile.close();
+    return 1;
+}
 void manageSchool() 
 {
     Admins admin = readAdmin();
@@ -597,19 +625,6 @@ void manageSchool()
     }
     inputFile.close();
 
-    if (lines.empty()) {
-        std::cout << "File is empty." << std::endl;
-        return;
-    }
-
-    std::ofstream outputFile("admins.txt");
-    if (!outputFile.is_open()) {
-        std::cout << "Failed to open file for writing." << std::endl;
-        return;
-    }
-
-
-
     do {
         std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl;
         std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Exit" << std::endl;
@@ -617,21 +632,48 @@ void manageSchool()
         choice = choiceCheck(4);
 
         switch (choice) {
-        case 1:
+        case 1: {
+            std::system("cls");
+            std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
             std::cout << "New Name: ";
             std::getline(std::cin >> std::ws, admin.SchoolName);
 
-            std::string newLine = std::to_string(admin.ID) + "," + admin.Name + "," + admin.Password + "," + admin.SchoolName;
-            lines[0] = newLine;
-            for (const auto& line : lines) {
-                outputFile << line << std::endl;
-            }
-            outputFile.close();
-            std::cout << "Name changed successfully!" << std::endl;
-            pressEnter();
-            break;
-        }
+            if (!std::cin.eof()) {
+                std::string newLine = std::to_string(admin.ID) + "," + admin.Name + "," + admin.Password + "," + admin.SchoolName;
+                lines[0] = newLine;
 
+                std::ofstream outputFile("admins.txt");
+                if (!outputFile.is_open()) {
+                    std::cout << "Failed to open file for writing." << std::endl;
+                    return;
+                }
+                for (const auto& line : lines) {
+                    outputFile << line << std::endl;
+                }
+                outputFile.close();
+                std::cout << "Name changed successfully!" << std::endl;
+                pressEnter();
+                break;
+            }
+            else {
+                std::cout << "Name not changed.";
+                pressEnter();
+                break;
+            }
+        }
+        case 2: {
+            std::string content;
+            placeCursor(screen, 2, 0);
+            for (int i = 0; i < 5; i++) {
+                std::cout << std::string(30, ' ') << std::endl;
+            }
+            placeCursor(screen, 3, 0);
+            std::cout << "2. Add News & Events" << std::endl << "New/Events item to add: ";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::getline(std::cin, content);
+            saveToFile("news.txt", content);
+        }
+        }
     } while (choice != 4);
 }
 void manageStudents() {}
@@ -652,12 +694,7 @@ void sALogin() {
         cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Teachers " << endl << "4. Manage Parents " << endl << "5. Manage classes " << endl <<"6. View Messages " << endl << "7. Send Messages " << endl << "8. View Reports" << endl << "9. Update News/Events" << endl << "10. Update Personal Information " << endl << "11. Logout" << endl << "12. Exit" << endl << endl;
         cout << "Make your choice : ";
 
-        // Perform numeric range check
-        while (!(std::cin >> choice) || choice < 1 || choice > 12) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid choice. Please enter a number (1 - 12): ";
-        }
+        choice = choiceCheck(12);
 
         switch (choice) {
         case 1: {
@@ -667,7 +704,7 @@ void sALogin() {
         }
         case 2: {
             break;
-        }
+        } 
         case 3: {
             break;
         }
@@ -692,8 +729,7 @@ void sALogin() {
         case 10: {
             break;
         }
-
-            }
+        }
         } while (choice <= 10);
         if (choice == 11) {
             system("cls");
@@ -702,8 +738,8 @@ void sALogin() {
         else {
             exit(0);
         }
-    }
 }
+
 
 void sLogin(string password, int ID, int& tries) {
     int cUser = 0;
@@ -731,8 +767,8 @@ void sLogin(string password, int ID, int& tries) {
         for (int i = 0; i < vS.size(); i++) {
             if (vS[i].ID == ID && vS[i].Password == password) {
                 sSLogin(i);
-
-            }else if (vS[i].ID == ID) {
+            }
+            else if (vS[i].ID == ID) {
                 cUser = 1;
             }
         }
@@ -820,7 +856,7 @@ void aLogin(string password, int ID, int& tries) {
     int cUser = 0;
     Admins admin = readAdmin();
     if (admin.ID == ID && admin.Password == password) {
-        sALogin(i);
+        sALogin();
     }
     else if (admin.ID == ID) {
         cUser = 1;
@@ -829,7 +865,7 @@ void aLogin(string password, int ID, int& tries) {
     tries++;
     login(cUser, tries, ID);
 }
-void login()
+void login(int cUser, static int tries, int correctID)
 {
     int t = 0;
     int ID;
@@ -893,7 +929,7 @@ void login()
         break;
     }
     case 3: {
-        aLogin(password, ID);
+        aLogin(password, ID, tries);
         break;
     }
     default: {
@@ -935,6 +971,7 @@ void mainMenu()
         }
         }
     } while (choice != 4);
+    exit(0);
 };
 int main()
 {
@@ -944,6 +981,8 @@ int main()
 void pressEnter()
 {
     std::cout << "Press Enter to continue...";
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
     std::system("cls");
 }
@@ -989,6 +1028,7 @@ void registerAccount()
     }
     case 4: {
         break;
+    }
     }
 }
 
@@ -1045,7 +1085,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, fname);
     }
     placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    std::cout << std::string(60, ' ');
 
     // Last name input
     placeCursor(screen, 5, 42);
@@ -1059,7 +1099,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, lname);
     }
     placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    std::cout << std::string(60, ' ');
 
     // Teacher/Parent contact number input
     if (accountType == AccountType::TEACHER || accountType == AccountType::PARENT) {
@@ -1074,7 +1114,7 @@ void registerNewAccount(const AccountType accountType)
             std::getline(std::cin >> std::ws, contactNum);
         }
         placeCursor(screen, 13, 0);
-        std::cout << "                                                                                                ";
+        std::cout << std::string(100, ' ');
     }
 
     // Parent: child ID input
@@ -1103,7 +1143,7 @@ void registerNewAccount(const AccountType accountType)
             std::getline(std::cin >> std::ws, childID);
         }
         placeCursor(screen, 13, 0);
-        std::cout << "                                                                                             ";
+        std::cout << std::string(100, ' ');
     }
 
     // Address number input
@@ -1118,7 +1158,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, addressNum);
     }
     placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    std::cout << std::string(60, ' ');
 
     // Address name input
     placeCursor(screen, 9, 42);
@@ -1132,7 +1172,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, addressName);
     }
     placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    std::cout << std::string(60, ' ');
 
     // Password input
     placeCursor(screen, 11, 10);
@@ -1146,7 +1186,7 @@ void registerNewAccount(const AccountType accountType)
         std::getline(std::cin >> std::ws, password);
     }
     placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    std::cout << std::string(60, ' ');
 
     int userID;
     std::vector<int> existingIDs;
@@ -1284,12 +1324,10 @@ void news()
 {
     std::system("cls");
     std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
+    displayFile("news.txt");
     std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
 
-    std::cout << "Press Enter to continue...";
-    std::cin.ignore(1, '\n');
-    std::cin.get();
-    std::system("cls");
+    pressEnter();
 }
 
 // Function to place the cursor

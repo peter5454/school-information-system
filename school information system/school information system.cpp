@@ -579,34 +579,65 @@ Admins readAdmin()
     
 
 }
-void saveToFile(const std::string& filename, const std::string& content)
+void saveToFile(const std::string& filename, const std::vector<std::string>& content)
 {
     std::ofstream outputFile(filename);
     if (!outputFile.is_open()) {
         std::cout << "Failed to open file for writing." << std::endl;
         return;
     }
-    outputFile << content;
-    outputFile.close();
-    std::cout << "Content saved to file." << std::endl;
-    
-    pressEnter();
-}
-int displayFile(const std::string& filename) {
-    std::ifstream inputFile(filename);
-    if (!inputFile.is_open()) {
-        std::cout << "Failed to open file for reading." << std::endl;
-        return 1;
+
+    for (const auto& line : content) {
+        outputFile << line << '\n';
     }
 
+    outputFile.close();
+    std::cout << "Content saved to file." << std::endl;
+}
+void appendToFile(const std::string& filename, const std::string& content)
+{
+    std::ofstream outputFile(filename, std::ios::app);
+    if (!outputFile.is_open()) {
+        std::cout << "Failed to open file for writing." << std::endl;
+        return;
+    }
+
+    outputFile << content << '\n';
+
+    outputFile.close();
+    std::cout << "Content appended to file." << std::endl;
+}
+
+std::vector<std::string> readFile(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        throw std::runtime_error("Failed to open file for reading.");
+    }
+    std::vector<std::string> content;
     std::string line;
     while (std::getline(inputFile, line)) {
-        std::cout << line << std::endl;
+        content.push_back(line);
     }
 
     inputFile.close();
-    return 1;
+    return content;
 }
+// Check if file is empty
+bool isFileEmpty(const std::string& filename) {
+    std::ifstream inputFile(filename);
+    if (!inputFile.is_open()) {
+        std::cout << "Failed to open file for reading.";
+    }
+
+    std::string line;
+    std::getline(inputFile, line);
+
+    bool isEmpty = inputFile.eof();
+
+    inputFile.close();
+    return isEmpty;
+}
+// Manage school name and news/events
 void manageSchool() 
 {
     Admins admin = readAdmin();
@@ -632,6 +663,7 @@ void manageSchool()
         choice = choiceCheck(4);
 
         switch (choice) {
+            // Change school name
         case 1: {
             std::system("cls");
             std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
@@ -652,7 +684,9 @@ void manageSchool()
                 }
                 outputFile.close();
                 std::cout << "Name changed successfully!" << std::endl;
-                pressEnter();
+                std::cout << "Press Enter to continue...";
+                std::cin.get();
+                std::system("cls");
                 break;
             }
             else {
@@ -661,17 +695,57 @@ void manageSchool()
                 break;
             }
         }
+              // Add news/events
         case 2: {
             std::string content;
-            placeCursor(screen, 2, 0);
-            for (int i = 0; i < 5; i++) {
-                std::cout << std::string(30, ' ') << std::endl;
-            }
-            placeCursor(screen, 3, 0);
-            std::cout << "2. Add News & Events" << std::endl << "New/Events item to add: ";
+            std::system("cls");
+            std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
+            std::cout << "Add News & Events" << std::endl << std::endl << "New/Events item to add: ";
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::getline(std::cin, content);
-            saveToFile("news.txt", content);
+            appendToFile("news.txt", content);
+            std::cout << "Press Enter to continue...";
+            std::cin.get();
+            std::system("cls");
+
+            break;
+        }
+              // Delete news/events
+        case 3: {
+            std::system("cls");
+            std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
+            std::cout << "Remove News & Events" << std::endl << std::endl;;
+            try {
+                int n = 1;
+                int toRemove;
+                std::vector<std::string> news = readFile("news.txt");
+
+                for (const auto& line : news) {
+                    std::cout << n << ". " << line << std::endl;
+                    n++;
+                }
+                std::cout << news.size() + 1 << ". Cancel" << std::endl;
+                std::cout << std::endl << "What item do you want to delete? ";
+                toRemove = choiceCheck(news.size() + 1);
+                if (toRemove == news.size() + 1) {
+                    std::system("cls");
+                    break;
+                }
+                std::vector<std::string> updatedNews;
+                for (const auto& line : news) {
+                    if (line != news[toRemove - 1]) {
+                        updatedNews.push_back(line);
+                    }
+                }
+                saveToFile("news.txt", updatedNews);
+                pressEnter();
+                break;
+            }
+            catch (const std::runtime_error& e) {
+                std::cout << "Error: " << e.what() << std::endl;
+                pressEnter();
+                break;
+            }
         }
         }
     } while (choice != 4);
@@ -682,7 +756,6 @@ void manageParents() {}
 void adminViewMessages() {}
 void aSendMessages() {}
 void viewReport() {}
-void updateEvents() {}
 void aUpdatePersonalInformation() {}
 void sALogin() {
     int choice = 0;
@@ -1324,9 +1397,18 @@ void news()
 {
     std::system("cls");
     std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
-    displayFile("news.txt");
-    std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
-
+    if (isFileEmpty("news.txt")) {
+        std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
+    }
+    try {
+        std::vector<std::string> news = readFile("news.txt");
+        for (const auto& line : news) {
+            std::cout << line << std::endl;
+        }
+    }
+    catch(const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
     pressEnter();
 }
 

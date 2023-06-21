@@ -1,1 +1,1 @@
-123,Admin,admin123,Hero Academy
+123,Admin,admin123,Regular School

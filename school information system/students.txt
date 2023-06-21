@@ -1,2 +1,3 @@
-113587,student one,password1234,54 park ave
-127606,rr e,eeeeeeeeee,231 e102920,Good Sudent,asdfghjkl,33 Good St
+132245,New Student,password,11 Baker St,0,-1,-1,-1,-1,-1
+132399,Top of The Class,12345678,22 Gerrity Ave,0,-1,-1,-1,-1,-1
+132569,Henry Smith,paradise,55 Paradise Resort,0,-1,-1,-1,-1,-1

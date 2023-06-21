@@ -22,6 +22,11 @@ struct Students {
     string Password;
     string Address;
     int Class;
+    int Grade1;
+    int Grade2;
+    int Grade3;
+    int Grade4;
+    int Grade5;
 };
 struct Parents {
     int ID;
@@ -30,11 +35,16 @@ struct Parents {
     string Address;
     int cNumber;
     int childID;
+    int childID2;
+    int childID3;
+    int childID4;
 };
 struct Teachers {
     int ID;
     string Name;
     string Password;
+    string address;
+    int cNumber;
     int Class;
 };
 struct Admins {
@@ -880,7 +890,142 @@ void manageSchool()
         }
     } while (choice != 4);
 }
-void manageStudents() {}
+void manageStudents() 
+{
+    // Create vector of all students
+    std::vector<Students> sVec;
+
+    ifstream sInputFile("students.txt");
+    if (!sInputFile.is_open()) {
+        cout << "Failed to open students.txt" << std::endl;
+        pressEnter();
+        sALogin();
+    }
+    string line;
+    while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+        istringstream iss(line);
+        string value;
+
+        Students s;
+
+        std::getline(iss, value, ',');
+        s.ID = stoi(value);
+
+        std::getline(iss, s.Name, ',');
+
+        std::getline(iss, s.Password, ',');
+
+        std::getline(iss, s.Address, ',');
+
+        std::getline(iss, value, ',');
+        s.Class = std::stoi(value);
+
+        std::getline(iss, value, ',');
+        s.Grade1 = std::stoi(value);
+
+        std::getline(iss, value, ',');
+        s.Grade2 = std::stoi(value);
+
+        std::getline(iss, value, ',');
+        s.Grade3 = std::stoi(value);
+
+        std::getline(iss, value, ',');
+        s.Grade4 = std::stoi(value);
+
+        std::getline(iss, value, 'n');
+        s.Grade5 = std::stoi(value);
+
+        sVec.push_back(s);
+    }
+    // Menu for searching students
+    std::cout << "\tManaging Students" << std::endl;
+    std::cout << "*********************************" << std::endl << std::endl;
+    std::cout << "1. Search students by ID" << std::endl << "2. Search students by class" << std::endl << "3. Cancel" << std::endl;
+    int choice = choiceCheck(3);
+
+    switch (choice) {
+    case 1: {
+        // Student ID search
+        std::system("cls");
+        std::cout << "\tManaging Students" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+        std::cout << "Student ID: ";
+        std:string sID;
+        std::cin >> sID;
+        while (!onlyNumbers(sID) || sID.length() != 6) {
+            std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
+            std::cout << "Student ID:";
+            std::cin >> sID;
+        }
+        // Find correct student
+        for (Students& student : sVec) {
+            if (std::stoi(sID) == student.ID) {
+                std::system("cls");
+                std::cout << "\tManaging Students" << std::endl;
+                std::cout << "*********************************" << std::endl << std::endl;
+                std::cout << "Student: " << student.Name << std::endl << std::endl;
+                std::cout << "1. Change ID: " << student.ID << std::endl;
+                std::cout << "2. Change Name: " << student.Name << std::endl;
+                std::cout << "3. Change Password: " << student.Password << std::endl;
+                std::cout << "4. Change Address: " << student.Address << std::endl;
+                std::cout << "5. Change Class: " << student.Class << std::endl;
+                std::cout << "6. Change Grade 1: " << student.Grade1 << std::endl;
+                std::cout << "7. Change Grade 2: " << student.Grade2 << std::endl;
+                std::cout << "8. Change Grade 3: " << student.Grade3 << std::endl;
+                std::cout << "9. Change Grade 4: " << student.Grade4 << std::endl;
+                std::cout << "10. Change Grade 5: " << student.Grade5 << std::endl;
+                std::cout << "11. Cancel" << std::endl;
+                std::cout << "Choice: ";
+                int choice2 = choiceCheck(11);
+
+                switch (choice2) {
+                    std::system("cls");
+                    std::cout << "\tManaging Students" << std::endl;
+                    std::cout << "*********************************" << std::endl << std::endl;
+                    std::cout << "Student: " << student.Name << std::endl << std::endl;
+                case 1: { // Change ID
+                    std::string newID;
+                    std::cout << "Current ID: " << student.ID << std::endl;
+                    std::cout << "New ID: ";
+                    std::cin >> newID;
+                    // ID number/length validation
+                    while (!onlyNumbers(newID) || newID.length() != 6) {
+                        std::cout << "Student ID needs to be 6 digits" << std::endl;
+                        std::cout << "New ID: ";
+                        std::cin >> newID;
+                    }
+                    // Check if ID already exists
+                    bool conflict = true;
+                    while (conflict) {
+                        conflict = false;
+                        for (const Students& student2 : sVec) {
+                            if (std::stoi(newID) == student2.ID) {
+                                std::cout << "That ID already exists." << std::endl;
+                                std::cout << "New ID: ";
+                                std::cin >> newID;
+                                conflict = true;
+                            }
+                        }
+                    }
+                    student.ID = std::stoi(newID);
+                    std::cout << "ID changed successfully. Save changes on next page." << std::endl;
+                    pressEnter();
+                    break;
+                }
+                }
+                pressEnter();
+                break;
+            }
+            else {
+                std::cout << "Student not found.";
+                pressEnter();
+                break;
+            }
+        }
+
+    }
+    } while (choice != 3);
+}
 void manageTeachers() {}
 void manageParents() {}
 void adminViewMessages() {}
@@ -905,6 +1050,8 @@ void sALogin() {
             break;
         }
         case 2: {
+            std::system("cls");
+            manageStudents();
             break;
         } 
         case 3: {
@@ -1407,13 +1554,13 @@ void registerNewAccount(const AccountType accountType)
     {
         // Write the account information to the file
         if (accountType == AccountType::STUDENT) {
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << std::endl;
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << ",0,-1,-1,-1,-1,-1" << std::endl;
         }
         else if (accountType == AccountType::TEACHER) {
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << std::endl;
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << ",0" << std::endl;
         }
         else if (accountType == AccountType::PARENT) {
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << "," << childID << std::endl;
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << "," << childID << ",0,0,0,0" << std::endl;
         }
 
         // Close the file

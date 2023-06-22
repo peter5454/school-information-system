@@ -12,6 +12,7 @@
 #include <vector>
 #include <regex>
 #include <set>
+#include <algorithm>
 
 HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -1105,6 +1106,10 @@ void manageSchool()
         }
     } while (choice != 4);
 }
+bool compareByName(const Students& student1, const Students& student2)
+{
+    return student1.Name < student2.Name;
+}
 void manageStudentInfo(std::vector<Students>& sVec, const std::string& sID)
 {
     // Find correct student // Manage individual student menu
@@ -1119,11 +1124,11 @@ void manageStudentInfo(std::vector<Students>& sVec, const std::string& sID)
             std::cout << "3. Change Password: " << student.Password << std::endl;
             std::cout << "4. Change Address: " << student.Address << std::endl;
             std::cout << "5. Change Class: " << student.Class << std::endl;
-            std::cout << "6. Change Grade 1: " << student.Grade1 << std::endl;
-            std::cout << "7. Change Grade 2: " << student.Grade2 << std::endl;
-            std::cout << "8. Change Grade 3: " << student.Grade3 << std::endl;
-            std::cout << "9. Change Grade 4: " << student.Grade4 << std::endl;
-            std::cout << "10. Change Grade 5: " << student.Grade5 << std::endl;
+            std::cout << "6. Change Grade 1: " << (student.Grade1 >= 0 ? std::to_string(student.Grade1) : "No Grade Added") << std::endl;
+            std::cout << "7. Change Grade 2: " << (student.Grade2 >= 0 ? std::to_string(student.Grade2) : "No Grade Added") << std::endl;
+            std::cout << "8. Change Grade 3: " << (student.Grade3 >= 0 ? std::to_string(student.Grade3) : "No Grade Added") << std::endl;
+            std::cout << "9. Change Grade 4: " << (student.Grade4 >= 0 ? std::to_string(student.Grade4) : "No Grade Added") << std::endl;
+            std::cout << "10. Change Grade 5: " << (student.Grade5 >= 0 ? std::to_string(student.Grade5) : "No Grade Added") << std::endl;
             std::cout << "11. Cancel" << std::endl;
             std::cout << "Choice: ";
             int choice2 = choiceCheck(11);
@@ -1229,13 +1234,19 @@ void manageStudents()
             std::system("cls");
             std::cout << "\tManaging Students" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "Enter Student ID: ";
+            std::cout << "Enter Student ID (or enter \'0\' to cancel): ";
             std::cin >> sID;
+            if (sID == "0") {
+                std::system("cls");
+                break;
+            }
             while (!onlyNumbers(sID) || sID.length() != 6) {
                 std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
                 std::cout << "Enter Student ID:";
                 std::cin >> sID;
             }
+            manageStudentInfo(sVec, sID);
+            break;
         }
         case 2: {
             // Student class search
@@ -1255,12 +1266,21 @@ void manageStudents()
             std::set<int> uniqueClasses(classes.begin(), classes.end());
             std::sort(classes.begin(), classes.end());
             for (const int& i : uniqueClasses) {
-                std::cout << i << ". Class " << i << std::endl;
+                if (i == 0) {
+                    std::cout << i << ". New Students (Not in a class)" << std::endl;
+                }
+                else if(i > 0) {
+                    std::cout << i << ". Class " << i << std::endl;
+                }
             }
-            int lastValue = *(--uniqueClasses.end());
+            int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
             std::cout << lastValue + 1 << ". Cancel" << std::endl;
             std::cout << std::endl << "Class: ";
             std::cin >> sClass;
+            if (sClass == (lastValue + 1)) {
+                std::system("cls");
+                break;
+            }
             bool validInput = false;
             do {
                 for (const int& i : uniqueClasses) {
@@ -1275,9 +1295,44 @@ void manageStudents()
                 }
             } while (!validInput);
 
+            // Display list of students in class
+            int n = 1;
+            std::vector<Students> inClass;
+            std::system("cls");
+            std::cout << "\tManaging Students" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            if (sClass == 0) {
+                std::cout << "Students not in a Class " << std::endl << std::endl;
+            }
+            else{
+                std::cout << "Class " << sClass << std::endl << std::endl;
+            }
+            
+            for (const auto& student: sVec) {
+                if (student.Class == sClass) {
+                    inClass.push_back(student);
+                }
+            }
+            std::sort(inClass.begin(), inClass.end(), compareByName);
+            for (const auto& student : inClass) {
+                std::cout << n++ << ". " << student.Name << std::endl;
+            }
+            std::cout << n << ". Cancel" << std::endl;
+            int sStudent;
+            std::cout << "Enter student to manage: ";
+
+            sStudent = choiceCheck(n);
+            if (sStudent == n) {
+                std::system("cls");
+                break;
+            }
+            // Pass student ID to 'manage student' function
+            manageStudentInfo(sVec, std::to_string(inClass[sStudent - 1].ID));
+            break;
         }
         case 3: {
             std::system("cls");
+            break;
         }
         }
     } while (choice != 3);

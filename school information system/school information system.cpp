@@ -1638,7 +1638,7 @@ bool onlyNumbers(const std::string& input) {
 int generateID(const std::vector<int>& existingIDs, const AccountType accountType)
 {
     srand(static_cast<unsigned int>(time(nullptr)));
-    int userID;
+    int userID = 0;
     bool idExists;
 
     do {

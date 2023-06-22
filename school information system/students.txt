@@ -1,3 +1,4 @@
-132245,New Student,password,11 Baker St,0,-1,-1,-1,-1,-1
-132399,Top of The Class,12345678,22 Gerrity Ave,0,-1,-1,-1,-1,-1
-132569,Henry Smith,paradise,55 Paradise Resort,0,-1,-1,-1,-1,-1
+132245,New Student,password,11 Baker St,1,-1,-1,-1,-1,-1
+132399,Top of The Class,12345678,22 Gerrity Ave,4,-1,-1,-1,-1,-1
+132569,Henry Smith,paradise,55 Paradise Resort,2,-1,-1,-1,-1,-1
+132456,John Doe,john1234,88 Fleet St,1,-1,-1,-1,-1,-1

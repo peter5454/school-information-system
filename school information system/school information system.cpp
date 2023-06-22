@@ -1016,11 +1016,11 @@ void manageStudents()
             std::system("cls");
             std::cout << "\tManaging Students" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "Student ID: ";
+            std::cout << "Enter Student ID: ";
             std::cin >> sID;
             while (!onlyNumbers(sID) || sID.length() != 6) {
                 std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
-                std::cout << "Student ID:";
+                std::cout << "Enter Student ID:";
                 std::cin >> sID;
             }
         }
@@ -1042,7 +1042,7 @@ void manageStudents()
             std::set<int> uniqueClasses(classes.begin(), classes.end());
             std::sort(classes.begin(), classes.end());
             for (const int& i : uniqueClasses) {
-                std::cout << "Class " << i << std::endl;
+                std::cout << i << ". Class " << i << std::endl;
             }
             int lastValue = *(--uniqueClasses.end());
             std::cout << lastValue + 1 << ". Cancel" << std::endl;

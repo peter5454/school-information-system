@@ -565,8 +565,11 @@ void sChangeInformation(const informationType informationType, int ID, int p, ve
             if (informationType == informationType::ID) {
                 vS[i].ID = std::stoi(output);
             }
-            else if (informationType == informationType::PASSWORD) {
+            else if (informationType == informationType::NAME) {
                 vS[i].Name = output;
+            }
+            else if (informationType == informationType::PASSWORD) {
+                vS[i].Password = output;
             }
             else if (informationType == informationType::ADDRESS) {
                 vS[i].Address = output;
@@ -640,7 +643,12 @@ void pChangeInformation(const informationType informationType, int ID, int p, ve
     outputFile.close();
     cout << "Done" << endl << endl;
     pressEnter();
-    sPLogin(p, vP);
+    if (admin) {
+        sALogin();
+    }
+    else {
+        sPLogin(p, vP);
+    }
 }
 void tChangeInformation(const informationType informationType, int ID, int p, vector<Teachers>& vT, string output, bool admin = false) {
     ofstream outputFile("teachers.txt");
@@ -669,9 +677,14 @@ void tChangeInformation(const informationType informationType, int ID, int p, ve
         outputFile << vT[i].ID << "," << vT[i].Name << "," << vT[i].Password << "," << vT[i].Address << "," << vT[i].cNumber << "," << vT[i].Class << endl;
     }
     outputFile.close();
-    cout << "Done" << endl << endl;
+    std::cout << "Done" << std::endl << std::endl;
     pressEnter();
-    sTLogin(p, vT);
+    if (admin) {
+        sALogin();
+    }
+    else {
+        sTLogin(p, vT);
+    }
 }
 void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
 {
@@ -780,10 +793,16 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
     std::getline(cin >> ws, str);
 
     if (str == "NULL") {
-        if (accountType == AccountType::TEACHER) {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
             sTLogin(p, vT);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             sPLogin(p, vP);
         }
     }
@@ -797,10 +816,16 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
         placeCursor(screen, 2, 10);
         std::getline(std::cin >> std::ws, str);
         if (str == "NULL") {
-            if (accountType == AccountType::TEACHER) {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::STUDENT) {
+                sSLogin(p);
+            }
+            else if (accountType == AccountType::TEACHER) {
                 sTLogin(p, vT);
             }
-            else {
+            else if (accountType == AccountType::PARENT) {
                 sPLogin(p, vP);
             }
         }
@@ -830,31 +855,46 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
 }
 void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
 {
-    std::string str;
-    std::string stri;
+    std::string address;
+    std::string adNum;
+    std::string adName;
     placeCursor(screen, 0, 0);
     cout << "Enter a new address ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
     cout << "Street Number : ";
-    std::getline(std::cin >> std::ws, str);
-    if (str == "NULL") {
-        if (accountType == AccountType::TEACHER) {
+    std::getline(std::cin >> std::ws, adNum);
+    if (adNum == "NULL") {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
             sTLogin(p, vT);
         }
-        sPLogin(p, vP);
+        else if (accountType == AccountType::PARENT) {
+            sPLogin(p, vP);
+        }
     }
-    while (!containsNumber(str)) {
+    while (!containsNumber(adNum)) {
         placeCursor(screen, 0, 0);
         cout << "Invalid input. Must contain at least one number.";
         placeCursor(screen, 2, 0);
         cout << "Street Number:          ";
         placeCursor(screen, 2, 15);
-        std::getline(std::cin >> std::ws, str);
-        if (str == "NULL") {
-            if (accountType == AccountType::TEACHER) {
+        std::getline(std::cin >> std::ws, adNum);
+        if (adNum == "NULL") {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::STUDENT) {
+                sSLogin(p);
+            }
+            else if (accountType == AccountType::TEACHER) {
                 sTLogin(p, vT);
             }
-            else {
+            else if (accountType == AccountType::PARENT) {
                 sPLogin(p, vP);
             }
         }
@@ -865,39 +905,66 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
     // Address name input
     placeCursor(screen, 3, 0);
     cout << "Street Name: ";
-    std::getline(std::cin >> std::ws, stri);
-    if (stri == "NULL") {
-        if (accountType == AccountType::TEACHER) {
+    std::getline(std::cin >> std::ws, adName);
+    if (adName == "NULL") {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
             sTLogin(p, vT);
         }
-        else
-        {
+        else if (accountType == AccountType::PARENT) {
             sPLogin(p, vP);
         }
 
     }
-    while (!isAlphabet(stri)) {
+    while (!isAlphabet(adName)) {
         placeCursor(screen, 0, 0);
         std::cout << "Invalid name. Please only use alphabet characters. ";
         placeCursor(screen, 3, 0);
         std::cout << "Street Name:                                       ";
         placeCursor(screen, 3, 12);
-        std::getline(std::cin >> std::ws, stri);
-        if (stri == "NULL") {
-            if (accountType == AccountType::TEACHER) {
+        std::getline(std::cin >> std::ws, adName);
+        if (adName == "NULL") {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::STUDENT) {
+                sSLogin(p);
+            }
+            else if (accountType == AccountType::TEACHER) {
                 sTLogin(p, vT);
             }
-            else {
+            else if (accountType == AccountType::PARENT) {
                 sPLogin(p, vP);
             }
         }
     }
-    str = str + " " + stri;
-    if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::ADDRESS, ID, p, vT, str, false);
+    address = adNum + " " + adName;
+    if (admin) {
+        if (accountType == AccountType::STUDENT) {
+            sChangeInformation(informationType::ADDRESS, ID, p, vS, address, true);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            tChangeInformation(informationType::ADDRESS, ID, p, vT, address, true);
+        }
+        else if (accountType == AccountType::PARENT) {
+            pChangeInformation(informationType::ADDRESS, ID, p, vP, address, true);
+        }
     }
     else {
-        pChangeInformation(informationType::ADDRESS, ID, p, vP, str, false);
+        if (accountType == AccountType::STUDENT) {
+            sChangeInformation(informationType::ADDRESS, ID, p, vS, address);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            tChangeInformation(informationType::ADDRESS, ID, p, vT, address);
+        }
+        else if (accountType == AccountType::PARENT) {
+            pChangeInformation(informationType::ADDRESS, ID, p, vP, address);
+        }
     }
 }
 void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
@@ -909,10 +976,13 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
     cout << "Contact Number: ";
     std::getline(cin >> ws, str);
     if (str == "NULL") {
-        if (accountType == AccountType::TEACHER) {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::TEACHER) {
             sTLogin(p, vT);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             sPLogin(p, vP);
         }
     }
@@ -924,10 +994,13 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
         placeCursor(screen, 2, 16);
         std::getline(std::cin >> std::ws, str);
         if (str == "NULL") {
-            if (accountType == AccountType::TEACHER) {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::TEACHER) {
                 sTLogin(p, vT);
             }
-            else {
+            else if (accountType == AccountType::PARENT) {
                 sPLogin(p, vP);
             }
         }
@@ -947,6 +1020,17 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     placeCursor(screen, 2, 0);
     std::cout << "Class (1-9): ";
     std::getline(std::cin >> std::ws, str);
+    if (str == "NULL") {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            sTLogin(p, vT);
+        }
+    }
     while (!onlyNumbers(str)) {
         placeCursor(screen, 4, 0);
         std::cout << "Invalid class. Please only use a single digit.";
@@ -954,6 +1038,17 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         std::cout << "Class (1-9):                          ";
         placeCursor(screen, 2, 12);
         std::getline(std::cin >> std::ws, str);
+        if (str == "NULL") {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::STUDENT) {
+                sSLogin(p);
+            }
+            else if (accountType == AccountType::TEACHER) {
+                sTLogin(p, vT);
+            }
+        }
     }
     placeCursor(screen, 4, 0);
     std::cout << std::string(60, ' ');
@@ -965,9 +1060,6 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::CLASS, ID, p, vT, str, true);
         }
-        else if (accountType == AccountType::PARENT) {
-            pChangeInformation(informationType::CLASS, ID, p, vP, str, true);
-        }
     }
     else {
         if (accountType == AccountType::STUDENT) {
@@ -975,9 +1067,6 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         }
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::CLASS, ID, p, vT, str);
-        }
-        else if (accountType == AccountType::PARENT) {
-            pChangeInformation(informationType::CLASS, ID, p, vP, str);
         }
     }
 }
@@ -990,6 +1079,17 @@ void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     std::cout << "Grade (0 - 100): ";
     placeCursor(screen, 2, 18);
     std::getline(std::cin >> std::ws, newGrade);
+    if (newGrade == "NULL") {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            sTLogin(p, vT);
+        }
+    }
     // Validation check (number: 0 - 100)
     while (!onlyNumbers(newGrade) || std::stoi(newGrade) <= 100 || std::stoi(newGrade) >= 0) {
         placeCursor(screen, 4, 0);
@@ -998,6 +1098,17 @@ void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         std::cout << "Grade (0 - 100):                                 ";
         placeCursor(screen, 2, 18);
         std::getline(std::cin >> std::ws, newGrade);
+        if (newGrade == "NULL") {
+            if (admin) {
+                sALogin();
+            }
+            else if (accountType == AccountType::STUDENT) {
+                sSLogin(p);
+            }
+            else if (accountType == AccountType::TEACHER) {
+                sTLogin(p, vT);
+            }
+        }
     }
     placeCursor(screen, 4, 0);
     std::cout << std::string(60, ' ');
@@ -1028,6 +1139,20 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             
     std::cout << "\nNew ID: ";
     std::cin >> newID;
+    if (newID == "NULL") {
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            sTLogin(p, vT);
+        }
+        else if (accountType == AccountType::PARENT) {
+            sPLogin(p, vP);
+        }
+    }
     // ID number/length validation
     if (accountType == AccountType::STUDENT) {
         while (!onlyNumbers(newID) || newID.length() != 6) {
@@ -1036,6 +1161,20 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
             std::cin >> newID;
+            if (newID == "NULL") {
+                if (admin) {
+                    sALogin();
+                }
+                else if (accountType == AccountType::STUDENT) {
+                    sSLogin(p);
+                }
+                else if (accountType == AccountType::TEACHER) {
+                    sTLogin(p, vT);
+                }
+                else if (accountType == AccountType::PARENT) {
+                    sPLogin(p, vP);
+                }
+            }
         }
         // Check if ID already exists
         bool conflict = true;
@@ -1061,6 +1200,20 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
             std::cin >> newID;
+            if (newID == "NULL") {
+                if (admin) {
+                    sALogin();
+                }
+                else if (accountType == AccountType::STUDENT) {
+                    sSLogin(p);
+                }
+                else if (accountType == AccountType::TEACHER) {
+                    sTLogin(p, vT);
+                }
+                else if (accountType == AccountType::PARENT) {
+                    sPLogin(p, vP);
+                }
+            }
         }
         // Check if ID already exists
         bool conflict = true;
@@ -1086,6 +1239,20 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
             std::cin >> newID;
+            if (newID == "NULL") {
+                if (admin) {
+                    sALogin();
+                }
+                else if (accountType == AccountType::STUDENT) {
+                    sSLogin(p);
+                }
+                else if (accountType == AccountType::TEACHER) {
+                    sTLogin(p, vT);
+                }
+                else if (accountType == AccountType::PARENT) {
+                    sPLogin(p, vP);
+                }
+            }
         }
         // Check if ID already exists
         bool conflict = true;
@@ -1119,8 +1286,6 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
 }
 void updatePersonalInformation(int ID, int p, const AccountType accountType, bool admin) {
     int choice;
-    std::string str;
-    std::string stri;
     int n;
     try {
         std::vector<Students> vS = createStudentsVector();
@@ -1130,7 +1295,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
             system("cls");
             std::cout << "\t" << "Which information do you want to change?";
             std::cout << std::endl << std::endl;
-            std::cout << "Option\tCurrent" << std::endl;
+            std::cout << "Option" << std::endl;
 
             n = 1;
 
@@ -1792,163 +1957,7 @@ void manageStudents()
             std::cout << "1. Search students by ID" << std::endl << "2. Search students by class" << std::endl << "3. Cancel" << std::endl;
             choice = choiceCheck(3);
 
-        switch (choice) {
-        case 1: {
-            // Student ID search
-            std::system("cls");
-            std::cout << "\tManaging Students" << std::endl;
-            std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "Enter Student ID (or enter \'0\' to cancel): ";
-            std::cin >> sID;
-            if (sID == "0") {
-                std::system("cls");
-                break;
-            }
-            while (!onlyNumbers(sID) || sID.length() != 6) {
-                std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
-                std::cout << "Enter Student ID:";
-                std::cin >> sID;
-            }
-            manageStudentInfo(sVec, sID);
-            break;
-        }
-        case 2: {
-            // Student class search
-            std::system("cls");
-            std::cout << "\tManaging Students" << std::endl;
-            std::cout << "*********************************" << std::endl << std::endl;
-            std::vector<int> classes;
-            for (const Students& c : sVec) {
-                classes.push_back(c.Class);
-            }
-            if (classes.empty()) {
-                std::cout << "No Classes Found." << std::endl;
-                pressEnter();
-                break;
-            }
-            // Get unique class numbers and sort them for display
-            std::set<int> uniqueClasses(classes.begin(), classes.end());
-            std::sort(classes.begin(), classes.end());
-            for (const int& i : uniqueClasses) {
-                if (i == 0) {
-                    std::cout << i << ". New Students (Not in a class)" << std::endl;
-                }
-                else if(i > 0) {
-                    std::cout << i << ". Class " << i << std::endl;
-                }
-            }
-            int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
-            std::cout << lastValue + 1 << ". Cancel" << std::endl;
-            std::cout << std::endl << "Class: ";
-            std::cin >> sClass;
-            if (sClass == (lastValue + 1)) {
-                std::system("cls");
-                break;
-            }
-            bool validInput = false;
-            do {
-                for (const int& i : uniqueClasses) {
-                    if (i == sClass) {
-                        validInput = true;
-                        break;
-                    }
-                }
-                if (!validInput) {
-                    cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
-                    std::cin >> sClass;
-                }
-            } while (!validInput);
-            system("cls");
-            cout << "ID \t\t Name \t\t\tclass \t\t address \t\t (G1) (G2) (G3) (G4) (G5)" << endl;
-
-            for (int i = 0; i < sVec.size(); i++) {
-                if (sVec[i].Class == sClass) {
-                    cout << sVec[i].ID << "\t\t " << sVec[i].Name;
-                    if (sVec[i].Name.length() < 15) {
-                        cout << "\t\t";
-                    }
-                    else {
-                        cout << "\t";
-                    }
-
-                    cout << sVec[i].Class << "\t\t " << sVec[i].Address;
-                    if (sVec[i].Address.length() < 15) {
-                        cout << "\t\t";
-                    }
-                    else {
-                        cout << "\t";
-                    }
-                    if (sVec[i].Grade1 > -1) {
-                        cout << sVec[i].Grade1 << " ";
-                    }
-                    else {
-                        cout << " none";
-                    }
-                    if (sVec[i].Grade2 > -1) {
-                        cout << sVec[i].Grade2 << " ";
-                    }
-                    else {
-                        cout << " none";
-                    }
-                    if (sVec[i].Grade3 > -1) {
-                        cout << sVec[i].Grade3 << " ";
-                    }
-                    else {
-                        cout << " none";
-                    }
-                    if (sVec[i].Grade4 > -1) {
-                        cout << sVec[i].Grade4 << " ";
-                    }
-                    else {
-                        cout << " none";
-                    }
-                    if (sVec[i].Grade5 > -1) {
-                        cout << sVec[i].Grade5 << " ";
-                    }
-                    else {
-                        cout << " none";
-                    }
-                    cout << endl;
-                }
-            }
-            cout << endl << endl;
-            cout << "Enter the ID of the student you want to change or enter 0 to go back : ";
-            string check;
-
-            cin >> sID;
-
-            while (sID != "0") {
-                bool validID = false;
-
-                while (sID.length() != 6 || !onlyNumbers(sID)) {
-                    cout << "Invalid choice. Please enter a proper ID or 0 to leave: ";
-                    cin >> sID;
-                    if (sID == "0") {
-                        break;
-                    }
-                }
-
-                if (sID == "0") {
-                    break;
-                }
-                for (const auto& student : sVec) {
-                    if (sID == to_string(student.ID)) {
-                        manageStudentInfo(sVec, sID);
-                        validID = true;
-                        break;
-                    }
-                }
-
-                if (validID) {
-                    break;
-                }
-                else {
-                    cout << "Invalid student ID. Please enter a valid ID or enter 0 to go back: ";
-                    cin >> sID;
-                }
-            }
-            sALogin();
-            /*switch (choice) {
+            switch (choice) {
             case 1: {
                 // Student ID search
                 std::system("cls");
@@ -1965,7 +1974,16 @@ void manageStudents()
                     std::cout << "Enter Student ID:";
                     std::cin >> sID;
                 }
-                manageStudentInfo(vS, sID);
+                // // Get student position from vector of all students by matching ID
+                int p;
+                int counter = 0;
+                for (auto& student : vS) {
+                    if (student.ID == std::stoi(sID)) {
+                        p = counter;
+                    }
+                    counter++;
+                }
+                updatePersonalInformation(std::stoi(sID), p, AccountType::STUDENT, true);
                 break;
             }
             case 2: {
@@ -2013,16 +2031,19 @@ void manageStudents()
                         std::cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
                         std::cin >> sClass;
                     }
-                } while (!validInput);*/
+                } while (!validInput);
 
-                // Display list of students in class
-                int n = 1;
-                std::vector<Students> inClass;
-                std::system("cls");
+                // Peters code
+                system("cls");
                 std::cout << "\tManaging Students" << std::endl;
                 std::cout << "*********************************" << std::endl << std::endl;
+                std::cout << "Option \t ID \t\t Name \t\t\tClass \t\t Address \t\t (G1) (G2) (G3) (G4) (G5)" << endl;
+
+                int n = 1;
+                std::vector<Students> inClass;
+
                 if (sClass == 0) {
-                    std::cout << "Students not in a Class " << std::endl << std::endl;
+                    std::cout << "All Students Not In a Class " << std::endl << std::endl;
                 }
                 else {
                     std::cout << "Class " << sClass << std::endl << std::endl;
@@ -2034,20 +2055,63 @@ void manageStudents()
                     }
                 }
                 std::sort(inClass.begin(), inClass.end(), compareByName);
+
+
+                //
                 for (const auto& student : inClass) {
-                    std::cout << n++ << ". " << student.Name << std::endl;
+                    std::cout << n++ << ".\t";
+                    if (student.Class == sClass) {
+                        std::cout << student.ID << "\t\t " << student.Name;
+                        if (student.Name.length() < 15) {
+                            std::cout << "\t\t";
+                        }
+                        else {
+                            std::cout << "\t";
+                        }
+
+                        std::cout << student.Class << "\t\t " << student.Address;
+                        if (student.Address.length() < 15) {
+                            std::cout << "\t\t";
+                        }
+                        else {
+                            std::cout << "\t";
+                        }
+                        // Loop to print grades
+                        for (int grade : {student.Grade1, student.Grade2, student.Grade3, student.Grade4, student.Grade5}) {
+                            if (grade > -1) {
+                                std::cout << grade << " ";
+                            }
+                            else {
+                                std::cout << " none";
+                            }
+                        }
+
+                        std::cout << std::endl;
+                    }
                 }
                 std::cout << n << ". Cancel" << std::endl;
-                int sStudent;
+                std::cout << std::endl << std::endl;
+
+                int sChange;
                 std::cout << "Enter student to manage: ";
 
-                sStudent = choiceCheck(n);
-                if (sStudent == n) {
+                sChange = choiceCheck(n);
+                if (sChange == n) {
                     std::system("cls");
                     break;
                 }
-                // Pass student ID to 'manage student' function
-                manageStudentInfo(vS, std::to_string(inClass[sStudent - 1].ID));
+                // Get student position from vector of all students by matching ID
+                int ID = inClass[sChange - 1].ID;
+                int p;
+                int counter = 0;
+                for (auto& student : vS) {
+                    if (student.ID == ID) {
+                        p = counter;
+                    }
+                    counter++;
+                }
+                // Pass student to update info function
+                updatePersonalInformation(ID, p, AccountType::STUDENT, true);
                 break;
             }
             case 3: {

@@ -2033,11 +2033,9 @@ void manageStudents()
                     }
                 } while (!validInput);
 
-                // Peters code
                 system("cls");
                 std::cout << "\tManaging Students" << std::endl;
                 std::cout << "*********************************" << std::endl << std::endl;
-                std::cout << "Option \t ID \t\t Name \t\t\tClass \t\t Address \t\t (G1) (G2) (G3) (G4) (G5)" << endl;
 
                 int n = 1;
                 std::vector<Students> inClass;
@@ -2056,8 +2054,8 @@ void manageStudents()
                 }
                 std::sort(inClass.begin(), inClass.end(), compareByName);
 
-
-                //
+                // Display student info in class
+                std::cout << "Option \t ID \t\t Name \t\t\tClass \t\t Address \t\t (G1) (G2) (G3) (G4) (G5)" << endl;
                 for (const auto& student : inClass) {
                     std::cout << n++ << ".\t";
                     if (student.Class == sClass) {

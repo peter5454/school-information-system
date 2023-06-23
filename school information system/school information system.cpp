@@ -110,26 +110,8 @@ void viewReport(int p) {}
 void viewClass(int p) {}
 void sSLogin(int p) {
     int choice;
-    vector<Students> vS;
-    ifstream sInputFile("students.txt");
-    if (sInputFile.is_open()) {
-        string line;
-        while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
-            istringstream iss(line);
-            string value;
+    vector<Students> vS = createStudentsVector();
 
-            Students s;
-
-            std::getline(iss, value, ',');
-            s.ID = stoi(value);
-
-            std::getline(iss, s.Name, ',');
-
-
-            std::getline(iss, s.Password, ',');
-
-            vS.push_back(s);
-        }
         do {
             system("cls");
             cout << "\t" << "Welcome " << vS[p].Name << "!";
@@ -149,7 +131,7 @@ void sSLogin(int p) {
                 break;
             }
             case 3: {
-                sUpdatePersonalInformation(p);
+                updatePersonalInformation(vS[p].ID, p, vS, vector<Parents>&vP, vector<Teachers>&vT, const AccountType accountType, bool admin);
                 break;
             }
             }
@@ -162,7 +144,6 @@ void sSLogin(int p) {
             exit(0);
         }
     }
-}
 
 void viewChildReport() {}
 void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {

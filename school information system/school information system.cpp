@@ -677,12 +677,31 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
 {
     std::string fname;
     std::string lname;
-    std::cout << "\tUpdating Name" << std::endl;
-    placeCursor(screen, 2, 0);
-    std::cout << "First Name:                    Last Name:" << std::endl;
+    std::cout << "\tUpdating Name or write ""NULL"" to cancel" << std::endl << std::endl;
 
+    std::cout << "First Name:                    Last Name:" << std::endl;
     placeCursor(screen, 2, 12);
     std::getline(std::cin >> std::ws, fname);
+    if (fname == "NULL") {
+
+        placeCursor(screen, 6, 0);
+        std::cout << "Name Change Cancelled." << std::endl;
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        std::system("cls");
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            sTLogin(p, vT);
+        }
+        else if (accountType == AccountType::PARENT) {
+            sPLogin(p, vP);
+        }
+    }
     while (!isAlphabet(fname)) {
         placeCursor(screen, 4, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
@@ -697,6 +716,26 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
     // Last name input
     placeCursor(screen, 2, 42);
     std::getline(std::cin >> std::ws, lname);
+    if (lname == "NULL") {
+        placeCursor(screen, 6, 0);
+        std::cout << "Name Change Cancelled." << std::endl;
+        std::cout << "Press Enter to continue...";
+        std::cin.get();
+        std::system("cls");
+        if (admin) {
+            sALogin();
+        }
+        else if (accountType == AccountType::STUDENT) {
+            sSLogin(p);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            sTLogin(p, vT);
+        }
+        else if (accountType == AccountType::PARENT) {
+            sPLogin(p, vP);
+        }
+    }
+
     while (!isAlphabet(lname)) {
         placeCursor(screen, 4, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
@@ -715,7 +754,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::NAME, ID, p, vT, str, true);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             pChangeInformation(informationType::NAME, ID, p, vP, str, true);
         }
     }
@@ -726,7 +765,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::NAME, ID, p, vT, str);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             pChangeInformation(informationType::NAME, ID, p, vP, str);
         }
     }
@@ -773,7 +812,7 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::PASSWORD, ID, p, vT, str, true);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             pChangeInformation(informationType::PASSWORD, ID, p, vP, str, true);
         }
     }
@@ -784,7 +823,7 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
         else if (accountType == AccountType::TEACHER) {
             tChangeInformation(informationType::PASSWORD, ID, p, vT, str);
         }
-        else {
+        else if (accountType == AccountType::PARENT) {
             pChangeInformation(informationType::PASSWORD, ID, p, vP, str);
         }
     }
@@ -900,10 +939,184 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
         pChangeInformation(informationType::CONTACTNUMBER, ID, p, vP, str, false);
     }
 }
-void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false){}
-void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false){}
+void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
+{
+    std::string str;
+
+    std::cout << "\tUpdating Class" << std::endl;
+    placeCursor(screen, 2, 0);
+    std::cout << "Class (1-9): ";
+    std::getline(std::cin >> std::ws, str);
+    while (!onlyNumbers(str)) {
+        placeCursor(screen, 4, 0);
+        std::cout << "Invalid class. Please only use a single digit.";
+        placeCursor(screen, 2, 0);
+        std::cout << "Class (1-9):                          ";
+        placeCursor(screen, 2, 12);
+        std::getline(std::cin >> std::ws, str);
+    }
+    placeCursor(screen, 4, 0);
+    std::cout << std::string(60, ' ');
+
+    if (admin) {
+        if (accountType == AccountType::STUDENT) {
+            sChangeInformation(informationType::CLASS, ID, p, vS, str, true);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            tChangeInformation(informationType::CLASS, ID, p, vT, str, true);
+        }
+        else if (accountType == AccountType::PARENT) {
+            pChangeInformation(informationType::CLASS, ID, p, vP, str, true);
+        }
+    }
+    else {
+        if (accountType == AccountType::STUDENT) {
+            sChangeInformation(informationType::CLASS, ID, p, vS, str);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            tChangeInformation(informationType::CLASS, ID, p, vT, str);
+        }
+        else if (accountType == AccountType::PARENT) {
+            pChangeInformation(informationType::CLASS, ID, p, vP, str);
+        }
+    }
+}
+void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
+{
+    std::string newGrade;
+
+    std::cout << "\tUpdating Grade or write ""NULL"" to cancel" << std::endl;
+    placeCursor(screen, 2, 0);
+    std::cout << "Grade (0 - 100): ";
+    placeCursor(screen, 2, 18);
+    std::getline(std::cin >> std::ws, newGrade);
+    // Validation check (number: 0 - 100)
+    while (!onlyNumbers(newGrade) || std::stoi(newGrade) <= 100 || std::stoi(newGrade) >= 0) {
+        placeCursor(screen, 4, 0);
+        std::cout << "Invalid input. Grade must be a number (0 - 100).";
+        placeCursor(screen, 2, 0);
+        std::cout << "Grade (0 - 100):                                 ";
+        placeCursor(screen, 2, 18);
+        std::getline(std::cin >> std::ws, newGrade);
+    }
+    placeCursor(screen, 4, 0);
+    std::cout << std::string(60, ' ');
+
+    if (admin) {
+            sChangeInformation(informationType::CLASS, ID, p, vS, newGrade, true);
+    }
+    else {
+            sChangeInformation(informationType::CLASS, ID, p, vS, newGrade);
+    }
+}
 void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false){}
-void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false){}
+// Function to collect new user ID
+void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
+{
+    std::string newID;
+    std::cout << "\tUpdating Name or write ""NULL"" to cancel" << std::endl;
+    
+    if (accountType == AccountType::STUDENT) {
+        std::cout << "Current ID: " << vS[p].ID << std::endl;
+    }
+    else if (accountType == AccountType::TEACHER) {
+        std::cout << "Current ID: " << vT[p].ID << std::endl;
+    }
+    else if (accountType == AccountType::PARENT) {
+        std::cout << "Current ID: " << vP[p].ID << std::endl;
+    }
+            
+    std::cout << "\nNew ID: ";
+    std::cin >> newID;
+    // ID number/length validation
+    if (accountType == AccountType::STUDENT) {
+        while (!onlyNumbers(newID) || newID.length() != 6) {
+            std::cout << "Student ID needs to be exactly 6 digits" << std::endl;
+            placeCursor(screen, 3, 0);
+            std::cout << "New ID:                           ";
+            placeCursor(screen, 3, 8);
+            std::cin >> newID;
+        }
+        // Check if ID already exists
+        bool conflict = true;
+        while (conflict) {
+            conflict = false;
+            for (const Students& student : vS) {
+                if (std::stoi(newID) == student.ID) {
+                    std::cout << "That ID already exists. Please try again." << std::endl;
+                    placeCursor(screen, 3, 0);
+                    std::cout << "New ID:                           ";
+                    placeCursor(screen, 3, 8);
+                    std::cin >> newID;
+                    conflict = true;
+                }
+            }
+        }
+    }
+    // ID number/length validation
+    else if (accountType == AccountType::TEACHER) {
+        while (!onlyNumbers(newID) || newID.length() != 4) {
+            std::cout << "Teacher ID needs to be exactly 4 digits" << std::endl;
+            placeCursor(screen, 3, 0);
+            std::cout << "New ID:                           ";
+            placeCursor(screen, 3, 8);
+            std::cin >> newID;
+        }
+        // Check if ID already exists
+        bool conflict = true;
+        while (conflict) {
+            conflict = false;
+            for (const Teachers& teacher : vT) {
+                if (std::stoi(newID) == teacher.ID) {
+                    std::cout << "That ID already exists. Please try again." << std::endl;
+                    placeCursor(screen, 3, 0);
+                    std::cout << "New ID:                           ";
+                    placeCursor(screen, 3, 8);
+                    std::cin >> newID;
+                    conflict = true;
+                }
+            }
+        }
+    }
+    // ID number/length validation
+    else if (accountType == AccountType::PARENT) {
+        while (!onlyNumbers(newID) || newID.length() != 5) {
+            std::cout << "Parent ID needs to be exactly 5 digits" << std::endl;
+            placeCursor(screen, 3, 0);
+            std::cout << "New ID:                           ";
+            placeCursor(screen, 3, 8);
+            std::cin >> newID;
+        }
+        // Check if ID already exists
+        bool conflict = true;
+        while (conflict) {
+            conflict = false;
+            for (const Parents& parent : vP) {
+                if (std::stoi(newID) == parent.ID) {
+                    std::cout << "That ID already exists. Please try again." << std::endl;
+                    placeCursor(screen, 3, 0);
+                    std::cout << "New ID:                           ";
+                    placeCursor(screen, 3, 8);
+                    std::cin >> newID;
+                    conflict = true;
+                }
+            }
+        }
+    }
+ 
+    if (admin) {
+        if (accountType == AccountType::STUDENT) {
+            sChangeInformation(informationType::ID, ID, p, vS, newID, true);
+        }
+        else if (accountType == AccountType::TEACHER) {
+            tChangeInformation(informationType::ID, ID, p, vT, newID, true);
+        }
+        else if (accountType == AccountType::PARENT) {
+            pChangeInformation(informationType::ID, ID, p, vP, newID, true);
+        }
+    }
+
+}
 void updatePersonalInformation(int ID, int p, const AccountType accountType, bool admin) {
     int choice;
     std::string str;
@@ -1555,39 +1768,10 @@ void manageStudentInfo(std::vector<Students>& vS, const std::string& sID)
 
             switch (choice2) {
                 std::system("cls");
-                std::cout << "\tManaging Students" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-                std::cout << "Student: " << student.Name << std::endl << std::endl;
-            case 1: { // Change ID
-                std::string newID;
-                std::cout << "Current ID: " << student.ID << std::endl;
-                std::cout << "New ID: ";
-                std::cin >> newID;
-                // ID number/length validation
-                while (!onlyNumbers(newID) || newID.length() != 6) {
-                    std::cout << "Student ID needs to be 6 digits" << std::endl;
-                    std::cout << "New ID: ";
-                    std::cin >> newID;
-                }
-                // Check if ID already exists
-                bool conflict = true;
-                while (conflict) {
-                    conflict = false;
-                    for (const Students& student2 : vS) {
-                        if (std::stoi(newID) == student2.ID) {
-                            std::cout << "That ID already exists." << std::endl;
-                            std::cout << "New ID: ";
-                            std::cin >> newID;
-                            conflict = true;
-                        }
-                    }
-                }
-                student.ID = std::stoi(newID);
-                std::cout << "ID changed successfully. Save changes on next page." << std::endl;
-                pressEnter();
+
                 break;
             }
-            }
+            
         }
     }
 }

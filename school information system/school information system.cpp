@@ -862,7 +862,7 @@ void updatePersonalInformation(int ID, int p, vector<Students>& vS, vector<Paren
     else if (accountType == AccountType::TEACHER) {
         sTLogin(p, vT);
     }
-    else if(accountType == AccountType::PARENT) {
+    else if (accountType == AccountType::PARENT) {
         sPLogin(p, vP);
     }
 }
@@ -1381,7 +1381,7 @@ void manageStudents()
                 if (i == 0) {
                     std::cout << i << ". New Students (Not in a class)" << std::endl;
                 }
-                else if(i > 0) {
+                else if (i > 0) {
                     std::cout << i << ". Class " << i << std::endl;
                 }
             }
@@ -1416,11 +1416,11 @@ void manageStudents()
             if (sClass == 0) {
                 std::cout << "Students not in a Class " << std::endl << std::endl;
             }
-            else{
+            else {
                 std::cout << "Class " << sClass << std::endl << std::endl;
             }
-            
-            for (const auto& student: vS) {
+
+            for (const auto& student : vS) {
                 if (student.Class == sClass) {
                     inClass.push_back(student);
                 }
@@ -2185,11 +2185,3 @@ void placeCursor(HANDLE screen, int row, int col)
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file

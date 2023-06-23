@@ -1500,7 +1500,7 @@ bool isFileEmpty(const std::string& filename) {
     return isEmpty;
 }
 // Manage school name and news/events
-void manageSchool()
+void manageSchoolInformation()
 {
     Admins admin = readAdmin();
     int choice;
@@ -1792,7 +1792,163 @@ void manageStudents()
             std::cout << "1. Search students by ID" << std::endl << "2. Search students by class" << std::endl << "3. Cancel" << std::endl;
             choice = choiceCheck(3);
 
-            switch (choice) {
+        switch (choice) {
+        case 1: {
+            // Student ID search
+            std::system("cls");
+            std::cout << "\tManaging Students" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            std::cout << "Enter Student ID (or enter \'0\' to cancel): ";
+            std::cin >> sID;
+            if (sID == "0") {
+                std::system("cls");
+                break;
+            }
+            while (!onlyNumbers(sID) || sID.length() != 6) {
+                std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
+                std::cout << "Enter Student ID:";
+                std::cin >> sID;
+            }
+            manageStudentInfo(sVec, sID);
+            break;
+        }
+        case 2: {
+            // Student class search
+            std::system("cls");
+            std::cout << "\tManaging Students" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            std::vector<int> classes;
+            for (const Students& c : sVec) {
+                classes.push_back(c.Class);
+            }
+            if (classes.empty()) {
+                std::cout << "No Classes Found." << std::endl;
+                pressEnter();
+                break;
+            }
+            // Get unique class numbers and sort them for display
+            std::set<int> uniqueClasses(classes.begin(), classes.end());
+            std::sort(classes.begin(), classes.end());
+            for (const int& i : uniqueClasses) {
+                if (i == 0) {
+                    std::cout << i << ". New Students (Not in a class)" << std::endl;
+                }
+                else if(i > 0) {
+                    std::cout << i << ". Class " << i << std::endl;
+                }
+            }
+            int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
+            std::cout << lastValue + 1 << ". Cancel" << std::endl;
+            std::cout << std::endl << "Class: ";
+            std::cin >> sClass;
+            if (sClass == (lastValue + 1)) {
+                std::system("cls");
+                break;
+            }
+            bool validInput = false;
+            do {
+                for (const int& i : uniqueClasses) {
+                    if (i == sClass) {
+                        validInput = true;
+                        break;
+                    }
+                }
+                if (!validInput) {
+                    cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
+                    std::cin >> sClass;
+                }
+            } while (!validInput);
+            system("cls");
+            cout << "ID \t\t Name \t\t\tclass \t\t address \t\t (G1) (G2) (G3) (G4) (G5)" << endl;
+
+            for (int i = 0; i < sVec.size(); i++) {
+                if (sVec[i].Class == sClass) {
+                    cout << sVec[i].ID << "\t\t " << sVec[i].Name;
+                    if (sVec[i].Name.length() < 15) {
+                        cout << "\t\t";
+                    }
+                    else {
+                        cout << "\t";
+                    }
+
+                    cout << sVec[i].Class << "\t\t " << sVec[i].Address;
+                    if (sVec[i].Address.length() < 15) {
+                        cout << "\t\t";
+                    }
+                    else {
+                        cout << "\t";
+                    }
+                    if (sVec[i].Grade1 > -1) {
+                        cout << sVec[i].Grade1 << " ";
+                    }
+                    else {
+                        cout << " none";
+                    }
+                    if (sVec[i].Grade2 > -1) {
+                        cout << sVec[i].Grade2 << " ";
+                    }
+                    else {
+                        cout << " none";
+                    }
+                    if (sVec[i].Grade3 > -1) {
+                        cout << sVec[i].Grade3 << " ";
+                    }
+                    else {
+                        cout << " none";
+                    }
+                    if (sVec[i].Grade4 > -1) {
+                        cout << sVec[i].Grade4 << " ";
+                    }
+                    else {
+                        cout << " none";
+                    }
+                    if (sVec[i].Grade5 > -1) {
+                        cout << sVec[i].Grade5 << " ";
+                    }
+                    else {
+                        cout << " none";
+                    }
+                    cout << endl;
+                }
+            }
+            cout << endl << endl;
+            cout << "Enter the ID of the student you want to change or enter 0 to go back : ";
+            string check;
+
+            cin >> sID;
+
+            while (sID != "0") {
+                bool validID = false;
+
+                while (sID.length() != 6 || !onlyNumbers(sID)) {
+                    cout << "Invalid choice. Please enter a proper ID or 0 to leave: ";
+                    cin >> sID;
+                    if (sID == "0") {
+                        break;
+                    }
+                }
+
+                if (sID == "0") {
+                    break;
+                }
+                for (const auto& student : sVec) {
+                    if (sID == to_string(student.ID)) {
+                        manageStudentInfo(sVec, sID);
+                        validID = true;
+                        break;
+                    }
+                }
+
+                if (validID) {
+                    break;
+                }
+                else {
+                    cout << "Invalid student ID. Please enter a valid ID or enter 0 to go back: ";
+                    cin >> sID;
+                }
+            }
+            sALogin();
+            /*switch (choice) {
             case 1: {
                 // Student ID search
                 std::system("cls");
@@ -1857,7 +2013,7 @@ void manageStudents()
                         std::cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
                         std::cin >> sClass;
                     }
-                } while (!validInput);
+                } while (!validInput);*/
 
                 // Display list of students in class
                 int n = 1;
@@ -1907,8 +2063,55 @@ void manageStudents()
 }
 void manageTeachers() {}
 void manageParents() {}
-void adminViewMessages() {}
-void aSendMessages() {}
+void manageClass() {}
+void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
+    int choice;
+    do {
+        system("cls");
+        cout << "\t" << "Manage School ";
+        cout << endl << endl;
+        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Manage class" << endl << "6. Logout" << endl << "7. Exit" << endl << endl;
+        cout << "Make your choice : ";
+
+        choice = choiceCheck(7);
+
+        switch (choice) {
+        case 1: {
+            std::system("cls");
+            manageSchoolInformation();
+            break;
+        }
+        case 2: {
+            std::system("cls");
+            manageStudents();
+            break;
+        }
+        case 3: {
+            std::system("cls");
+            manageParents();
+            break;
+        }
+        case 4: {
+            std::system("cls");
+            manageTeachers();
+            break;
+        }
+        case 5: {
+            std::system("cls");
+            manageClass();
+            break;
+        }
+        }
+    } while (choice <= 5);
+    if (choice == 6) {
+        system("cls");
+        mainMenu();
+    }
+    else {
+        exit(0);
+    }
+}
+
 void viewReport() {}
 void aUpdatePersonalInformation() {}
 void sALogin() {
@@ -1977,47 +2180,27 @@ void sALogin() {
         system("cls");
         cout << "\t" << "Welcome " << admin.Name << "!";
         cout << endl << endl;
-        cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Teachers " << endl << "4. Manage Parents " << endl << "5. Manage classes " << endl << "6. Messages" << endl << "7. View Reports" << endl << "8. Update News/Events" << endl << "9. Update Personal Information " << endl << "10. Logout" << endl << "11. Exit" << endl << endl;
+        cout << "1. Manage School (school information, students, parents, teachers and class" << endl << "2. Messages" << endl << "3. View Reports" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
         cout << "Make your choice : ";
 
-        choice = choiceCheck(11);
+        choice = choiceCheck(5);
 
         switch (choice) {
         case 1: {
             std::system("cls");
-            manageSchool();
+            manageSchool(admin.ID, 1, vP, vT);
             break;
         }
         case 2: {
-            std::system("cls");
-            manageStudents();
+            viewMessages(admin.ID, 1, vP, vT);
             break;
         }
         case 3: {
             break;
         }
-        case 4: {
-            break;
         }
-        case 5: {
-            break;
-        }
-        case 6: {
-            viewMessages(admin.ID, 1, vP, vT);
-            break;
-        }
-        case 7: {
-            break;
-        }
-        case 8: {
-            break;
-        }
-        case 9: {
-            break;
-        }
-        }
-    } while (choice <= 9);
-    if (choice == 10) {
+    } while (choice <= 3);
+    if (choice == 4) {
         system("cls");
         mainMenu();
     }

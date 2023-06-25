@@ -1333,29 +1333,12 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
 void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
 {
     std::string str;
-
+    int t = 0;
     std::cout << "\tUpdating Class" << std::endl;
     placeCursor(screen, 2, 0);
     std::cout << "Class (1-9): ";
     std::getline(std::cin >> std::ws, str);
-    if (str == "NULL") {
-        if (admin) {
-            sALogin();
-        }
-        else if (accountType == AccountType::STUDENT) {
-            sSLogin(p);
-        }
-        else if (accountType == AccountType::TEACHER) {
-            sTLogin(p, vT);
-        }
-    }
-    while (!onlyNumbers(str)) {
-        placeCursor(screen, 4, 0);
-        std::cout << "Invalid class. Please only use a single digit.";
-        placeCursor(screen, 2, 0);
-        std::cout << "Class (1-9):                          ";
-        placeCursor(screen, 2, 12);
-        std::getline(std::cin >> std::ws, str);
+    while (true) {
         if (str == "NULL") {
             if (admin) {
                 sALogin();
@@ -1366,6 +1349,52 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
             else if (accountType == AccountType::TEACHER) {
                 sTLogin(p, vT);
             }
+        }
+
+        while (!onlyNumbers(str)) {
+            placeCursor(screen, 4, 0);
+            std::cout << "Invalid class. Please only use a single digit.";
+            placeCursor(screen, 2, 0);
+            std::cout << "Class (1-9):                          ";
+            placeCursor(screen, 2, 12);
+            std::getline(std::cin >> std::ws, str);
+
+            if (str == "NULL") {
+                if (admin) {
+                    sALogin();
+                }
+                else if (accountType == AccountType::STUDENT) {
+                    sSLogin(p);
+                }
+                else if (accountType == AccountType::TEACHER) {
+                    sTLogin(p, vT);
+                }
+            }
+        }
+
+        if (accountType == AccountType::TEACHER) {
+            bool validClass = true;
+            for (int i = 0; i < vT.size(); i++) {
+                if (vT[i].Class == stoi(str) && i != p) {
+                    validClass = false;
+                    break;
+                }
+            }
+
+            if (validClass) {
+                break; // Exit the while loop if the class is valid
+            }
+
+            // Show error message and prompt for class input again
+            placeCursor(screen, 4, 0);
+            std::cout << "Invalid class. Another teacher already has this class.";
+            placeCursor(screen, 2, 0);
+            std::cout << "Class (1-9):                          ";
+            placeCursor(screen, 2, 12);
+            std::getline(std::cin >> std::ws, str);
+        }
+        else {
+            break; // Exit the while loop for non-teacher account types
         }
     }
     placeCursor(screen, 4, 0);
@@ -1853,7 +1882,6 @@ void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
-void updateReports() {}
 void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
     system("cls");
     int t = 0;
@@ -2516,14 +2544,53 @@ void manageStudents()
 }
 void manageTeachers() {}
 void manageParents() {}
-void manageClass() {}
+void manageClass(vector<Parents>& vP, vector<Teachers>& vT) {
+    try {
+        int newID;
+        int t = 0;
+        bool admin;
+        int newClass;
+        vector<Students> vS = createStudentsVector();
+        while (t != 1) {
+            cout << "enter the ID of the persons class you want to change (teacher or student) or write 0 to cancel : ";
+            cin >> newID;
+            int length = to_string(newID).length();
+            if (newID == 0) {
+                sALogin();
+            }
+            if (length == 4) {
+                for (int i = 0; i < vT.size(); i++) {
+                    if (vT[i].ID == newID) {
+                        updateClass(newID, i, vS, vP, vT, AccountType::TEACHER, admin = true);
+                    }
+                }
+            }
+            else if (length == 6) {
+                for (int i = 0; i < vT.size(); i++) {
+                    if (vS[i].ID == newID) {
+                        updateClass(newID, i, vS, vP, vT, AccountType::STUDENT, admin = true);
+                    }
+                }
+            }
+            else {
+                system("cls");
+                cout << "invalid ";
+            }
+        }
+        
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+
+}
 void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
     int choice;
     do {
         system("cls");
         cout << "\t" << "Manage School ";
         cout << endl << endl;
-        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Manage class" << endl << "6. Logout" << endl << "7. Exit" << endl << endl;
+        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Manage class" << endl << "6. go back" << endl << "7. Exit" << endl << endl;
         cout << "Make your choice : ";
 
         choice = choiceCheck(7);
@@ -2551,22 +2618,21 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         }
         case 5: {
             std::system("cls");
-            manageClass();
+            manageClass(vP, vT);
             break;
         }
         }
     } while (choice <= 5);
     if (choice == 6) {
         system("cls");
-        mainMenu();
+        sALogin();
     }
     else {
         exit(0);
     }
 }
 
-void viewReport() {}
-void aUpdatePersonalInformation() {}
+
 void sALogin() {
     int choice = 0;
     Admins admin = readAdmin();

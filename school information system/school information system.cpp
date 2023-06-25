@@ -90,6 +90,7 @@ enum class informationType
 // Function declarations
 void mainMenu();
 void pressEnter();
+void sSLogin(int p);
 int choiceCheck(int);
 void registerAccount();
 void sTLogin(int, vector<Teachers>&);
@@ -112,20 +113,35 @@ void viewReceivedMessages(vector<Messages>&, int, int, vector<Parents>&, vector<
 void sPLogin(int p, vector<Parents>&);
 void sendMessages(int, int, vector<Parents>&, vector<Teachers>&);
 void sALogin();
+void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS);
 
 // Main
 
 
 // Function definitions
 
-void viewReport(int p) {}
-void viewClass(int p) {}
+void viewReport(int p, vector<Students>& vS) {
+    system("cls");
+    cout << vS[p].Name << "'s report :" << endl << endl;
+    cout << "(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+    for (int grade : {vS[p].Grade1, vS[p].Grade2, vS[p].Grade3, vS[p].Grade4, vS[p].Grade5}) {
+        if (grade > -1) {
+            std::cout << grade << " ";
+        }
+        else {
+            std::cout << "none ";
+        }
+    }
+    cout << endl << endl;
+    pressEnter();
+    sSLogin(p);
+}
 void sSLogin(int p) {
     int choice;
 
     try {
         vector<Students> vS = createStudentsVector();
-
+        vector<Teachers> vT = createTeachersVector();
         do {
             system("cls");
             cout << "\t" << "Welcome " << vS[p].Name << "!";
@@ -137,11 +153,11 @@ void sSLogin(int p) {
 
             switch (choice) {
             case 1: {
-                viewReport(p);
+                viewReport(p, vS);
                 break;
             }
             case 2: {
-                viewClass(p);
+                viewClass(p, vS[p].ID, vT, vS);
                 break;
             }
             case 3: {
@@ -163,7 +179,89 @@ void sSLogin(int p) {
     }
 }
 
-void viewChildReport() {}
+void viewChildReport(int ID, int num, vector<Parents>& vP) {
+    system("cls");
+    int c2;
+    int c3;
+    int c4;
+    int c1;
+    int child = 0;
+    try {
+        std::vector<Students> vS = createStudentsVector();
+        if (vP[num].childID2 != 0) {
+            for (int i = 0; i < vS.size(); i++) {
+                if (vP[num].childID2 == vS[i].ID) {
+                    c2 = i;
+                    child++;
+                }
+            }
+        }
+        if (vP[num].childID3 != 0) {
+            for (int i = 0; i < vS.size(); i++) {
+                if (vP[num].childID3 == vS[i].ID) {
+                    c3 = i;
+                    child++;
+                }
+            }
+        }
+        if (vP[num].childID4 != 0) {
+            for (int i = 0; i < vS.size(); i++) {
+                if (vP[num].childID4 == vS[i].ID) {
+                    c4 = i;
+                    child++;
+                }
+            }
+        }
+        for (int i = 0; i < vS.size(); i++) {
+            if (vP[num].childID == vS[i].ID) {
+                c1 = i;
+                child++;
+            }
+        }
+        if (child == 0) {
+            cout << "No children linked to your account";
+            pressEnter();
+            sPLogin(num, vP);
+        }
+        cout << "Your children reports" << endl;
+        cout << "grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+        for (int i = 0; i < child; i++) {
+            int currentChild = c1;
+            if (i == 1) {
+                currentChild = c2;
+            }
+            else if (i == 2) {
+                currentChild = c3;
+            }
+            else if (i == 3) {
+                currentChild = c4;
+            }
+            cout << vS[currentChild].Name;
+            if (vS[currentChild].Name.length() < 15) {
+                std::cout << "\t\t";
+            }
+            else {
+                std::cout << "\t";
+            }
+            for (int grade : {vS[currentChild].Grade1, vS[currentChild].Grade2, vS[currentChild].Grade3, vS[currentChild].Grade4, vS[currentChild].Grade5}) {
+                if (grade > -1) {
+                    std::cout << grade << " ";
+                }
+                else {
+                    std::cout << "none ";
+                }
+            }
+            cout << endl;
+        }
+       
+        cout << endl << endl;
+        pressEnter();
+        sPLogin(num,vP);
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
 void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
     vector<Messages> vM;
     int unreadMessages = 0;
@@ -387,6 +485,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     int c3;
     int c4;
     int choice = 0;
+    int choice1 = 0;
     ifstream sInputFile("students.txt");
     if (!sInputFile.is_open()) {
         cout << "Failed to open students.txt" << std::endl;
@@ -430,108 +529,131 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
         sVec.push_back(s);
     }
     cout << "\tSend Messages" << endl;
-    cout << "*****************************" << endl << endl;
+    cout << "*****************************" << endl;
     if (length == 5) {
-        if (vP[num].childID2 != 0) {
+        cout << "1. Admin" << endl << "2. Teacher" << endl <<endl;
+        cout << "Make your pick: ";
+        choice1 = choiceCheck(2);
+        if (choice1 == 1) {
+            system("cls");
+            cout << "Enter a message you want to send to the admin (or leave it blank to cancel): ";
+            cin.ignore();
+            std::getline(cin, message);
+            length = message.length();
+            if (length == 0) {
+                viewMessages(ID, num, vP, vT);
+            }
+            ofstream outputFile("messages.txt", ios_base::app);
+            if (outputFile.is_open()) {
+                outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                outputFile.close();
+                viewMessages(ID, num, vP, vT);
+            }
+        }
+        else {
+            if (vP[num].childID2 != 0) {
+                for (int i = 0; i < sVec.size(); i++) {
+                    if (vP[num].childID2 == sVec[i].ID) {
+                        c2 = i;
+                        for (int j = 0; j < vT.size(); j++) {
+                            if (sVec[i].Class == vT[j].Class) {
+                                locationOfTeacher2 = j;
+                                child++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (vP[num].childID3 != 0) {
+                for (int i = 0; i < sVec.size(); i++) {
+                    if (vP[num].childID3 == sVec[i].ID) {
+                        c3 = i;
+                        for (int j = 0; j < vT.size(); j++) {
+                            if (sVec[i].Class == vT[j].Class) {
+                                locationOfTeacher3 = j;
+                                child++;
+                            }
+                        }
+                    }
+                }
+            }
+            if (vP[num].childID4 != 0) {
+                for (int i = 0; i < sVec.size(); i++) {
+                    if (vP[num].childID4 == sVec[i].ID) {
+                        c4 = i;
+                        for (int j = 0; j < vT.size(); j++) {
+                            if (sVec[i].Class == vT[j].Class) {
+                                locationOfTeacher4 = j;
+                                child++;
+                            }
+                        }
+                    }
+                }
+            }
             for (int i = 0; i < sVec.size(); i++) {
-                if (vP[num].childID2 == sVec[i].ID) {
-                    c2 = i;
+                if (vP[num].childID == sVec[i].ID) {
+                    c1 = i;
                     for (int j = 0; j < vT.size(); j++) {
                         if (sVec[i].Class == vT[j].Class) {
-                            locationOfTeacher2 = j;
+                            locationOfTeacher = j;
                             child++;
                         }
                     }
                 }
             }
-        }
-        if (vP[num].childID3 != 0) {
-            for (int i = 0; i < sVec.size(); i++) {
-                if (vP[num].childID3 == sVec[i].ID) {
-                    c3 = i;
-                    for (int j = 0; j < vT.size(); j++) {
-                        if (sVec[i].Class == vT[j].Class) {
-                            locationOfTeacher3 = j;
-                            child++;
-                        }
-                    }
-                }
+            system("cls");
+            if (child == 2) {
+                cout << "which teacher do you want to message" << endl;
+                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                cout << "which ne do you pick : ";
+                choice = choiceCheck(2);
             }
-        }
-        if (vP[num].childID4 != 0) {
-            for (int i = 0; i < sVec.size(); i++) {
-                if (vP[num].childID4 == sVec[i].ID) {
-                    c4 = i;
-                    for (int j = 0; j < vT.size(); j++) {
-                        if (sVec[i].Class == vT[j].Class) {
-                            locationOfTeacher4 = j;
-                            child++;
-                        }
-                    }
-                }
+            else if (child == 3) {
+                cout << "which teacher do you want to message" << endl;
+                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+                cout << "which ne do you pick : ";
+                choice = choiceCheck(3);
             }
-        }
-        for (int i = 0; i < sVec.size(); i++) {
-            if (vP[num].childID == sVec[i].ID) {
-                c1 = i;
-                for (int j = 0; j < vT.size(); j++) {
-                    if (sVec[i].Class == vT[j].Class) {
-                        locationOfTeacher = j;
-                        child++;
-                    }
-                }
+            else if (child == 4) {
+                cout << "which teacher do you want to message" << endl;
+                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+                cout << "4. " << vT[locationOfTeacher4].Name << ", teacher of child " << sVec[c4].Name << endl;
+                cout << "which ne do you pick : ";
+                choice = choiceCheck(4);
             }
-        }
-        if (child == 2) {
-            cout << "which teacher do you want to message" << endl;
-            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-            cout << "which ne do you pick : ";
-            choice = choiceCheck(2);
-        }
-        else if (child == 3) {
-            cout << "which teacher do you want to message" << endl;
-            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-            cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
-            cout << "which ne do you pick : ";
-            choice = choiceCheck(3);
-        }
-        else if (child == 4) {
-            cout << "which teacher do you want to message" << endl;
-            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-            cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
-            cout << "4. " << vT[locationOfTeacher4].Name << ", teacher of child " << sVec[c4].Name << endl;
-            cout << "which ne do you pick : ";
-            choice = choiceCheck(4);
-        }
-        if (choice == 2) {
-            locationOfTeacher = locationOfTeacher2;
-        }
-        else if (choice == 3) {
-            locationOfTeacher = locationOfTeacher3;
-        }
-        else if (choice == 4) {
-            locationOfTeacher = locationOfTeacher4;
-        }
-        if (locationOfTeacher = 9999) {
-            cout << "No children are matched to your account" << endl;
-            pressEnter();
-            viewMessages(ID, num, vP, vT);
-        }
-        cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
-        cin.ignore();
-        std::getline(cin, message);
-        length = message.length();
-        if (length == 0) {
-            viewMessages(ID, num, vP, vT);
-        }
-        ofstream outputFile("messages.txt", ios_base::app);
-        if (outputFile.is_open()) {
-            outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
-            outputFile.close();
-            viewMessages(ID, num, vP, vT);
+            if (choice == 2) {
+                locationOfTeacher = locationOfTeacher2;
+            }
+            else if (choice == 3) {
+                locationOfTeacher = locationOfTeacher3;
+            }
+            else if (choice == 4) {
+                locationOfTeacher = locationOfTeacher4;
+            }
+            if (locationOfTeacher == 9999) {
+                cout << "No children are matched to your account" << endl;
+                pressEnter();
+                viewMessages(ID, num, vP, vT);
+            }
+            system("cls");
+            cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
+            cin.ignore();
+            std::getline(cin, message);
+            length = message.length();
+            if (length == 0) {
+                viewMessages(ID, num, vP, vT);
+            }
+            ofstream outputFile("messages.txt", ios_base::app);
+            if (outputFile.is_open()) {
+                outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
+                outputFile.close();
+                viewMessages(ID, num, vP, vT);
+            }
         }
     }
     else if (length == 4) {
@@ -544,7 +666,8 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             cout << "Invalid choice. Please enter a number (1 - 2): ";
         }
         if (choice == 1) {
-            cout << "Enter a message you want to send (or leave it blank to cancel): ";
+            system("cls");
+            cout << "Enter a message you want to send the admin (or leave it blank to cancel): ";
             cin.ignore();
             std::getline(cin, message);
             length = message.length();
@@ -1658,29 +1781,27 @@ void sPLogin(int p, vector<Parents>& vP) {
             system("cls");
             cout << "\t" << "Welcome " << vP[p].Name << "!";
             cout << endl << endl;
-            cout << "1. View Your Child's Report" << endl << "2. View your Child's Class" << endl << "3. Messages " << endl << "4. Update Personal Information" << endl << "5. Logout" << endl << "6. Exit" << endl << endl;
+            cout << "1. View Your Child's Report" << endl << "2. Messages " << endl << "3. Update Personal Information" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
-            choice = choiceCheck(6);
+            choice = choiceCheck(5);
 
             switch (choice) {
             case 1: {
+                viewChildReport(vP[p].ID, p, vP);
                 break;
             }
             case 2: {
-                break;
-            }
-            case 3: {
                 viewMessages(vP[p].ID, p, vP, vT);
                 break;
             }
-            case 4: {
+            case 3: {
                 updatePersonalInformation(vP[p].ID, p, AccountType::PARENT);
                 break;
             }
             }
-        } while (choice < 5);
-        if (choice == 5) {
+        } while (choice < 4);
+        if (choice == 4) {
             system("cls");
             mainMenu();
         }
@@ -1693,9 +1814,82 @@ void sPLogin(int p, vector<Parents>& vP) {
     }
 }
 
-void viewClass() {}
-void updateReports() {}
+void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
+    system("cls");
+    int t = 0;
+    try {
+        if (int length = to_string(ID).length() == 4) {
+            cout << "Your class : " << endl;
+            for (int i = 0; i < vS.size(); i++) {
+                if (vS[i].Class == vT[num].Class) {
+                    t++;
+                    cout << t << ". " << vS[i].Name << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "No one in your class" << endl;
 
+            }
+            pressEnter();
+            sTLogin(num, vT);
+        }
+        else {
+            cout << "Your classmates : " << endl;
+            for (int i = 0; i < vS.size(); i++) {
+                if (vS[i].Class == vS[num].Class && num != i) {
+                    t++;
+                    cout << t << ". " << vS[i].Name << endl;
+                }
+            }
+            if (t == 0) {
+                cout << "No one in your class" << endl;
+
+            }
+            pressEnter();
+            sSLogin(num);
+        }
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
+void updateReports() {}
+void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
+    system("cls");
+    int t = 0;
+    try {
+        cout << "Your class: " << endl;
+        cout << "grades: \t\t(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+        for (int i = 0; i < vS.size(); i++) {
+            if (vS[i].Class == vT[num].Class) {
+                t++;
+                cout << t << ". "<<vS[i].Name;
+                if (vS[i].Name.length() < 15) {
+                    std::cout << "\t\t";
+                }
+                else {
+                    std::cout << "\t";
+                }
+                for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
+                    if (grade > -1) {
+                        std::cout << grade << " ";
+                    }
+                    else {
+                        std::cout << "none ";
+                    }
+                }
+                cout << endl;
+            }
+        }
+
+        cout << endl << endl;
+        pressEnter();
+        sTLogin(num, vT);
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
 void sTLogin(int p, vector<Teachers>& vT) {
     int choice = 0;
     try {
@@ -1740,12 +1934,14 @@ void sTLogin(int p, vector<Teachers>& vT) {
 
             switch (choice) {
             case 1: {
+                viewClass(p,vT[p].ID, vT, vS);
                 break;
             }
             case 2: {
                 break;
             }
             case 3: {
+                viewClassReport(p, vT, vS);
                 break;
             }
             case 4: {

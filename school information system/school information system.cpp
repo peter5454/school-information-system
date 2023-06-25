@@ -802,6 +802,12 @@ void pChangeInformation(const informationType informationType, int ID, int p, ve
             else if (informationType == informationType::PASSWORD) {
                 vP[i].Password = output;
             }
+            else if (informationType == informationType::NAME) {
+                vP[i].Name = output;
+            }
+            else if (informationType == informationType::PASSWORD) {
+                vP[i].Password = output;
+            }
             else if (informationType == informationType::ADDRESS) {
                 vP[i].Address = output;
             }
@@ -840,6 +846,12 @@ void tChangeInformation(const informationType informationType, int ID, int p, ve
         if (vT[i].ID == ID) {
             if (informationType == informationType::ID) {
                 vT[i].ID = std::stoi(output);
+            }
+            else if (informationType == informationType::NAME) {
+                vT[i].Name = output;
+            }
+            else if (informationType == informationType::PASSWORD) {
+                vT[i].Password = output;
             }
             else if (informationType == informationType::NAME) {
                 vT[i].Name = output;
@@ -1297,19 +1309,19 @@ void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     std::cout << std::string(60, ' ');
 
     if (admin) {
-        sChangeInformation(informationType::CLASS, ID, p, vS, newGrade, true);
+            sChangeInformation(informationType::CLASS, ID, p, vS, newGrade, true);
     }
     else {
-        sChangeInformation(informationType::CLASS, ID, p, vS, newGrade);
+            sChangeInformation(informationType::CLASS, ID, p, vS, newGrade);
     }
 }
-void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false) {}
+void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false){}
 // Function to collect new user ID
 void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
 {
     std::string newID;
     std::cout << "\tUpdating Name or write ""NULL"" to cancel" << std::endl;
-
+    
     if (accountType == AccountType::STUDENT) {
         std::cout << "Current ID: " << vS[p].ID << std::endl;
     }
@@ -1319,7 +1331,7 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     else if (accountType == AccountType::PARENT) {
         std::cout << "Current ID: " << vP[p].ID << std::endl;
     }
-
+            
     std::cout << "\nNew ID: ";
     std::cin >> newID;
     if (newID == "NULL") {
@@ -1453,7 +1465,7 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             }
         }
     }
-
+ 
     if (admin) {
         if (accountType == AccountType::STUDENT) {
             sChangeInformation(informationType::ID, ID, p, vS, newID, true);
@@ -2119,7 +2131,7 @@ void manageStudentInfo(std::vector<Students>& vS, const std::string& sID)
 
                 break;
             }
-
+            
         }
     }
 }
@@ -2496,8 +2508,8 @@ void pLogin(string password, int ID, int& tries) {
 }
 void tLogin(string password, int ID, int& tries) {
     int cUser = 0;
-
-    try {
+    
+    try{
         vector<Teachers> vT = createTeachersVector();
         for (int i = 0; i < vT.size(); i++) {
             if (vT[i].ID == ID && vT[i].Password == password) {

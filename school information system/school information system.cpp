@@ -374,10 +374,19 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     int pID;
     int t = 0;
     int r = 0;
+    int child = 0;
     int length = to_string(ID).length();
     string message;
     std::vector<Students> sVec;
-    int locationOfTeacher;
+    int locationOfTeacher = 9999;
+    int locationOfTeacher2;
+    int locationOfTeacher3;
+    int locationOfTeacher4;
+    int c1;
+    int c2;
+    int c3;
+    int c4;
+    int choice = 0;
     ifstream sInputFile("students.txt");
     if (!sInputFile.is_open()) {
         cout << "Failed to open students.txt" << std::endl;
@@ -423,18 +432,95 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     cout << "\tSend Messages" << endl;
     cout << "*****************************" << endl << endl;
     if (length == 5) {
-        
-        for (int i = 0; i < sVec.size(); i++) {
-            if (vP[num].childID == sVec[i].ID) {
-                for (int j = 0; j < vT.size(); j++) {
-                    if (sVec[i].Class == vT[j].Class) {
-                        locationOfTeacher = j;
+        if (vP[num].childID2 != 0) {
+            for (int i = 0; i < sVec.size(); i++) {
+                if (vP[num].childID2 == sVec[i].ID) {
+                    c2 = i;
+                    for (int j = 0; j < vT.size(); j++) {
+                        if (sVec[i].Class == vT[j].Class) {
+                            locationOfTeacher2 = j;
+                            child++;
+                        }
                     }
                 }
             }
         }
-        
-        cout << "Enter a message you want to " << vT[locationOfTeacher].Name <<"send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
+        if (vP[num].childID3 != 0) {
+            for (int i = 0; i < sVec.size(); i++) {
+                if (vP[num].childID3 == sVec[i].ID) {
+                    c3 = i;
+                    for (int j = 0; j < vT.size(); j++) {
+                        if (sVec[i].Class == vT[j].Class) {
+                            locationOfTeacher3 = j;
+                            child++;
+                        }
+                    }
+                }
+            }
+        }
+        if (vP[num].childID4 != 0) {
+            for (int i = 0; i < sVec.size(); i++) {
+                if (vP[num].childID4 == sVec[i].ID) {
+                    c4 = i;
+                    for (int j = 0; j < vT.size(); j++) {
+                        if (sVec[i].Class == vT[j].Class) {
+                            locationOfTeacher4 = j;
+                            child++;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < sVec.size(); i++) {
+            if (vP[num].childID == sVec[i].ID) {
+                c1 = i;
+                for (int j = 0; j < vT.size(); j++) {
+                    if (sVec[i].Class == vT[j].Class) {
+                        locationOfTeacher = j;
+                        child++;
+                    }
+                }
+            }
+        }
+        if (child == 2) {
+            cout << "which teacher do you want to message" << endl;
+            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+            cout << "which ne do you pick : ";
+            choice = choiceCheck(2);
+        }
+        else if (child == 3) {
+            cout << "which teacher do you want to message" << endl;
+            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+            cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+            cout << "which ne do you pick : ";
+            choice = choiceCheck(3);
+        }
+        else if (child == 4) {
+            cout << "which teacher do you want to message" << endl;
+            cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+            cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+            cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+            cout << "4. " << vT[locationOfTeacher4].Name << ", teacher of child " << sVec[c4].Name << endl;
+            cout << "which ne do you pick : ";
+            choice = choiceCheck(4);
+        }
+        if (choice == 2) {
+            locationOfTeacher = locationOfTeacher2;
+        }
+        else if (choice == 3) {
+            locationOfTeacher = locationOfTeacher3;
+        }
+        else if (choice == 4) {
+            locationOfTeacher = locationOfTeacher4;
+        }
+        if (locationOfTeacher = 9999) {
+            cout << "No children are matched to your account" << endl;
+            pressEnter();
+            viewMessages(ID, num, vP, vT);
+        }
+        cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
         cin.ignore();
         std::getline(cin, message);
         length = message.length();
@@ -491,7 +577,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                                 temp2 = k;
                                 for (int j = 0; j < vT.size(); j++) {
                                     if (sVec[temp2].Class == vT[j].Class)
-                                    r = temp;
+                                        r = temp;
                                     t = 1;
                                     break;
                                 }
@@ -499,8 +585,8 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                         }
                     }
                 }
-                
-                   
+
+
 
 
                 if (t == 0) {
@@ -647,7 +733,7 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
             t++;
         }
     }
-   
+
     if (t == 0) {
         cout << "No messages" << endl;
     }
@@ -716,6 +802,12 @@ void pChangeInformation(const informationType informationType, int ID, int p, ve
             else if (informationType == informationType::PASSWORD) {
                 vP[i].Password = output;
             }
+            else if (informationType == informationType::NAME) {
+                vP[i].Name = output;
+            }
+            else if (informationType == informationType::PASSWORD) {
+                vP[i].Password = output;
+            }
             else if (informationType == informationType::ADDRESS) {
                 vP[i].Address = output;
             }
@@ -754,6 +846,12 @@ void tChangeInformation(const informationType informationType, int ID, int p, ve
         if (vT[i].ID == ID) {
             if (informationType == informationType::ID) {
                 vT[i].ID = std::stoi(output);
+            }
+            else if (informationType == informationType::NAME) {
+                vT[i].Name = output;
+            }
+            else if (informationType == informationType::PASSWORD) {
+                vT[i].Password = output;
             }
             else if (informationType == informationType::NAME) {
                 vT[i].Name = output;

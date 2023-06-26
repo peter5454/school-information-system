@@ -133,6 +133,7 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
 void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT);
 void manageSchoolInformation();
+void viewReportAdmin();
 void manageStudents();
 void manageParents();
 void manageTeachers();
@@ -355,7 +356,7 @@ std::vector<Teachers> createTeachersVector()
 void login(int cUser, static int tries, int correctID)
 {
     string password;
-    int ID;
+    int ID = 0;
     int length;
     system("cls");
     if (tries == 3) {
@@ -696,6 +697,7 @@ void sALogin() {
                 break;
             }
             case 3: {
+                viewReportAdmin();
                 break;
             }
             }
@@ -1422,8 +1424,9 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
             cin.ignore();
             std::getline(cin, message);
-            length = message.length();
-            if (length == 0) {
+            int length2;
+            length2 = message.length();
+            if (length2 == 0) {
                 viewMessages(ID, num, vP, vT);
             }
             ofstream outputFile("messages.txt", ios_base::app);
@@ -1732,19 +1735,129 @@ void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
+void viewReportAdmin() {
+    int sClass;
+    int t = 0;
+    int average = 0;
 
+    // Create vector of all students
+    try {
+        std::vector<Students> vS = createStudentsVector();
+        std::system("cls");
+        std::cout << "\tView reports" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+        std::vector<int> classes;
+        for (const Students& c : vS) {
+            classes.push_back(c.Class);
+        }
+        if (classes.empty()) {
+            std::cout << "No Classes Found." << std::endl;
+            pressEnter();
+        }
+        // Get unique class numbers and sort them for display
+        std::set<int> uniqueClasses(classes.begin(), classes.end());
+        std::sort(classes.begin(), classes.end());
+        for (const int& i : uniqueClasses) {
+            if (i == 0) {
+                std::cout << i << ". New Students (Not in a class)" << std::endl;
+            }
+            else if (i > 0) {
+                std::cout << i << ". Class " << i << std::endl;
+            }
+        }
+        int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
+        std::cout << lastValue + 1 << ". Cancel" << std::endl;
+        std::cout << std::endl << "Class: ";
+        std::cin >> sClass;
+        if (sClass == (lastValue + 1)) {
+            std::system("cls");
+        }
+        bool validInput = false;
+        do {
+            for (const int& i : uniqueClasses) {
+                if (i == sClass) {
+                    validInput = true;
+                    break;
+                }
+            }
+            if (!validInput) {
+                std::cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
+                std::cin >> sClass;
+            }
+        } while (!validInput);
+
+        system("cls");
+        std::cout << "\tView reports" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+
+        int n = 1;
+        std::vector<Students> inClass;
+
+        if (sClass == 0) {
+            std::cout << "All Students Not In a Class " << std::endl << std::endl;
+        }
+        else {
+            std::cout << "Class " << sClass << std::endl << std::endl;
+        }
+
+        for (const auto& student : vS) {
+            if (student.Class == sClass) {
+                inClass.push_back(student);
+            }
+        }
+        std::sort(inClass.begin(), inClass.end(), compareByName);
+        cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
+        for (int i = 0; i < vS.size(); i++) {
+            if (vS[i].Class == sClass) {
+                t++;
+                cout << t << ". " << vS[i].Name;
+                placeCursor(screen, t + 5, 31);
+                for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
+                    if (grade > -1) {
+                        std::cout << "  " << grade << "  ";
+                        average += grade;
+                    }
+                    else {
+                        std::cout << "  XX  ";
+                    }
+                }
+                cout << "  " << average/t << endl;
+            }
+        }
+
+        cout << endl << endl;
+
+        pressEnter();
+    }
+        catch (const std::runtime_error& e) {
+            std::cout << "Error: " << e.what() << std::endl;
+        }
+    
+}
 void viewReport(int p, vector<Students>& vS) {
     system("cls");
+    int i = 0;
+    float average = 0;
     cout << vS[p].Name << "'s report :" << endl << endl;
     cout << "(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
     for (int grade : {vS[p].Grade1, vS[p].Grade2, vS[p].Grade3, vS[p].Grade4, vS[p].Grade5}) {
         if (grade > -1) {
-            std::cout << grade << " ";
+            if (i == 0) {
+               std::cout << " " << grade << "  ";
+               i++;
+               average += grade;
+            }
+            else {
+                std::cout << "  " << grade << "  ";
+                i++;
+                average += grade;
+            }
         }
         else {
-            std::cout << "none ";
+            std::cout << " none ";
         }
     }
+    cout << "\n\nYour average is : " << average / i;
     cout << endl << endl;
     pressEnter();
     sSLogin(p);
@@ -1756,6 +1869,8 @@ void viewChildReport(int ID, int num, vector<Parents>& vP) {
     int c4;
     int c1;
     int child = 0;
+    int t = 0;
+    int average = 0;
     try {
         std::vector<Students> vS = createStudentsVector();
         if (vP[num].childID2 != 0) {
@@ -1794,7 +1909,7 @@ void viewChildReport(int ID, int num, vector<Parents>& vP) {
             sPLogin(num, vP);
         }
         cout << "Your children reports" << endl;
-        cout << "grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+        cout << "grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
         for (int i = 0; i < child; i++) {
             int currentChild = c1;
             if (i == 1) {
@@ -1806,22 +1921,19 @@ void viewChildReport(int ID, int num, vector<Parents>& vP) {
             else if (i == 3) {
                 currentChild = c4;
             }
-            cout << vS[currentChild].Name;
-            if (vS[currentChild].Name.length() < 15) {
-                std::cout << "\t\t";
-            }
-            else {
-                std::cout << "\t";
-            }
-            for (int grade : {vS[currentChild].Grade1, vS[currentChild].Grade2, vS[currentChild].Grade3, vS[currentChild].Grade4, vS[currentChild].Grade5}) {
+            t++;
+            cout << t << ". " << vS[currentChild].Name;
+            placeCursor(screen, t + 1, 31);
+            for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
                 if (grade > -1) {
-                    std::cout << grade << " ";
+                    std::cout << "  " << grade << "  ";
+                    average += grade;
                 }
                 else {
-                    std::cout << "none ";
+                    std::cout << "  XX  ";
                 }
             }
-            cout << endl;
+            cout << "  " << average / t << endl;
         }
        
         cout << endl << endl;
@@ -1835,7 +1947,7 @@ void viewChildReport(int ID, int num, vector<Parents>& vP) {
 void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
     system("cls");
     int t = 0;
-
+    int average = 0;
     cout << "Your class: " << endl;
     cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
     for (int i = 0; i < vS.size(); i++) {
@@ -1846,12 +1958,13 @@ void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
             for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
                 if (grade > -1) {
                     std::cout << "  " << grade << "  ";
+                    average += grade;
                 }
                 else {
                     std::cout << "  XX  ";
                 }
             }
-            cout << endl;
+            cout << "  " << average / t << endl;
         }
     }
 
@@ -2677,7 +2790,7 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         system("cls");
         cout << "\t" << "Manage School ";
         cout << endl << endl;
-        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Manage class" << endl << "6. Cancel" << endl << "7. Exit" << endl << endl;
+        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
         cout << "Make your choice : ";
 
         choice = choiceCheck(7);
@@ -2703,14 +2816,9 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
             manageTeachers();
             break;
         }
-        case 5: {
-            std::system("cls");
-            manageClass(vP, vT);
-            break;
         }
-        }
-    } while (choice <= 5);
-    if (choice == 6) {
+    } while (choice <= 4);
+    if (choice == 5) {
         system("cls");
         sALogin();
     }
@@ -3123,46 +3231,6 @@ void manageTeachers() {
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
-}
-void manageClass(vector<Parents>& vP, vector<Teachers>& vT) {
-    try {
-        int newID;
-        int t = 0;
-        bool admin;
-        int newClass;
-        vector<Students> vS = createStudentsVector();
-        while (t != 1) {
-            cout << "enter the ID of the persons class you want to change (teacher or student) or write 0 to cancel : ";
-            cin >> newID;
-            int length = to_string(newID).length();
-            if (newID == 0) {
-                sALogin();
-            }
-            if (length == 4) {
-                for (int i = 0; i < vT.size(); i++) {
-                    if (vT[i].ID == newID) {
-                        updateClass(newID, i, vS, vP, vT, AccountType::TEACHER);
-                    }
-                }
-            }
-            else if (length == 6) {
-                for (int i = 0; i < vT.size(); i++) {
-                    if (vS[i].ID == newID) {
-                        updateClass(newID, i, vS, vP, vT, AccountType::STUDENT);
-                    }
-                }
-            }
-            else {
-                system("cls");
-                cout << "invalid ";
-            }
-        }
-
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
-
 }
 
 // General functions

@@ -1131,22 +1131,22 @@ void appendToFile(const std::string& filename, const std::string& content)
 // Messaging functions
 void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
 
-    int pID;
+    int pID; //potential ID
     int t = 0;
-    int r = 0;
-    int child = 0;
+    int r = 0; //t and r are counters
+    int child = 0; //how many children the parents have
     int length = to_string(ID).length();
     string message;
-    int locationOfTeacher = 9999;
+    int locationOfTeacher = 9999;  //initiating the fact that a parent might have 4 different teacher they can send to
     int locationOfTeacher2;
     int locationOfTeacher3;
     int locationOfTeacher4;
     int c1;
     int c2;
     int c3;
-    int c4;
+    int c4; //all 4 children
     int choice = 0;
-    int choice1 = 0;
+    int choice1 = 0; //for 2 choices
     try {
         vector<Students> sVec = createStudentsVector();
         cout << "\tSend Messages" << endl;
@@ -1166,12 +1166,12 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl; // append the data to the file in the format sentID, recipiantID, isRead and the message
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
-            else {
+            else { //if they pick 2 it check how many children they have
                 if (vP[num].childID2 != 0) {
                     for (int i = 0; i < sVec.size(); i++) {
                         if (vP[num].childID2 == sVec[i].ID) {
@@ -1221,9 +1221,9 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                             }
                         }
                     }
-                }
+                } //Above gathers the data and the location of each of their children teachers
                 system("cls");
-                if (child == 2) {
+                if (child == 2) { //allows the parents to pick the teacher they want to send the message to
                     cout << "which teacher do you want to message" << endl;
                     cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
                     cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
@@ -1255,37 +1255,33 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 else if (choice == 4) {
                     locationOfTeacher = locationOfTeacher4;
-                }
+                } // finnaly assigns the value of which teacher they want to send it to
                 if (locationOfTeacher == 9999) {
                     cout << "No children are matched to your account" << endl;
                     pressEnter();
                     viewMessages(ID, num, vP, vT);
                 }
                 system("cls");
-                cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
+                cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //outputs the name based on which teacher the user choose
                 cin.ignore();
                 std::getline(cin, message);
                 length = message.length();
                 if (length == 0) {
-                    viewMessages(ID, num, vP, vT);
+                    viewMessages(ID, num, vP, vT); //in case the user change their mind on senddng a message
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl; // appends the data to the file
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
         }
-        else if (length == 4) {
+        else if (length == 4) { //If their ID is a teacher ID
             int choice;
             cout << "1. Admin" << endl << "2. Parent" << endl;
             cout << "Make your pick: ";
-            while (!(cin >> choice) || choice < 1 || choice > 2) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Please enter a number (1 - 2): ";
-            }
+            choice = choiceCheck(2);
             if (choice == 1) {
                 system("cls");
                 cout << "Enter a message you want to send the admin (or leave it blank to cancel): ";
@@ -1293,11 +1289,11 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 std::getline(cin, message);
                 length = message.length();
                 if (length == 0) {
-                    viewMessages(ID, num, vP, vT);
+                    viewMessages(ID, num, vP, vT); //Incase they change their mind
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl; // append to fiel using rcipiant ID 123 because it doesn't change
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
@@ -1314,14 +1310,14 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                     int temp;
                     int temp2;
                     for (int i = 0; i < vP.size(); i++) {
-                        if (vP[i].ID == pID) {
+                        if (vP[i].ID == pID) { // finding parents of students in the users class then checking i their id matches the submited ID
                             temp = i;
                             for (int k = 0; k < sVec.size(); k++) {
                                 if (vP[temp].childID == sVec[k].ID) {
                                     temp2 = k;
                                     for (int j = 0; j < vT.size(); j++) {
                                         if (sVec[temp2].Class == vT[j].Class)
-                                            r = temp;
+                                            r = temp; 
                                         t = 1;
                                         break;
                                     }
@@ -1333,10 +1329,10 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
 
 
 
-                    if (t == 0) {
+                    if (t == 0) { //if the id doesnt match anybody 
                         system("cls");
                         cout << "Send message to parents of your students" << endl;
-                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: "; 
                         cin >> pID;
                         if (pID == 0) {
                             viewMessages(ID, num, vP, vT);
@@ -1344,7 +1340,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                     }
                 }
                 system("cls");
-                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): "; //Incase they dont want to send a message
                 cin.ignore();
                 std::getline(cin, message);
                 length = message.length();
@@ -1353,21 +1349,21 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl; // append to the file
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
         }
         else {
-            cout << "Enter ID for parent or teacher you want to talk to: ";
+            cout << "Enter ID for parent or teacher you want to talk to: "; //admin functions, Admin can send a message to anybody (not studetns)
             cin >> pID;
             length = to_string(pID).length();
             if (pID == 0) {
                 viewMessages(ID, num, vP, vT);
                 return;
             }
-            while (length != 4 && length != 5) {
+            while (length != 4 && length != 5) { // simple check if the id is matching 4 or 5 digits which is parent or teacher
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "Invalid ID. Please enter another ID: ";
@@ -1376,17 +1372,17 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
 
             do {
-                if (length == 5) {
+                if (length == 5) { // if id is a parent id
                     for (int i = 0; i < vP.size(); i++) {
-                        if (vP[i].ID == pID) {
+                        if (vP[i].ID == pID) { // read the vector for matching potential id
                             t++;
-                            r = i;
+                            r = i; //place is saved and counter is increased by one to tell the system matching id was found
                             break;
                         }
                     }
                     if (t == 0) {
                         system("cls");
-                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: "; // in case the counter wasn't increased
                         cin >> pID;
                         length = to_string(pID).length();
                         if (pID == 0) {
@@ -1395,47 +1391,46 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                         }
                     }
                 }
-                else if (length == 4) {
+                else if (length == 4) { //if id is teacher ID
                     for (int i = 0; i < vT.size(); i++) {
-                        if (pID == vT[i].ID) {
+                        if (pID == vT[i].ID) { //read the vector for potential ID (pID)
                             t++;
-                            r = i;
+                            r = i; // saves the place and increaes the counter to tell the system that a matching ID has been found
                             break;
                         }
                     }
-                    if (t == 0) {
+                    if (t == 0) { //if counter has increased
                         system("cls");
                         cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
                         cin >> pID;
                         length = to_string(pID).length();
                         if (pID == 0) {
-                            viewMessages(ID, num, vP, vT);
-                            return;
+                            viewMessages(ID, num, vP, vT); // exits
                         }
                     }
                 }
-            } while (t != 1);
+            } while (t != 1); // while counter hasn't increased
             system("cls");
-            if (length == 5) {
-                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+            if (length == 5) { // if id is parent
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): "; //output parent name
             }
             else {
-                cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): ";
+                cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): "; // output teacher name
             }
             cin.ignore();
             std::getline(cin, message);
-            int length2;
+
             length2 = message.length();
             if (length2 == 0) {
-                viewMessages(ID, num, vP, vT);
+                viewMessages(ID, num, vP, vT); //in case the user changes their mind
             }
             ofstream outputFile("messages.txt", ios_base::app);
             if (outputFile.is_open()) {
                 if (length == 5) {
-                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl; //output parent ID to the file
                 }
                 else {
-                    outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl; //append teachere id to the file
                 }
                 outputFile.close();
                 viewMessages(ID, num, vP, vT);

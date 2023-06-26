@@ -3244,10 +3244,10 @@ bool compareByName(const Students& student1, const Students& student2)
 void pressEnter()
 {
 
-    std::cout << "Press Enter(or twice) to continue...";
+    std::cout << "Press Enter(or twice) to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
-    std::system("cls");
+    std::cin.get(); //gets the input
+    std::system("cls"); //clear screen
 }
 // Function to perform numeric range check for choices
 int choiceCheck(int n)

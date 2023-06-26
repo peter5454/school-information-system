@@ -1136,6 +1136,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     int r = 0; //t and r are counters
     int child = 0; //how many children the parents have
     int length = to_string(ID).length();
+    int length2;
     string message;
     int locationOfTeacher = 9999;  //initiating the fact that a parent might have 4 different teacher they can send to
     int locationOfTeacher2;

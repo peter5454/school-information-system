@@ -88,7 +88,7 @@ enum class informationType
 };
 
 // Function declarations
-void mainMenu();
+void mainMenu(int);
 Admins readAdmin();
 std::vector<Students> createStudentsVector();
 std::vector<Parents> createParentsVector();
@@ -105,7 +105,7 @@ void aLogin(string password, int ID, int& tries);
 void registerAccount();
 void registerNewAccount(const AccountType);
 int generateID(const std::vector<int>&, const AccountType);
-void news();
+void news(int);
 bool isFileEmpty(const std::string& filename);
 std::vector<std::string> readFile(const std::string& filename);
 void saveToFile(const std::string& filename, const std::vector<std::string>& content);
@@ -137,7 +137,6 @@ void viewReportAdmin();
 void manageStudents();
 void manageParents();
 void manageTeachers();
-void manageClass(vector<Parents>& vP, vector<Teachers>& vT);
 bool compareByName(const Students& student1, const Students& student2);
 void pressEnter();
 int choiceCheck(int n);
@@ -150,13 +149,13 @@ void placeCursor(HANDLE screen, int row, int col);
 // Main
 int main()
 {
-    mainMenu();
+    mainMenu(0);
 }
 
 // Function definitions
 
 // Main Menu
-void mainMenu()
+void mainMenu(static int tries)
 {
     try {
         int choice;
@@ -175,7 +174,7 @@ void mainMenu()
 
             switch (choice) {
             case 1: {
-                login(0, 0, 0);
+                login(0, tries, 0);
                 break;
             }
             case 2: {
@@ -183,7 +182,7 @@ void mainMenu()
                 break;
             }
             case 3: {
-                news();
+                news(tries);
                 break;
             }
             }
@@ -421,6 +420,12 @@ void login(int cUser, static int tries, int correctID)
     }
     default: {
         tries++;
+        system("cls");
+        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
+        if (3 - tries == 0) {
+            exit(0);
+        }
+        mainMenu(tries);
         break;
     }
     }
@@ -457,7 +462,7 @@ void sSLogin(int p) {
         } while (choice <= 3);
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -499,7 +504,7 @@ void sPLogin(int p, vector<Parents>& vP) {
         } while (choice < 4);
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -660,7 +665,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
         } while (choice <= 5);
         if (choice == 6) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -704,7 +709,7 @@ void sALogin() {
         } while (choice <= 3);
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -1052,7 +1057,7 @@ int generateID(const std::vector<int>& existingIDs, const AccountType accountTyp
 }
 
 // Events/News functions
-void news()
+void news(static int tries)
 {
     std::system("cls");
     std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
@@ -1069,7 +1074,7 @@ void news()
         std::cout << "Error: " << e.what() << std::endl;
     }
     pressEnter();
-    mainMenu();
+    mainMenu(tries);
 }
 bool isFileEmpty(const std::string& filename) {
     std::ifstream inputFile(filename);

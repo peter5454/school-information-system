@@ -282,7 +282,7 @@ std::vector<Parents> createParentsVector()
     }
     else {
         string line;
-        while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+        while (std::getline(sInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
             istringstream iss(line);
             string value;
 
@@ -325,7 +325,7 @@ std::vector<Teachers> createTeachersVector()
         throw std::runtime_error("Failed to open teachers.txt for reading.");
     }
     string line;
-    while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+    while (std::getline(sInputFile, line)) { //Gathers all of the teachers names, passwords and IDs then assigns them to their respected variables.
         istringstream iss(line);
         string value;
 
@@ -812,6 +812,7 @@ void registerAccount()
         break;
     }
     case 4: {
+        std::system("cls");
         break;
     }
     }

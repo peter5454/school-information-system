@@ -2542,8 +2542,117 @@ void manageStudents()
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
-void manageTeachers() {}
-void manageParents() {}
+void manageTeachers() {
+    // Create vector of all students
+    try {
+        std::vector<Teachers> vT = createTeachersVector();
+
+        // Menu for searching students
+        int choice;
+        string tID;
+        do {
+            std::cout << "\tManaging Teachers" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            std::cout << "1. Search Teachers by ID"  << std::endl << "2. Cancel" << std::endl;
+            std::cout << "Make your choice : ";
+            choice = choiceCheck(2);
+
+            switch (choice) {
+            case 1: {
+                // Student ID search
+                std::system("cls");
+                std::cout << "\tManaging Teachers" << std::endl;
+                std::cout << "*********************************" << std::endl << std::endl;
+                std::cout << "Enter Teacher ID (or enter \'0\' to cancel): ";
+                std::cin >> tID;
+                if (tID == "0") {
+                    std::system("cls");
+                    break;
+                }
+                while (!onlyNumbers(tID) || tID.length() != 4) {
+                    std::cout << "Not a valid Teacher ID (must contain 4 numbers only)" << std::endl;
+                    std::cout << "Enter Teacher ID:";
+                    std::cin >> tID;
+                }
+                // // Get student position from vector of all students by matching ID
+                int p;
+                int counter = 0;
+                for (auto& Teachers : vT) {
+                    if (Teachers.ID == std::stoi(tID)) {
+                        p = counter;
+                    }
+                    counter++;
+                }
+                updatePersonalInformation(std::stoi(tID), p, AccountType::TEACHER, true);
+                break;
+            }
+           
+            case 2: {
+                std::system("cls");
+                break;
+            }
+            }
+        } while (choice != 2);
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
+void manageParents() {
+    try {
+        std::vector<Parents> vP = createParentsVector();
+
+        // Menu for searching students
+        int choice;
+        string pID;
+        do {
+            std::cout << "\tManaging Parents" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            std::cout << "1. Search Parents by ID" << std::endl << "2. Cancel" << std::endl;
+            std::cout << "Make your choice : ";
+            choice = choiceCheck(2);
+
+            switch (choice) {
+            case 1: {
+                // Student ID search
+                std::system("cls");
+                std::cout << "\tManaging Parents" << std::endl;
+                std::cout << "*********************************" << std::endl << std::endl;
+                std::cout << "Enter Parent ID (or enter \'0\' to cancel): ";
+                std::cin >> pID;
+                if (pID == "0") {
+                    std::system("cls");
+                    break;
+                }
+                while (!onlyNumbers(pID) || pID.length() != 5) {
+                    std::cout << "Not a valid Parent ID (must contain 5 numbers only)" << std::endl;
+                    std::cout << "Enter Parent ID:";
+                    std::cin >> pID;
+                }
+                // // Get student position from vector of all students by matching ID
+                int p;
+                int counter = 0;
+                for (auto& Parents : vP) {
+                    if (Parents.ID == std::stoi(pID)) {
+                        p = counter;
+                    }
+                    counter++;
+                }
+                updatePersonalInformation(std::stoi(pID), p, AccountType::PARENT, true);
+                break;
+            }
+
+            case 2: {
+                std::system("cls");
+                break;
+            }
+            }
+        } while (choice != 2);
+    }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
+    }
+}
 void manageClass(vector<Parents>& vP, vector<Teachers>& vT) {
     try {
         int newID;
@@ -2915,7 +3024,7 @@ void mainMenu()
 void pressEnter()
 {
 
-    std::cout << "Press Enter to continue...";
+    std::cout << "Press Enter(or twice) to continue...";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::cin.get();
     std::system("cls");

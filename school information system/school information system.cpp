@@ -358,11 +358,11 @@ void login(int cUser, static int tries, int correctID)
     int ID = 0;
     int length;
     system("cls");
-    if (tries == 3) {
+    if (tries == 3) { //if the user has tried 3 times to log in they will be exited from the system
         cout << "You failed to login 3 times exiting";
         exit(0);
     }
-    else if (cUser == 1) {
+    else if (cUser == 1) { //if they got the id correct but wrong password
         cout << "\tincorrect Password! You have " << 3 - tries << " tries left" << endl << endl;
         placeCursor(screen, 2, 23);
         cout << "Login";
@@ -375,7 +375,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your Password : ";
         cin >> password;
     }
-    else if (tries > 0) {
+    else if (tries > 0) { // if the user entered incorrect id and password
         cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
         placeCursor(screen, 2, 23);
         cout << "Login";
@@ -388,7 +388,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your Password : ";
         cin >> password;
     }
-    else if (tries == 0) {
+    else if (tries == 0) { //initial login arrempt
         placeCursor(screen, 0, 23);
         cout << "Login";
         placeCursor(screen, 1, 5);
@@ -401,7 +401,7 @@ void login(int cUser, static int tries, int correctID)
         cin >> password;
     }
     length = to_string(ID).length();
-    switch (length) {
+    switch (length) { //calls one of the function based the length f the id they inputted 
     case 6: {
         sLogin(password, ID, tries);
         break;
@@ -421,11 +421,11 @@ void login(int cUser, static int tries, int correctID)
     default: {
         tries++;
         system("cls");
-        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
+        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl; // clear screen and output in order to display above the main menu
         if (3 - tries == 0) {
             exit(0);
         }
-        mainMenu(tries);
+        mainMenu(tries); //passes back tries
         break;
     }
     }
@@ -434,18 +434,18 @@ void sSLogin(int p) {
     int choice;
 
     try {
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //sucessful student login creates 2 vectors in order to pass o the respected function if called
         vector<Teachers> vT = createTeachersVector();
         do {
             system("cls");
-            cout << "\t" << "Welcome " << vS[p].Name << "!";
+            cout << "\t" << "Welcome " << vS[p].Name << "!"; //uses p to indicate the name, the only variable passed
             cout << endl << endl;
             cout << "1. View Report" << endl << "2. View Class" << endl << "3. Update Personal Information" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) { //based on choice will call these function which match with the text outputted
             case 1: {
                 viewReport(p, vS);
                 break;
@@ -476,18 +476,18 @@ void sPLogin(int p, vector<Parents>& vP) {
     int choice;
     try {
         vector<Teachers> vT = createTeachersVector();
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector();//sucessful parent login creates 2 vectors in order to pass o the respected function if called
         
         do {
             system("cls");
-            cout << "\t" << "Welcome " << vP[p].Name << "!";
+            cout << "\t" << "Welcome " << vP[p].Name << "!";//uses p to indicate the name, the only variable passed
             cout << endl << endl;
             cout << "1. View Your Child's Report" << endl << "2. Messages " << endl << "3. Update Personal Information" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) {//based on choice will call these function which match with the text outputted
             case 1: {
                 viewChildReport(vP[p].ID, p, vP);
                 break;
@@ -519,7 +519,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
 
     try {
         vector<Parents> vP = createParentsVector();
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //creates the other 2 vectors after being passed their own
         
         do {
             system("cls");
@@ -530,7 +530,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
 
             choice = choiceCheck(7);
 
-            switch (choice) {
+            switch (choice) { //7 switch case option
             case 1: {
                 viewClass(p, vT[p].ID, vT, vS);
                 break;
@@ -540,8 +540,8 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 std::cout << "\tUpdating Grades" << std::endl;
                 std::cout << "*****************************" << std::endl << std::endl;
 
-                if (vT[p].Class == 0) {
-                    std::cout << "Wait until administrator assigns you to a class." << std::endl;
+                if (vT[p].Class == 0) { //if the teacher has no class they need to wait for the admin to assign them to one
+                    std::cout << "Wait until administrator assigns you to a class (might need to message them)." << std::endl;
                     pressEnter();
                     break;
                 }
@@ -549,14 +549,14 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 int n = 1;
                 std::vector<Students> inClass;
 
-                std::cout << "Class " << vT[p].Class << std::endl << std::endl;
+                std::cout << "Class " << vT[p].Class << std::endl << std::endl; //outputs their class number
 
                 for (const auto& student : vS) {
                     if (student.Class == vT[p].Class) {
                         inClass.push_back(student);
                     }
                 }
-                std::sort(inClass.begin(), inClass.end(), compareByName);
+                std::sort(inClass.begin(), inClass.end(), compareByName); //gets and sorts all the students in their class
 
                 // Display student info in class
                 std::cout << "Option \t ID \t\t Name \t\t\t(G1) (G2) (G3) (G4) (G5)" << endl;
@@ -565,7 +565,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
                     if (student.Class == vT[p].Class) {
                         std::cout << student.ID << "\t\t " << student.Name;
                         if (student.Name.length() < 15) {
-                            std::cout << "\t\t";
+                            std::cout << "\t\t"; //outputs the students
                         }
                         else {
                             std::cout << "\t";
@@ -681,7 +681,7 @@ void sALogin() {
         do {
             Admins admin = readAdmin();
             vector<Teachers> vT = createTeachersVector();
-            vector<Parents> vP = createParentsVector();
+            vector<Parents> vP = createParentsVector(); //creates the vectors
             
             system("cls");
             cout << "\t" << "Welcome " << admin.Name << "!";
@@ -691,7 +691,7 @@ void sALogin() {
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) { 
             case 1: {
                 std::system("cls");
                 manageSchool(admin.ID, 1, vP, vT);
@@ -706,12 +706,12 @@ void sALogin() {
                 break;
             }
             }
-        } while (choice <= 3);
+        } while (choice <= 3); //while choice != 4 or choice != 5
         if (choice == 4) {
             system("cls");
             mainMenu(0);
         }
-        else {
+        else { //if choice == 5 (only possible option)
             exit(0);
         }
     }
@@ -722,18 +722,18 @@ void sALogin() {
 void sLogin(string password, int ID, int& tries) {
     int cUser = 0;
     try {
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //creates the vector
 
-        for (int i = 0; i < vS.size(); i++) {
+        for (int i = 0; i < vS.size(); i++) { //checks if id and password match from the whole vector
             if (vS[i].ID == ID && vS[i].Password == password) {
                 sSLogin(i);
             }
             else if (vS[i].ID == ID) {
-                cUser = 1;
+                cUser = 1; //if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID); // goes back to login
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
@@ -742,19 +742,19 @@ void sLogin(string password, int ID, int& tries) {
 void pLogin(string password, int ID, int& tries) {
     int cUser = 0;
     try {
-        vector<Parents> vP = createParentsVector();
+        vector<Parents> vP = createParentsVector(); //creates the vector
 
         for (int i = 0; i < vP.size(); i++) {
-            if (vP[i].ID == ID && vP[i].Password == password) {
+            if (vP[i].ID == ID && vP[i].Password == password) {//checks if id and password match from the whole vector
                 sPLogin(i, vP);
 
             }
             else if (vP[i].ID == ID) {
-                cUser = 1;
+                cUser = 1;//if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID);// goes back to login
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
@@ -764,17 +764,17 @@ void tLogin(string password, int ID, int& tries) {
     int cUser = 0;
 
     try {
-        vector<Teachers> vT = createTeachersVector();
+        vector<Teachers> vT = createTeachersVector();//creates the vector
         for (int i = 0; i < vT.size(); i++) {
-            if (vT[i].ID == ID && vT[i].Password == password) {
+            if (vT[i].ID == ID && vT[i].Password == password) {//checks if id and password match from the whole vector
                 sTLogin(i, vT);
             }
             else if (vT[i].ID == ID) {
-                cUser = 1;
+                cUser = 1;//if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID);// goes back to login
     }
 
     catch (const std::runtime_error& e) {
@@ -783,8 +783,8 @@ void tLogin(string password, int ID, int& tries) {
 }
 void aLogin(string password, int ID, int& tries) {
     int cUser = 0;
-    Admins admin = readAdmin();
-    if (admin.ID == ID && admin.Password == password) {
+    Admins admin = readAdmin(); //due to there being 1 admin doesnt need to create a vector
+    if (admin.ID == ID && admin.Password == password) { //if m
         sALogin();
     }
     else if (admin.ID == ID) {

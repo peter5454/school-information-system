@@ -2690,7 +2690,7 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         system("cls");
         cout << "\t" << "Manage School ";
         cout << endl << endl;
-        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Manage class" << endl << "6. Cancel" << endl << "7. Exit" << endl << endl;
+        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
         cout << "Make your choice : ";
 
         choice = choiceCheck(7);
@@ -2716,14 +2716,9 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
             manageTeachers();
             break;
         }
-        case 5: {
-            std::system("cls");
-            manageClass(vP, vT);
-            break;
         }
-        }
-    } while (choice <= 5);
-    if (choice == 6) {
+    } while (choice <= 4);
+    if (choice == 5) {
         system("cls");
         sALogin();
     }
@@ -3136,46 +3131,6 @@ void manageTeachers() {
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
-}
-void manageClass(vector<Parents>& vP, vector<Teachers>& vT) {
-    try {
-        int newID;
-        int t = 0;
-        bool admin;
-        int newClass;
-        vector<Students> vS = createStudentsVector();
-        while (t != 1) {
-            cout << "enter the ID of the persons class you want to change (teacher or student) or write 0 to cancel : ";
-            cin >> newID;
-            int length = to_string(newID).length();
-            if (newID == 0) {
-                sALogin();
-            }
-            if (length == 4) {
-                for (int i = 0; i < vT.size(); i++) {
-                    if (vT[i].ID == newID) {
-                        updateClass(newID, i, vS, vP, vT, AccountType::TEACHER);
-                    }
-                }
-            }
-            else if (length == 6) {
-                for (int i = 0; i < vT.size(); i++) {
-                    if (vS[i].ID == newID) {
-                        updateClass(newID, i, vS, vP, vT, AccountType::STUDENT);
-                    }
-                }
-            }
-            else {
-                system("cls");
-                cout << "invalid ";
-            }
-        }
-
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
-
 }
 
 // General functions

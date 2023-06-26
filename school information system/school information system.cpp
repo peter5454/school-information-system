@@ -476,7 +476,6 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     int child = 0;
     int length = to_string(ID).length();
     string message;
-    std::vector<Students> sVec;
     int locationOfTeacher = 9999;
     int locationOfTeacher2;
     int locationOfTeacher3;
@@ -487,244 +486,281 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
     int c4;
     int choice = 0;
     int choice1 = 0;
-    ifstream sInputFile("students.txt");
-    if (!sInputFile.is_open()) {
-        cout << "Failed to open students.txt" << std::endl;
-        pressEnter();
-        sALogin();
-    }
-    string line;
-    while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
-        istringstream iss(line);
-        string value;
-
-        Students s;
-
-        std::getline(iss, value, ',');
-        s.ID = stoi(value);
-
-        std::getline(iss, s.Name, ',');
-
-        std::getline(iss, s.Password, ',');
-
-        std::getline(iss, s.Address, ',');
-
-        std::getline(iss, value, ',');
-        s.Class = std::stoi(value);
-
-        std::getline(iss, value, ',');
-        s.Grade1 = std::stoi(value);
-
-        std::getline(iss, value, ',');
-        s.Grade2 = std::stoi(value);
-
-        std::getline(iss, value, ',');
-        s.Grade3 = std::stoi(value);
-
-        std::getline(iss, value, ',');
-        s.Grade4 = std::stoi(value);
-
-        std::getline(iss, value, 'n');
-        s.Grade5 = std::stoi(value);
-
-        sVec.push_back(s);
-    }
-    cout << "\tSend Messages" << endl;
-    cout << "*****************************" << endl;
-    if (length == 5) {
-        cout << "1. Admin" << endl << "2. Teacher" << endl <<endl;
-        cout << "Make your pick: ";
-        choice1 = choiceCheck(2);
-        if (choice1 == 1) {
-            system("cls");
-            cout << "Enter a message you want to send to the admin (or leave it blank to cancel): ";
-            cin.ignore();
-            std::getline(cin, message);
-            length = message.length();
-            if (length == 0) {
-                viewMessages(ID, num, vP, vT);
-            }
-            ofstream outputFile("messages.txt", ios_base::app);
-            if (outputFile.is_open()) {
-                outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
-                outputFile.close();
-                viewMessages(ID, num, vP, vT);
-            }
-        }
-        else {
-            if (vP[num].childID2 != 0) {
-                for (int i = 0; i < sVec.size(); i++) {
-                    if (vP[num].childID2 == sVec[i].ID) {
-                        c2 = i;
-                        for (int j = 0; j < vT.size(); j++) {
-                            if (sVec[i].Class == vT[j].Class) {
-                                locationOfTeacher2 = j;
-                                child++;
-                            }
-                        }
-                    }
+    try {
+        vector<Students> sVec = createStudentsVector();
+        cout << "\tSend Messages" << endl;
+        cout << "*****************************" << endl;
+        if (length == 5) {
+            cout << "1. Admin" << endl << "2. Teacher" << endl << endl;
+            cout << "Make your pick: ";
+            choice1 = choiceCheck(2);
+            if (choice1 == 1) {
+                system("cls");
+                cout << "Enter a message you want to send to the admin (or leave it blank to cancel): ";
+                cin.ignore();
+                std::getline(cin, message);
+                length = message.length();
+                if (length == 0) {
+                    viewMessages(ID, num, vP, vT);
+                }
+                ofstream outputFile("messages.txt", ios_base::app);
+                if (outputFile.is_open()) {
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile.close();
+                    viewMessages(ID, num, vP, vT);
                 }
             }
-            if (vP[num].childID3 != 0) {
-                for (int i = 0; i < sVec.size(); i++) {
-                    if (vP[num].childID3 == sVec[i].ID) {
-                        c3 = i;
-                        for (int j = 0; j < vT.size(); j++) {
-                            if (sVec[i].Class == vT[j].Class) {
-                                locationOfTeacher3 = j;
-                                child++;
-                            }
-                        }
-                    }
-                }
-            }
-            if (vP[num].childID4 != 0) {
-                for (int i = 0; i < sVec.size(); i++) {
-                    if (vP[num].childID4 == sVec[i].ID) {
-                        c4 = i;
-                        for (int j = 0; j < vT.size(); j++) {
-                            if (sVec[i].Class == vT[j].Class) {
-                                locationOfTeacher4 = j;
-                                child++;
-                            }
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < sVec.size(); i++) {
-                if (vP[num].childID == sVec[i].ID) {
-                    c1 = i;
-                    for (int j = 0; j < vT.size(); j++) {
-                        if (sVec[i].Class == vT[j].Class) {
-                            locationOfTeacher = j;
-                            child++;
-                        }
-                    }
-                }
-            }
-            system("cls");
-            if (child == 2) {
-                cout << "which teacher do you want to message" << endl;
-                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-                cout << "which ne do you pick : ";
-                choice = choiceCheck(2);
-            }
-            else if (child == 3) {
-                cout << "which teacher do you want to message" << endl;
-                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-                cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
-                cout << "which ne do you pick : ";
-                choice = choiceCheck(3);
-            }
-            else if (child == 4) {
-                cout << "which teacher do you want to message" << endl;
-                cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
-                cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
-                cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
-                cout << "4. " << vT[locationOfTeacher4].Name << ", teacher of child " << sVec[c4].Name << endl;
-                cout << "which ne do you pick : ";
-                choice = choiceCheck(4);
-            }
-            if (choice == 2) {
-                locationOfTeacher = locationOfTeacher2;
-            }
-            else if (choice == 3) {
-                locationOfTeacher = locationOfTeacher3;
-            }
-            else if (choice == 4) {
-                locationOfTeacher = locationOfTeacher4;
-            }
-            if (locationOfTeacher == 9999) {
-                cout << "No children are matched to your account" << endl;
-                pressEnter();
-                viewMessages(ID, num, vP, vT);
-            }
-            system("cls");
-            cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
-            cin.ignore();
-            std::getline(cin, message);
-            length = message.length();
-            if (length == 0) {
-                viewMessages(ID, num, vP, vT);
-            }
-            ofstream outputFile("messages.txt", ios_base::app);
-            if (outputFile.is_open()) {
-                outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
-                outputFile.close();
-                viewMessages(ID, num, vP, vT);
-            }
-        }
-    }
-    else if (length == 4) {
-        int choice;
-        cout << "1. Admin" << endl << "2. Parent" << endl;
-        cout << "Make your pick: ";
-        while (!(cin >> choice) || choice < 1 || choice > 2) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid choice. Please enter a number (1 - 2): ";
-        }
-        if (choice == 1) {
-            system("cls");
-            cout << "Enter a message you want to send the admin (or leave it blank to cancel): ";
-            cin.ignore();
-            std::getline(cin, message);
-            length = message.length();
-            if (length == 0) {
-                viewMessages(ID, num, vP, vT);
-            }
-            ofstream outputFile("messages.txt", ios_base::app);
-            if (outputFile.is_open()) {
-                outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
-                outputFile.close();
-                viewMessages(ID, num, vP, vT);
-            }
-        }
-        else {
-            system("cls");
-            cout << "Send message to parents of your students" << endl;
-            cout << "Enter ID for parent (e.g., 01042) or enter '0' return: ";
-            cin >> pID;
-            if (pID == 0) {
-                viewMessages(ID, num, vP, vT);
-            }
-            while (t == 0) {
-                int temp;
-                int temp2;
-                for (int i = 0; i < vP.size(); i++) {
-                    if (vP[i].ID == pID) {
-                        temp = i;
-                        for (int k = 0; k < sVec.size(); k++) {
-                            if (vP[temp].childID == sVec[k].ID) {
-                                temp2 = k;
-                                for (int j = 0; j < vT.size(); j++) {
-                                    if (sVec[temp2].Class == vT[j].Class)
-                                        r = temp;
-                                    t = 1;
-                                    break;
+            else {
+                if (vP[num].childID2 != 0) {
+                    for (int i = 0; i < sVec.size(); i++) {
+                        if (vP[num].childID2 == sVec[i].ID) {
+                            c2 = i;
+                            for (int j = 0; j < vT.size(); j++) {
+                                if (sVec[i].Class == vT[j].Class) {
+                                    locationOfTeacher2 = j;
+                                    child++;
                                 }
                             }
                         }
                     }
                 }
-
-
-
-
-                if (t == 0) {
-                    system("cls");
-                    cout << "Send message to parents of your students" << endl;
-                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
-                    cin >> pID;
-                    if (pID == 0) {
-                        viewMessages(ID, num, vP, vT);
+                if (vP[num].childID3 != 0) {
+                    for (int i = 0; i < sVec.size(); i++) {
+                        if (vP[num].childID3 == sVec[i].ID) {
+                            c3 = i;
+                            for (int j = 0; j < vT.size(); j++) {
+                                if (sVec[i].Class == vT[j].Class) {
+                                    locationOfTeacher3 = j;
+                                    child++;
+                                }
+                            }
+                        }
                     }
                 }
+                if (vP[num].childID4 != 0) {
+                    for (int i = 0; i < sVec.size(); i++) {
+                        if (vP[num].childID4 == sVec[i].ID) {
+                            c4 = i;
+                            for (int j = 0; j < vT.size(); j++) {
+                                if (sVec[i].Class == vT[j].Class) {
+                                    locationOfTeacher4 = j;
+                                    child++;
+                                }
+                            }
+                        }
+                    }
+                }
+                for (int i = 0; i < sVec.size(); i++) {
+                    if (vP[num].childID == sVec[i].ID) {
+                        c1 = i;
+                        for (int j = 0; j < vT.size(); j++) {
+                            if (sVec[i].Class == vT[j].Class) {
+                                locationOfTeacher = j;
+                                child++;
+                            }
+                        }
+                    }
+                }
+                system("cls");
+                if (child == 2) {
+                    cout << "which teacher do you want to message" << endl;
+                    cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                    cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                    cout << "which ne do you pick : ";
+                    choice = choiceCheck(2);
+                }
+                else if (child == 3) {
+                    cout << "which teacher do you want to message" << endl;
+                    cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                    cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                    cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+                    cout << "which ne do you pick : ";
+                    choice = choiceCheck(3);
+                }
+                else if (child == 4) {
+                    cout << "which teacher do you want to message" << endl;
+                    cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
+                    cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
+                    cout << "3. " << vT[locationOfTeacher3].Name << ", teacher of child " << sVec[c3].Name << endl;
+                    cout << "4. " << vT[locationOfTeacher4].Name << ", teacher of child " << sVec[c4].Name << endl;
+                    cout << "which ne do you pick : ";
+                    choice = choiceCheck(4);
+                }
+                if (choice == 2) {
+                    locationOfTeacher = locationOfTeacher2;
+                }
+                else if (choice == 3) {
+                    locationOfTeacher = locationOfTeacher3;
+                }
+                else if (choice == 4) {
+                    locationOfTeacher = locationOfTeacher4;
+                }
+                if (locationOfTeacher == 9999) {
+                    cout << "No children are matched to your account" << endl;
+                    pressEnter();
+                    viewMessages(ID, num, vP, vT);
+                }
+                system("cls");
+                cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
+                cin.ignore();
+                std::getline(cin, message);
+                length = message.length();
+                if (length == 0) {
+                    viewMessages(ID, num, vP, vT);
+                }
+                ofstream outputFile("messages.txt", ios_base::app);
+                if (outputFile.is_open()) {
+                    outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
+                    outputFile.close();
+                    viewMessages(ID, num, vP, vT);
+                }
             }
+        }
+        else if (length == 4) {
+            int choice;
+            cout << "1. Admin" << endl << "2. Parent" << endl;
+            cout << "Make your pick: ";
+            while (!(cin >> choice) || choice < 1 || choice > 2) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid choice. Please enter a number (1 - 2): ";
+            }
+            if (choice == 1) {
+                system("cls");
+                cout << "Enter a message you want to send the admin (or leave it blank to cancel): ";
+                cin.ignore();
+                std::getline(cin, message);
+                length = message.length();
+                if (length == 0) {
+                    viewMessages(ID, num, vP, vT);
+                }
+                ofstream outputFile("messages.txt", ios_base::app);
+                if (outputFile.is_open()) {
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile.close();
+                    viewMessages(ID, num, vP, vT);
+                }
+            }
+            else {
+                system("cls");
+                cout << "Send message to parents of your students" << endl;
+                cout << "Enter ID for parent (e.g., 01042) or enter '0' return: ";
+                cin >> pID;
+                if (pID == 0) {
+                    viewMessages(ID, num, vP, vT);
+                }
+                while (t == 0) {
+                    int temp;
+                    int temp2;
+                    for (int i = 0; i < vP.size(); i++) {
+                        if (vP[i].ID == pID) {
+                            temp = i;
+                            for (int k = 0; k < sVec.size(); k++) {
+                                if (vP[temp].childID == sVec[k].ID) {
+                                    temp2 = k;
+                                    for (int j = 0; j < vT.size(); j++) {
+                                        if (sVec[temp2].Class == vT[j].Class)
+                                            r = temp;
+                                        t = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
+
+
+                    if (t == 0) {
+                        system("cls");
+                        cout << "Send message to parents of your students" << endl;
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cin >> pID;
+                        if (pID == 0) {
+                            viewMessages(ID, num, vP, vT);
+                        }
+                    }
+                }
+                system("cls");
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+                cin.ignore();
+                std::getline(cin, message);
+                length = message.length();
+                if (length == 0) {
+                    viewMessages(ID, num, vP, vT);
+                }
+                ofstream outputFile("messages.txt", ios_base::app);
+                if (outputFile.is_open()) {
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile.close();
+                    viewMessages(ID, num, vP, vT);
+                }
+            }
+        }
+        else {
+            cout << "Enter ID for parent or teacher you want to talk to: ";
+            cin >> pID;
+            length = to_string(pID).length();
+            if (pID == 0) {
+                viewMessages(ID, num, vP, vT);
+                return;
+            }
+            while (length != 4 && length != 5) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid ID. Please enter another ID: ";
+                cin >> pID;
+                length = to_string(pID).length();
+            }
+
+            do {
+                if (length == 5) {
+                    for (int i = 0; i < vP.size(); i++) {
+                        if (vP[i].ID == pID) {
+                            t++;
+                            r = i;
+                            break;
+                        }
+                    }
+                    if (t == 0) {
+                        system("cls");
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cin >> pID;
+                        length = to_string(pID).length();
+                        if (pID == 0) {
+                            viewMessages(ID, num, vP, vT);
+                            return;
+                        }
+                    }
+                }
+                else if (length == 4) {
+                    for (int i = 0; i < vT.size(); i++) {
+                        if (pID == vT[i].ID) {
+                            t++;
+                            r = i;
+                            break;
+                        }
+                    }
+                    if (t == 0) {
+                        system("cls");
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cin >> pID;
+                        length = to_string(pID).length();
+                        if (pID == 0) {
+                            viewMessages(ID, num, vP, vT);
+                            return;
+                        }
+                    }
+                }
+            } while (t != 1);
             system("cls");
-            cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+            if (length == 5) {
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+            }
+            else {
+                cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): ";
+            }
             cin.ignore();
             std::getline(cin, message);
             length = message.length();
@@ -733,92 +769,19 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
             ofstream outputFile("messages.txt", ios_base::app);
             if (outputFile.is_open()) {
-                outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                if (length == 5) {
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                }
+                else {
+                    outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl;
+                }
                 outputFile.close();
                 viewMessages(ID, num, vP, vT);
             }
         }
     }
-    else {
-        cout << "Enter ID for parent or teacher you want to talk to: ";
-        cin >> pID;
-        length = to_string(pID).length();
-        if (pID == 0) {
-            viewMessages(ID, num, vP, vT);
-            return;
-        }
-        while (length != 4 && length != 5) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "Invalid ID. Please enter another ID: ";
-            cin >> pID;
-            length = to_string(pID).length();
-        }
-
-        do {
-            if (length == 5) {
-                for (int i = 0; i < vP.size(); i++) {
-                    if (vP[i].ID == pID) {
-                        t++;
-                        r = i;
-                        break;
-                    }
-                }
-                if (t == 0) {
-                    system("cls");
-                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
-                    cin >> pID;
-                    length = to_string(pID).length();
-                    if (pID == 0) {
-                        viewMessages(ID, num, vP, vT);
-                        return;
-                    }
-                }
-            }
-            else if (length == 4) {
-                for (int i = 0; i < vT.size(); i++) {
-                    if (pID == vT[i].ID) {
-                        t++;
-                        r = i;
-                        break;
-                    }
-                }
-                if (t == 0) {
-                    system("cls");
-                    cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
-                    cin >> pID;
-                    length = to_string(pID).length();
-                    if (pID == 0) {
-                        viewMessages(ID, num, vP, vT);
-                        return;
-                    }
-                }
-            }
-        } while (t != 1);
-        system("cls");
-        if (length == 5) {
-            cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
-        }
-        else {
-            cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): ";
-        }
-        cin.ignore();
-        std::getline(cin, message);
-        length = message.length();
-        if (length == 0) {
-            viewMessages(ID, num, vP, vT);
-        }
-        ofstream outputFile("messages.txt", ios_base::app);
-        if (outputFile.is_open()) {
-            if (length == 5) {
-                outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
-            }
-            else {
-                outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl;
-            }
-            outputFile.close();
-            viewMessages(ID, num, vP, vT);
-        }
+    catch (const std::runtime_error& e) {
+        std::cout << "Error: " << e.what() << std::endl;
     }
 }
 void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {

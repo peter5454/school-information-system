@@ -1438,7 +1438,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
         }
     }
-    catch (const std::runtime_error& e) {
+    catch (const std::runtime_error& e) { //if failed to create the student vector
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
@@ -1472,17 +1472,17 @@ void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         }
         for (int i = 0; i < vM.size(); i++) {
             if (ID == vM[i].recipientID && vM[i].isRead == 1) {
-                unreadMessages++;
+                unreadMessages++; //count how many messages that are unread by checking if the unread variable is = to 1 and recipiant id is = to the user id
             }
         }
         system("cls");
-        cout << "You have " << unreadMessages << " new messages" << endl;
+        cout << "You have " << unreadMessages << " new messages" << endl; //outputs how many un read messages
         cout << "1. View Unread messages " << endl << "2. View all recieved Messages" << endl << "3. Send Messages" << endl << "4. View all sent messages " << endl << "5. Go back " << endl << endl;
         cout << "Make your choice : ";
         cin >> choice;
         switch (choice) {
         case 1: {
-            if (unreadMessages == 0) {
+            if (unreadMessages == 0) { //if no unread messages displays it instead of going to function
                 system("cls");
                 cout << "You have no unread Messages!" << endl;
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
@@ -1490,35 +1490,35 @@ void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
                 std::getline(cin, input);
                 viewMessages(ID, p, vP, vT);
             }
-            else {
+            else { // if there are unread mssage goes to function
                 viewUnreadMessages(vM, unreadMessages, ID, p, vP, vT);
             }
             break;
         }
         case 2: {
-            viewReceivedMessages(vM, ID, p, vP, vT);
+            viewReceivedMessages(vM, ID, p, vP, vT); //goes to recieve messages function
             break;
         }
         case 3: {
             system("cls");
-            sendMessages(ID, p, vP, vT);
+            sendMessages(ID, p, vP, vT); //goes to send messages function
             break;
         }
         case 4: {
-            viewSentMessages(vM, ID, p, vP, vT);
+            viewSentMessages(vM, ID, p, vP, vT); //goes to view sent messages function
             break;
         }
 
-        } while (choice != 5)
+        } while (choice != 5) //if choice !=5 it will stay in loop
 
             if (length == 5) {
-                sPLogin(p, vP);
+                sPLogin(p, vP); // if parent it will go to parent login
             }
-            else if (length == 4) {
+            else if (length == 4) { //if teacher it will go to teacher login
                 sTLogin(p, vT);
-            }
+            } 
             else {
-                sALogin();
+                sALogin(); //or it goes to admin login
             }
     }
 }
@@ -1530,13 +1530,14 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
     system("cls");
     cout << "\tUnread Messages" << endl;
     cout << "************************" << endl;
-    for (int i = 0; i < vM.size(); i++) {
-        if (vM[i].recipientID == ID && vM[i].isRead == 1) {
+    for (int i = 0; i < vM.size(); i++) { //for statemet to read all of the messages
+        if (vM[i].recipientID == ID && vM[i].isRead == 1) { // if unread and recipiant id and id matches then it will find the length to find out which file to open 
             length = to_string(vM[i].sentID).length();
+
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //opens teacher vector and if the ids match it will save their name and output
                         break;
                     }
                 }
@@ -1544,23 +1545,23 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
             else if (length == 5) {
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].sentID) {
-                        name = vP[j].Name;
+                        name = vP[j].Name; // same with teacher
                     }
                 }
             }
-            else {
+            else { // if length doesnt = any of thoese it must be admin
                 name = "Admin";
             }
             cout << "Message " << t << " from " << name << ": " << vM[i].message << endl;
             t++;
-            vM[i].isRead = 0;
+            vM[i].isRead = 0; //outputs message and changes the message o read
         }
 
     }
     ofstream file("messages.txt");
     if (file.is_open()) {
         for (int i = 0; i < vM.size(); i++) {
-            file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl;
+            file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl; //write the vector down to the file.
         }
     }
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
@@ -1572,7 +1573,7 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
 }
 void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, vector <Teachers>& vT) {
     int t = 1;
-    string name = "hi";
+    string name;
     string input;
     system("cls");
     int length;
@@ -1587,7 +1588,7 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //same as unread for new messages
                         break;
                     }
                 }
@@ -1608,13 +1609,13 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
         }
     }
     cout << "\nOld Messages : " << endl << endl;
-    for (int i = vM.size() - 1; i > 0; i--) {
+    for (int i = vM.size() - 1; i > 0; i--) { //goes backwards from new to old rather than new to old
         if (vM[i].recipientID == ID) {
             length = to_string(vM[i].sentID).length();
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //saves name after matching id
                         break;
                     }
                 }
@@ -1622,7 +1623,7 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             else if (length == 5) {
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].sentID) {
-                        name = vP[j].Name;
+                        name = vP[j].Name; //saves name after matching id
                         break;
                     }
                 }
@@ -1630,13 +1631,13 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             else {
                 name = "Admin";
             }
-            cout << "Message " << t << " from " << name << ": " << vM[i].message << endl;
+            cout << "Message " << t << " from " << name << ": " << vM[i].message << endl; //uputs message
             t++;
             vM[i].isRead = 0;
         }
     }
     if (t == 0) {
-        cout << "No messages" << endl;
+        cout << "No messages" << endl; //if counter = 0  no messages have been recieved
     }
     ofstream file("messages.txt");
     if (file.is_open()) {
@@ -1661,15 +1662,15 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
     for (int i = 0; i < vM.size(); i++) {
         if (vM[i].sentID == ID && vM[i].isRead == 1) {
             length = to_string(vM[i].recipientID).length();
-            if (length == 4) {
+            if (length == 4) { //if id is a teacher id
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].recipientID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //same as view recieved messages except for this matches the users id with sent id and then locates the recipiant id to get the name 
                         break;
                     }
                 }
             }
-            else if (length == 5) {
+            else if (length == 5) { //if id is a paren id
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].recipientID) {
                         name = vP[j].Name;
@@ -1677,15 +1678,15 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
                 }
             }
             else {
-                name = "Admin";
+                name = "Admin"; //has to be admin if none of the above
             }
-            cout << "Message " << t << " to " << name << ": " << vM[i].message << endl;
+            cout << "Message " << t << " to " << name << ": " << vM[i].message << endl; //outputs messages
             t++;
         }
     }
 
-    if (t == 0) {
-        cout << "No messages" << endl;
+    if (t == 1) {
+        cout << "No messages" << endl; //if t = to what it is initialised as then it ouputs no sent messages
     }
     pressEnter();
     viewMessages(ID, p, vP, vT);

@@ -1350,6 +1350,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     std::string str;
 
     std::cout << "\tUpdating Class or write ""NULL"" to cancel" << std::endl;
+
     placeCursor(screen, 2, 0);
     std::cout << "Class (1-9): ";
     std::getline(std::cin >> std::ws, str);

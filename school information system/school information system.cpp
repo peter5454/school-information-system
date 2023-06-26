@@ -3445,6 +3445,12 @@ void registerNewAccount(const AccountType accountType)
 
         placeCursor(screen, 13, 0);
         std::cout << "Account registered successfully!" << std::endl << std::endl;
+        if (accountType == AccountType::STUDENT || accountType == AccountType::TEACHER) {
+            std::cout << "Please wait while an administrator assigns you to a class." << std::endl;
+        }
+        else if (accountType == AccountType::PARENT) {
+            std::cout << "To link more child ID's to your account, contact the administrator." << std::endl;
+        }
         std::cout << "Press Enter to continue...";
         std::cin.get();
         std::system("cls");

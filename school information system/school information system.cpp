@@ -355,7 +355,7 @@ std::vector<Teachers> createTeachersVector()
 void login(int cUser, static int tries, int correctID)
 {
     string password;
-    int ID;
+    int ID = 0;
     int length;
     system("cls");
     if (tries == 3) {
@@ -1422,8 +1422,9 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
             cin.ignore();
             std::getline(cin, message);
-            length = message.length();
-            if (length == 0) {
+            int length2;
+            length2 = message.length();
+            if (length2 == 0) {
                 viewMessages(ID, num, vP, vT);
             }
             ofstream outputFile("messages.txt", ios_base::app);
@@ -1735,16 +1736,28 @@ void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
 
 void viewReport(int p, vector<Students>& vS) {
     system("cls");
+    int i = 0;
+    float average = 0;
     cout << vS[p].Name << "'s report :" << endl << endl;
     cout << "(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
     for (int grade : {vS[p].Grade1, vS[p].Grade2, vS[p].Grade3, vS[p].Grade4, vS[p].Grade5}) {
         if (grade > -1) {
-            std::cout << grade << " ";
+            if (i == 0) {
+               std::cout << " " << grade << "  ";
+               i++;
+               average += grade;
+            }
+            else {
+                std::cout << "  " << grade << "  ";
+                i++;
+                average += grade;
+            }
         }
         else {
-            std::cout << "none ";
+            std::cout << " none ";
         }
     }
+    cout << "\n\nYour average is : " << average / i;
     cout << endl << endl;
     pressEnter();
     sSLogin(p);

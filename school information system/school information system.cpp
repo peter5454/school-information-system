@@ -1435,7 +1435,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
 void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, bool admin = false)
 {
     std::string newGrade;
-    informationType gradeType = informationType::GRADE1;
+    informationType gradeType;
 
     std::cout << "\tUpdating Grade or write ""NULL"" to cancel" << std::endl;
     placeCursor(screen, 2, 0);
@@ -2153,6 +2153,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 break;
             }
             case 2: {
+                updateGrade();
                 break;
             }
             case 3: {

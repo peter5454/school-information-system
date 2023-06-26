@@ -784,15 +784,15 @@ void tLogin(string password, int ID, int& tries) {
 void aLogin(string password, int ID, int& tries) {
     int cUser = 0;
     Admins admin = readAdmin(); //due to there being 1 admin doesnt need to create a vector
-    if (admin.ID == ID && admin.Password == password) { //if m
+    if (admin.ID == ID && admin.Password == password) { //if admin id an dpasswor dmatch teh id and password which are passed here
         sALogin();
     }
     else if (admin.ID == ID) {
-        cUser = 1;
+        cUser = 1; //if id matches the admin id
 
     }
     tries++;
-    login(cUser, tries, ID);
+    login(cUser, tries, ID); //goes back to login
 }
 
 // Register functions
@@ -802,10 +802,10 @@ void registerAccount()
 
     system("cls");
     cout << "\tRegister New Account" << std::endl;
-    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl;
+    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl; 
     choice = choiceCheck(4);
 
-    switch (choice) {
+    switch (choice) { //switch case for the new account then assign account type based on their input
     case 1: {
         registerNewAccount(AccountType::STUDENT);
         break;
@@ -819,7 +819,7 @@ void registerAccount()
         break;
     }
     case 4: {
-        break;
+        return;
     }
     }
 }
@@ -830,7 +830,7 @@ void registerNewAccount(const AccountType accountType)
     HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
     std::string fileName;
 
-    if (accountType == AccountType::STUDENT) {
+    if (accountType == AccountType::STUDENT) { //which file to open based on the account type which was passed
         std::cout << "\tStudent Registry" << std::endl;
         fileName = "students.txt";
     }
@@ -842,8 +842,7 @@ void registerNewAccount(const AccountType accountType)
         std::cout << "\tParent Registry" << std::endl;
         fileName = "parents.txt";
     }
-    std::cout << "********************************" << std::endl << "Please Enter Your Details";
-
+    std::cout << "********************************" << std::endl << "Please Enter Your Details"; 
     placeCursor(screen, 4, 0);
     std::cout << "NAME" << std::endl;
     std::cout << "First Name:                    Last Name:" << std::endl;
@@ -862,6 +861,7 @@ void registerNewAccount(const AccountType accountType)
 
     placeCursor(screen, 11, 0);
     std::cout << "Password: ";
+    //outputs all mthe fields
 
     // First name input
     placeCursor(screen, 5, 12);
@@ -915,7 +915,7 @@ void registerNewAccount(const AccountType accountType)
         bool isValid = false;
         int childIDInt;
 
-
+        //checks if childID input matches an already existing student
         while (!isValid) {
             std::istringstream(childID) >> childIDInt;
             for (int i : studentIDs) {
@@ -924,6 +924,7 @@ void registerNewAccount(const AccountType accountType)
                     break;
                 }
             }
+            //if it doesn't match wth any
             if (isValid) { break; }
             placeCursor(screen, 13, 0);
             std::cout << "ID does not match any current students. (The input should consist of 6 numbers only)";
@@ -982,7 +983,7 @@ void registerNewAccount(const AccountType accountType)
     std::vector<int> existingIDs;
 
     existingIDs = readExistingIDs(fileName);
-    userID = generateID(existingIDs, accountType);
+    userID = generateID(existingIDs, accountType); //gives the user a unique id
 
     // Open the file in append mode
     std::ofstream outputFile(fileName, std::ios_base::app);
@@ -992,7 +993,7 @@ void registerNewAccount(const AccountType accountType)
     {
         // Write the account information to the file
         if (accountType == AccountType::STUDENT) {
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << ",0,-1,-1,-1,-1,-1" << std::endl;
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << ",0,-1,-1,-1,-1,-1" << std::endl; 
         }
         else if (accountType == AccountType::TEACHER) {
             outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << ",0" << std::endl;
@@ -1021,27 +1022,24 @@ void registerNewAccount(const AccountType accountType)
     {
         std::system("cls");
         std::cout << "Error opening the file." << std::endl << std::endl;
-        std::cout << "Press Enter to continue...";
-        std::cin.get();
-        std::system("cls");
-
+        pressEnter();
     }
 }
 int generateID(const std::vector<int>& existingIDs, const AccountType accountType)
 {
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand(static_cast<unsigned int>(time(nullptr))); //intiate random
     int userID = 0;
     bool idExists;
 
     do {
         if (accountType == AccountType::STUDENT) {
-            userID = rand() % 900000 + 100000;
+            userID = rand() % 900000 + 100000; //gets a random 6 digit number
         }
         else if (accountType == AccountType::TEACHER) {
-            userID = rand() % 9000 + 1000;
+            userID = rand() % 9000 + 1000; //gets a random 5 digit number
         }
         else if (accountType == AccountType::PARENT) {
-            userID = rand() % 90000 + 10000;
+            userID = rand() % 90000 + 10000; //gets a random 4 digit number
         }
         // Check if the generated ID already exists
         idExists = false;
@@ -1062,30 +1060,30 @@ void news(static int tries)
     std::system("cls");
     std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
     if (isFileEmpty("news.txt")) {
-        std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
+        std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;// incase the file is empty
     }
     try {
         std::vector<std::string> news = readFile("news.txt");
         for (const auto& line : news) {
-            std::cout << line << std::endl;
+            std::cout << line << std::endl; //outputs the lines in the file one at a time and ends it after
         }
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
     pressEnter();
-    mainMenu(tries);
+    mainMenu(tries); // passes tries back to main menu
 }
 bool isFileEmpty(const std::string& filename) {
     std::ifstream inputFile(filename);
     if (!inputFile.is_open()) {
-        std::cout << "Failed to open file for reading.";
+        std::cout << "Failed to open file for reading."; 
     }
 
     std::string line;
     std::getline(inputFile, line);
 
-    bool isEmpty = inputFile.eof();
+    bool isEmpty = inputFile.eof(); //checks if file is empty and if so returns false
 
     inputFile.close();
     return isEmpty;
@@ -1098,7 +1096,7 @@ std::vector<std::string> readFile(const std::string& filename) {
     std::vector<std::string> content;
     std::string line;
     while (std::getline(inputFile, line)) {
-        content.push_back(line);
+        content.push_back(line); //simply gets the information and applies it to a vector string
     }
 
     inputFile.close();
@@ -1113,7 +1111,7 @@ void saveToFile(const std::string& filename, const std::vector<std::string>& con
     }
 
     for (const auto& line : content) {
-        outputFile << line << '\n';
+        outputFile << line << '\n'; //saves a string to the file
     }
 
     outputFile.close();
@@ -1127,7 +1125,7 @@ void appendToFile(const std::string& filename, const std::string& content)
         return;
     }
 
-    outputFile << content << '\n';
+    outputFile << content << '\n'; //instead of saving to the file it adds a new line and saves to that
 
     outputFile.close();
     std::cout << "Content appended to file." << std::endl;
@@ -1700,9 +1698,9 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
 // Class/report functions
 void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
     system("cls");
-    int t = 0;
+    int t = 0; //counter
     try {
-        if (int length = to_string(ID).length() == 4) {
+        if (int length = to_string(ID).length() == 4) { //since this is used by teachers and students checks if a teacher is using it
             cout << "Your class : " << endl;
             for (int i = 0; i < vS.size(); i++) {
                 if (vS[i].Class == vT[num].Class) {
@@ -1718,7 +1716,7 @@ void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
             sTLogin(num, vT);
         }
         else {
-            cout << "Your classmates : " << endl;
+            cout << "Your classmates : " << endl; //if a student opens the function simply finds other students with same class and outputs them
             for (int i = 0; i < vS.size(); i++) {
                 if (vS[i].Class == vS[num].Class && num != i) {
                     t++;
@@ -1774,7 +1772,7 @@ void viewReportAdmin() {
         if (sClass == (lastValue + 1)) {
             std::system("cls");
         }
-        bool validInput = false;
+        bool validInput = false; //checks for valid input
         do {
             for (const int& i : uniqueClasses) {
                 if (i == sClass) {
@@ -1796,7 +1794,7 @@ void viewReportAdmin() {
         std::vector<Students> inClass;
 
         if (sClass == 0) {
-            std::cout << "All Students Not In a Class " << std::endl << std::endl;
+            std::cout << "All Students Not In a Class " << std::endl << std::endl; //if no classes are assigned to students
         }
         else {
             std::cout << "Class " << sClass << std::endl << std::endl;
@@ -1804,10 +1802,10 @@ void viewReportAdmin() {
 
         for (const auto& student : vS) {
             if (student.Class == sClass) {
-                inClass.push_back(student);
+                inClass.push_back(student); //assigns the students which are in the already inputed class
             }
         }
-        std::sort(inClass.begin(), inClass.end(), compareByName);
+        std::sort(inClass.begin(), inClass.end(), compareByName); //sorts them
         cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
         for (int i = 0; i < vS.size(); i++) {
             if (vS[i].Class == sClass) {

@@ -1,2 +1,2 @@
-132245,Good Guy,Password,40 Goodville Place,1,90,-1,-1,-1,-1
-132399,Top of The Class,12345678,22 Gerrity Ave,67,35,-1,-1,-1,-1
+132245,Test student,password,11 Baker St,1,-1,-1,-1,-1,-1
+132399,Top of The Class,12345678,22 Gerrity Ave,1,-1,-1,-1,-1,-1

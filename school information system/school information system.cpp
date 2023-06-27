@@ -88,7 +88,7 @@ enum class informationType
 };
 
 // Function declarations
-void mainMenu();
+void mainMenu(int);
 Admins readAdmin();
 std::vector<Students> createStudentsVector();
 std::vector<Parents> createParentsVector();
@@ -105,7 +105,7 @@ void aLogin(string password, int ID, int& tries);
 void registerAccount();
 void registerNewAccount(const AccountType);
 int generateID(const std::vector<int>&, const AccountType);
-void news();
+void news(int);
 bool isFileEmpty(const std::string& filename);
 std::vector<std::string> readFile(const std::string& filename);
 void saveToFile(const std::string& filename, const std::vector<std::string>& content);
@@ -137,7 +137,6 @@ void viewReportAdmin();
 void manageStudents();
 void manageParents();
 void manageTeachers();
-void manageClass(vector<Parents>& vP, vector<Teachers>& vT);
 bool compareByName(const Students& student1, const Students& student2);
 void pressEnter();
 int choiceCheck(int n);
@@ -150,13 +149,13 @@ void placeCursor(HANDLE screen, int row, int col);
 // Main
 int main()
 {
-    mainMenu();
+    mainMenu(0);
 }
 
 // Function definitions
 
 // Main Menu
-void mainMenu()
+void mainMenu(static int tries)
 {
     try {
         int choice;
@@ -175,7 +174,7 @@ void mainMenu()
 
             switch (choice) {
             case 1: {
-                login(0, 0, 0);
+                login(0, tries, 0);
                 break;
             }
             case 2: {
@@ -183,7 +182,7 @@ void mainMenu()
                 break;
             }
             case 3: {
-                news();
+                news(tries);
                 break;
             }
             }
@@ -359,11 +358,11 @@ void login(int cUser, static int tries, int correctID)
     int ID = 0;
     int length;
     system("cls");
-    if (tries == 3) {
+    if (tries == 3) { //if the user has tried 3 times to log in they will be exited from the system
         cout << "You failed to login 3 times exiting";
         exit(0);
     }
-    else if (cUser == 1) {
+    else if (cUser == 1) { //if they got the id correct but wrong password
         cout << "\tincorrect Password! You have " << 3 - tries << " tries left" << endl << endl;
         placeCursor(screen, 2, 23);
         cout << "Login";
@@ -376,7 +375,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your Password : ";
         cin >> password;
     }
-    else if (tries > 0) {
+    else if (tries > 0) { // if the user entered incorrect id and password
         cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
         placeCursor(screen, 2, 23);
         cout << "Login";
@@ -389,7 +388,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your Password : ";
         cin >> password;
     }
-    else if (tries == 0) {
+    else if (tries == 0) { //initial login arrempt
         placeCursor(screen, 0, 23);
         cout << "Login";
         placeCursor(screen, 1, 5);
@@ -402,7 +401,7 @@ void login(int cUser, static int tries, int correctID)
         cin >> password;
     }
     length = to_string(ID).length();
-    switch (length) {
+    switch (length) { //calls one of the function based the length f the id they inputted 
     case 6: {
         sLogin(password, ID, tries);
         break;
@@ -421,6 +420,12 @@ void login(int cUser, static int tries, int correctID)
     }
     default: {
         tries++;
+        system("cls");
+        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl; // clear screen and output in order to display above the main menu
+        if (3 - tries == 0) {
+            exit(0);
+        }
+        mainMenu(tries); //passes back tries
         break;
     }
     }
@@ -429,18 +434,18 @@ void sSLogin(int p) {
     int choice;
 
     try {
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //sucessful student login creates 2 vectors in order to pass o the respected function if called
         vector<Teachers> vT = createTeachersVector();
         do {
             system("cls");
-            cout << "\t" << "Welcome " << vS[p].Name << "!";
+            cout << "\t" << "Welcome " << vS[p].Name << "!"; //uses p to indicate the name, the only variable passed
             cout << endl << endl;
             cout << "1. View Report" << endl << "2. View Class" << endl << "3. Update Personal Information" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) { //based on choice will call these function which match with the text outputted
             case 1: {
                 viewReport(p, vS);
                 break;
@@ -457,7 +462,7 @@ void sSLogin(int p) {
         } while (choice <= 3);
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -471,18 +476,18 @@ void sPLogin(int p, vector<Parents>& vP) {
     int choice;
     try {
         vector<Teachers> vT = createTeachersVector();
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector();//sucessful parent login creates 2 vectors in order to pass o the respected function if called
         
         do {
             system("cls");
-            cout << "\t" << "Welcome " << vP[p].Name << "!";
+            cout << "\t" << "Welcome " << vP[p].Name << "!";//uses p to indicate the name, the only variable passed
             cout << endl << endl;
             cout << "1. View Your Child's Report" << endl << "2. Messages " << endl << "3. Update Personal Information" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) {//based on choice will call these function which match with the text outputted
             case 1: {
                 viewChildReport(vP[p].ID, p, vP);
                 break;
@@ -499,7 +504,7 @@ void sPLogin(int p, vector<Parents>& vP) {
         } while (choice < 4);
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -514,7 +519,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
 
     try {
         vector<Parents> vP = createParentsVector();
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //creates the other 2 vectors after being passed their own
         
         do {
             system("cls");
@@ -525,7 +530,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
 
             choice = choiceCheck(7);
 
-            switch (choice) {
+            switch (choice) { //7 switch case option
             case 1: {
                 viewClass(p, vT[p].ID, vT, vS);
                 break;
@@ -535,8 +540,8 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 std::cout << "\tUpdating Grades" << std::endl;
                 std::cout << "*****************************" << std::endl << std::endl;
 
-                if (vT[p].Class == 0) {
-                    std::cout << "Wait until administrator assigns you to a class." << std::endl;
+                if (vT[p].Class == 0) { //if the teacher has no class they need to wait for the admin to assign them to one
+                    std::cout << "Wait until administrator assigns you to a class (might need to message them)." << std::endl;
                     pressEnter();
                     break;
                 }
@@ -544,14 +549,14 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 int n = 1;
                 std::vector<Students> inClass;
 
-                std::cout << "Class " << vT[p].Class << std::endl << std::endl;
+                std::cout << "Class " << vT[p].Class << std::endl << std::endl; //outputs their class number
 
                 for (const auto& student : vS) {
                     if (student.Class == vT[p].Class) {
                         inClass.push_back(student);
                     }
                 }
-                std::sort(inClass.begin(), inClass.end(), compareByName);
+                std::sort(inClass.begin(), inClass.end(), compareByName); //gets and sorts all the students in their class
 
                 // Display student info in class
                 std::cout << "Option \t ID \t\t Name \t\t\t(G1) (G2) (G3) (G4) (G5)" << endl;
@@ -560,7 +565,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
                     if (student.Class == vT[p].Class) {
                         std::cout << student.ID << "\t\t " << student.Name;
                         if (student.Name.length() < 15) {
-                            std::cout << "\t\t";
+                            std::cout << "\t\t"; //outputs the students
                         }
                         else {
                             std::cout << "\t";
@@ -660,7 +665,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
         } while (choice <= 5);
         if (choice == 6) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
         else {
             exit(0);
@@ -676,7 +681,7 @@ void sALogin() {
         do {
             Admins admin = readAdmin();
             vector<Teachers> vT = createTeachersVector();
-            vector<Parents> vP = createParentsVector();
+            vector<Parents> vP = createParentsVector(); //creates the vectors
             
             system("cls");
             cout << "\t" << "Welcome " << admin.Name << "!";
@@ -686,7 +691,7 @@ void sALogin() {
 
             choice = choiceCheck(5);
 
-            switch (choice) {
+            switch (choice) { 
             case 1: {
                 std::system("cls");
                 manageSchool(admin.ID, 1, vP, vT);
@@ -701,12 +706,12 @@ void sALogin() {
                 break;
             }
             }
-        } while (choice <= 3);
+        } while (choice <= 3); //while choice != 4 or choice != 5
         if (choice == 4) {
             system("cls");
-            mainMenu();
+            mainMenu(0);
         }
-        else {
+        else { //if choice == 5 (only possible option)
             exit(0);
         }
     }
@@ -717,18 +722,18 @@ void sALogin() {
 void sLogin(string password, int ID, int& tries) {
     int cUser = 0;
     try {
-        vector<Students> vS = createStudentsVector();
+        vector<Students> vS = createStudentsVector(); //creates the vector
 
-        for (int i = 0; i < vS.size(); i++) {
+        for (int i = 0; i < vS.size(); i++) { //checks if id and password match from the whole vector
             if (vS[i].ID == ID && vS[i].Password == password) {
                 sSLogin(i);
             }
             else if (vS[i].ID == ID) {
-                cUser = 1;
+                cUser = 1; //if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID); // goes back to login
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
@@ -737,19 +742,19 @@ void sLogin(string password, int ID, int& tries) {
 void pLogin(string password, int ID, int& tries) {
     int cUser = 0;
     try {
-        vector<Parents> vP = createParentsVector();
+        vector<Parents> vP = createParentsVector(); //creates the vector
 
         for (int i = 0; i < vP.size(); i++) {
-            if (vP[i].ID == ID && vP[i].Password == password) {
+            if (vP[i].ID == ID && vP[i].Password == password) {//checks if id and password match from the whole vector
                 sPLogin(i, vP);
 
             }
             else if (vP[i].ID == ID) {
-                cUser = 1;
+                cUser = 1;//if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID);// goes back to login
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
@@ -759,17 +764,17 @@ void tLogin(string password, int ID, int& tries) {
     int cUser = 0;
 
     try {
-        vector<Teachers> vT = createTeachersVector();
+        vector<Teachers> vT = createTeachersVector();//creates the vector
         for (int i = 0; i < vT.size(); i++) {
-            if (vT[i].ID == ID && vT[i].Password == password) {
+            if (vT[i].ID == ID && vT[i].Password == password) {//checks if id and password match from the whole vector
                 sTLogin(i, vT);
             }
             else if (vT[i].ID == ID) {
-                cUser = 1;
+                cUser = 1;//if only id matched sets cUser to 1
             }
         }
         tries++;
-        login(cUser, tries, ID);
+        login(cUser, tries, ID);// goes back to login
     }
 
     catch (const std::runtime_error& e) {
@@ -778,16 +783,16 @@ void tLogin(string password, int ID, int& tries) {
 }
 void aLogin(string password, int ID, int& tries) {
     int cUser = 0;
-    Admins admin = readAdmin();
-    if (admin.ID == ID && admin.Password == password) {
+    Admins admin = readAdmin(); //due to there being 1 admin doesnt need to create a vector
+    if (admin.ID == ID && admin.Password == password) { //if admin id an dpasswor dmatch teh id and password which are passed here
         sALogin();
     }
     else if (admin.ID == ID) {
-        cUser = 1;
+        cUser = 1; //if id matches the admin id
 
     }
     tries++;
-    login(cUser, tries, ID);
+    login(cUser, tries, ID); //goes back to login
 }
 
 // Register functions
@@ -797,10 +802,10 @@ void registerAccount()
 
     system("cls");
     cout << "\tRegister New Account" << std::endl;
-    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl;
+    cout << "\n1. Register Student\n2. Register Teacher\n3. Register Parent\n4. Cancel" << std::endl; 
     choice = choiceCheck(4);
 
-    switch (choice) {
+    switch (choice) { //switch case for the new account then assign account type based on their input
     case 1: {
         registerNewAccount(AccountType::STUDENT);
         break;
@@ -814,7 +819,7 @@ void registerAccount()
         break;
     }
     case 4: {
-        break;
+        return;
     }
     }
 }
@@ -825,7 +830,7 @@ void registerNewAccount(const AccountType accountType)
     HANDLE screen = GetStdHandle(STD_OUTPUT_HANDLE);
     std::string fileName;
 
-    if (accountType == AccountType::STUDENT) {
+    if (accountType == AccountType::STUDENT) { //which file to open based on the account type which was passed
         std::cout << "\tStudent Registry" << std::endl;
         fileName = "students.txt";
     }
@@ -837,8 +842,7 @@ void registerNewAccount(const AccountType accountType)
         std::cout << "\tParent Registry" << std::endl;
         fileName = "parents.txt";
     }
-    std::cout << "********************************" << std::endl << "Please Enter Your Details";
-
+    std::cout << "********************************" << std::endl << "Please Enter Your Details"; 
     placeCursor(screen, 4, 0);
     std::cout << "NAME" << std::endl;
     std::cout << "First Name:                    Last Name:" << std::endl;
@@ -857,6 +861,7 @@ void registerNewAccount(const AccountType accountType)
 
     placeCursor(screen, 11, 0);
     std::cout << "Password: ";
+    //outputs all mthe fields
 
     // First name input
     placeCursor(screen, 5, 12);
@@ -910,7 +915,7 @@ void registerNewAccount(const AccountType accountType)
         bool isValid = false;
         int childIDInt;
 
-
+        //checks if childID input matches an already existing student
         while (!isValid) {
             std::istringstream(childID) >> childIDInt;
             for (int i : studentIDs) {
@@ -919,6 +924,7 @@ void registerNewAccount(const AccountType accountType)
                     break;
                 }
             }
+            //if it doesn't match wth any
             if (isValid) { break; }
             placeCursor(screen, 13, 0);
             std::cout << "ID does not match any current students. (The input should consist of 6 numbers only)";
@@ -977,7 +983,7 @@ void registerNewAccount(const AccountType accountType)
     std::vector<int> existingIDs;
 
     existingIDs = readExistingIDs(fileName);
-    userID = generateID(existingIDs, accountType);
+    userID = generateID(existingIDs, accountType); //gives the user a unique id
 
     // Open the file in append mode
     std::ofstream outputFile(fileName, std::ios_base::app);
@@ -987,7 +993,7 @@ void registerNewAccount(const AccountType accountType)
     {
         // Write the account information to the file
         if (accountType == AccountType::STUDENT) {
-            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << ",0,-1,-1,-1,-1,-1" << std::endl;
+            outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << ",0,-1,-1,-1,-1,-1" << std::endl; 
         }
         else if (accountType == AccountType::TEACHER) {
             outputFile << userID << "," << fname << " " << lname << "," << password << "," << addressNum << " " << addressName << "," << contactNum << ",0" << std::endl;
@@ -1016,27 +1022,24 @@ void registerNewAccount(const AccountType accountType)
     {
         std::system("cls");
         std::cout << "Error opening the file." << std::endl << std::endl;
-        std::cout << "Press Enter to continue...";
-        std::cin.get();
-        std::system("cls");
-
+        pressEnter();
     }
 }
 int generateID(const std::vector<int>& existingIDs, const AccountType accountType)
 {
-    srand(static_cast<unsigned int>(time(nullptr)));
+    srand(static_cast<unsigned int>(time(nullptr))); //intiate random
     int userID = 0;
     bool idExists;
 
     do {
         if (accountType == AccountType::STUDENT) {
-            userID = rand() % 900000 + 100000;
+            userID = rand() % 900000 + 100000; //gets a random 6 digit number
         }
         else if (accountType == AccountType::TEACHER) {
-            userID = rand() % 9000 + 1000;
+            userID = rand() % 9000 + 1000; //gets a random 5 digit number
         }
         else if (accountType == AccountType::PARENT) {
-            userID = rand() % 90000 + 10000;
+            userID = rand() % 90000 + 10000; //gets a random 4 digit number
         }
         // Check if the generated ID already exists
         idExists = false;
@@ -1052,35 +1055,35 @@ int generateID(const std::vector<int>& existingIDs, const AccountType accountTyp
 }
 
 // Events/News functions
-void news()
+void news(static int tries)
 {
     std::system("cls");
     std::cout << "\tEVENTS & NEWS" << std::endl << std::endl;
     if (isFileEmpty("news.txt")) {
-        std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;
+        std::cout << "There's nothing here yet. Check back later." << std::endl << std::endl;// incase the file is empty
     }
     try {
         std::vector<std::string> news = readFile("news.txt");
         for (const auto& line : news) {
-            std::cout << line << std::endl;
+            std::cout << line << std::endl; //outputs the lines in the file one at a time and ends it after
         }
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
     }
     pressEnter();
-    mainMenu();
+    mainMenu(tries); // passes tries back to main menu
 }
 bool isFileEmpty(const std::string& filename) {
     std::ifstream inputFile(filename);
     if (!inputFile.is_open()) {
-        std::cout << "Failed to open file for reading.";
+        std::cout << "Failed to open file for reading."; 
     }
 
     std::string line;
     std::getline(inputFile, line);
 
-    bool isEmpty = inputFile.eof();
+    bool isEmpty = inputFile.eof(); //checks if file is empty and if so returns false
 
     inputFile.close();
     return isEmpty;
@@ -1093,7 +1096,7 @@ std::vector<std::string> readFile(const std::string& filename) {
     std::vector<std::string> content;
     std::string line;
     while (std::getline(inputFile, line)) {
-        content.push_back(line);
+        content.push_back(line); //simply gets the information and applies it to a vector string
     }
 
     inputFile.close();
@@ -1108,7 +1111,7 @@ void saveToFile(const std::string& filename, const std::vector<std::string>& con
     }
 
     for (const auto& line : content) {
-        outputFile << line << '\n';
+        outputFile << line << '\n'; //saves a string to the file
     }
 
     outputFile.close();
@@ -1122,7 +1125,7 @@ void appendToFile(const std::string& filename, const std::string& content)
         return;
     }
 
-    outputFile << content << '\n';
+    outputFile << content << '\n'; //instead of saving to the file it adds a new line and saves to that
 
     outputFile.close();
     std::cout << "Content appended to file." << std::endl;
@@ -1131,22 +1134,23 @@ void appendToFile(const std::string& filename, const std::string& content)
 // Messaging functions
 void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
 
-    int pID;
+    int pID; //potential ID
     int t = 0;
-    int r = 0;
-    int child = 0;
+    int r = 0; //t and r are counters
+    int child = 0; //how many children the parents have
     int length = to_string(ID).length();
+    int length2;
     string message;
-    int locationOfTeacher = 9999;
+    int locationOfTeacher = 9999;  //initiating the fact that a parent might have 4 different teacher they can send to
     int locationOfTeacher2;
     int locationOfTeacher3;
     int locationOfTeacher4;
     int c1;
     int c2;
     int c3;
-    int c4;
+    int c4; //all 4 children
     int choice = 0;
-    int choice1 = 0;
+    int choice1 = 0; //for 2 choices
     try {
         vector<Students> sVec = createStudentsVector();
         cout << "\tSend Messages" << endl;
@@ -1166,12 +1170,12 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl; // append the data to the file in the format sentID, recipiantID, isRead and the message
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
-            else {
+            else { //if they pick 2 it check how many children they have
                 if (vP[num].childID2 != 0) {
                     for (int i = 0; i < sVec.size(); i++) {
                         if (vP[num].childID2 == sVec[i].ID) {
@@ -1221,9 +1225,9 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                             }
                         }
                     }
-                }
+                } //Above gathers the data and the location of each of their children teachers
                 system("cls");
-                if (child == 2) {
+                if (child == 2) { //allows the parents to pick the teacher they want to send the message to
                     cout << "which teacher do you want to message" << endl;
                     cout << "1. " << vT[locationOfTeacher].Name << ", teacher of child " << sVec[c1].Name << endl;
                     cout << "2. " << vT[locationOfTeacher2].Name << ", teacher of child " << sVec[c2].Name << endl;
@@ -1255,37 +1259,33 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 else if (choice == 4) {
                     locationOfTeacher = locationOfTeacher4;
-                }
+                } // finnaly assigns the value of which teacher they want to send it to
                 if (locationOfTeacher == 9999) {
                     cout << "No children are matched to your account" << endl;
                     pressEnter();
                     viewMessages(ID, num, vP, vT);
                 }
                 system("cls");
-                cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //still need to get teacher id in order to get name for this ouput message
+                cout << "Enter a message you want to " << vT[locationOfTeacher].Name << "send (or leave it blank to cancel) : "; //outputs the name based on which teacher the user choose
                 cin.ignore();
                 std::getline(cin, message);
                 length = message.length();
                 if (length == 0) {
-                    viewMessages(ID, num, vP, vT);
+                    viewMessages(ID, num, vP, vT); //in case the user change their mind on senddng a message
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vT[locationOfTeacher].ID << ',' << 1 << ',' << message << endl; // appends the data to the file
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
         }
-        else if (length == 4) {
+        else if (length == 4) { //If their ID is a teacher ID
             int choice;
             cout << "1. Admin" << endl << "2. Parent" << endl;
             cout << "Make your pick: ";
-            while (!(cin >> choice) || choice < 1 || choice > 2) {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Invalid choice. Please enter a number (1 - 2): ";
-            }
+            choice = choiceCheck(2);
             if (choice == 1) {
                 system("cls");
                 cout << "Enter a message you want to send the admin (or leave it blank to cancel): ";
@@ -1293,11 +1293,11 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 std::getline(cin, message);
                 length = message.length();
                 if (length == 0) {
-                    viewMessages(ID, num, vP, vT);
+                    viewMessages(ID, num, vP, vT); //Incase they change their mind
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << "123" << ',' << 1 << ',' << message << endl; // append to fiel using rcipiant ID 123 because it doesn't change
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
@@ -1314,14 +1314,14 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                     int temp;
                     int temp2;
                     for (int i = 0; i < vP.size(); i++) {
-                        if (vP[i].ID == pID) {
+                        if (vP[i].ID == pID) { // finding parents of students in the users class then checking i their id matches the submited ID
                             temp = i;
                             for (int k = 0; k < sVec.size(); k++) {
                                 if (vP[temp].childID == sVec[k].ID) {
                                     temp2 = k;
                                     for (int j = 0; j < vT.size(); j++) {
                                         if (sVec[temp2].Class == vT[j].Class)
-                                            r = temp;
+                                            r = temp; 
                                         t = 1;
                                         break;
                                     }
@@ -1333,10 +1333,10 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
 
 
 
-                    if (t == 0) {
+                    if (t == 0) { //if the id doesnt match anybody 
                         system("cls");
                         cout << "Send message to parents of your students" << endl;
-                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: "; 
                         cin >> pID;
                         if (pID == 0) {
                             viewMessages(ID, num, vP, vT);
@@ -1344,7 +1344,7 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                     }
                 }
                 system("cls");
-                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): "; //Incase they dont want to send a message
                 cin.ignore();
                 std::getline(cin, message);
                 length = message.length();
@@ -1353,21 +1353,21 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                 }
                 ofstream outputFile("messages.txt", ios_base::app);
                 if (outputFile.is_open()) {
-                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl; // append to the file
                     outputFile.close();
                     viewMessages(ID, num, vP, vT);
                 }
             }
         }
         else {
-            cout << "Enter ID for parent or teacher you want to talk to: ";
+            cout << "Enter ID for parent or teacher you want to talk to: "; //admin functions, Admin can send a message to anybody (not studetns)
             cin >> pID;
             length = to_string(pID).length();
             if (pID == 0) {
                 viewMessages(ID, num, vP, vT);
                 return;
             }
-            while (length != 4 && length != 5) {
+            while (length != 4 && length != 5) { // simple check if the id is matching 4 or 5 digits which is parent or teacher
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "Invalid ID. Please enter another ID: ";
@@ -1376,17 +1376,17 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
 
             do {
-                if (length == 5) {
+                if (length == 5) { // if id is a parent id
                     for (int i = 0; i < vP.size(); i++) {
-                        if (vP[i].ID == pID) {
+                        if (vP[i].ID == pID) { // read the vector for matching potential id
                             t++;
-                            r = i;
+                            r = i; //place is saved and counter is increased by one to tell the system matching id was found
                             break;
                         }
                     }
                     if (t == 0) {
                         system("cls");
-                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
+                        cout << "Number not found." << endl << "Please enter another ID or type '0' to return: "; // in case the counter wasn't increased
                         cin >> pID;
                         length = to_string(pID).length();
                         if (pID == 0) {
@@ -1395,54 +1395,53 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
                         }
                     }
                 }
-                else if (length == 4) {
+                else if (length == 4) { //if id is teacher ID
                     for (int i = 0; i < vT.size(); i++) {
-                        if (pID == vT[i].ID) {
+                        if (pID == vT[i].ID) { //read the vector for potential ID (pID)
                             t++;
-                            r = i;
+                            r = i; // saves the place and increaes the counter to tell the system that a matching ID has been found
                             break;
                         }
                     }
-                    if (t == 0) {
+                    if (t == 0) { //if counter has increased
                         system("cls");
                         cout << "Number not found." << endl << "Please enter another ID or type '0' to return: ";
                         cin >> pID;
                         length = to_string(pID).length();
                         if (pID == 0) {
-                            viewMessages(ID, num, vP, vT);
-                            return;
+                            viewMessages(ID, num, vP, vT); // exits
                         }
                     }
                 }
-            } while (t != 1);
+            } while (t != 1); // while counter hasn't increased
             system("cls");
-            if (length == 5) {
-                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): ";
+            if (length == 5) { // if id is parent
+                cout << "Enter a message you want to send to " << vP[r].Name << "(or leave it blank to cancel): "; //output parent name
             }
             else {
-                cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): ";
+                cout << "Enter a message you want to send to " << vT[r].Name << " (or leave it blank to cancel): "; // output teacher name
             }
             cin.ignore();
             std::getline(cin, message);
-            int length2;
+
             length2 = message.length();
             if (length2 == 0) {
-                viewMessages(ID, num, vP, vT);
+                viewMessages(ID, num, vP, vT); //in case the user changes their mind
             }
             ofstream outputFile("messages.txt", ios_base::app);
             if (outputFile.is_open()) {
                 if (length == 5) {
-                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vP[r].ID << ',' << 1 << ',' << message << endl; //output parent ID to the file
                 }
                 else {
-                    outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl;
+                    outputFile << ID << ',' << vT[r].ID << ',' << 1 << ',' << message << endl; //append teachere id to the file
                 }
                 outputFile.close();
                 viewMessages(ID, num, vP, vT);
             }
         }
     }
-    catch (const std::runtime_error& e) {
+    catch (const std::runtime_error& e) { //if failed to create the student vector
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
@@ -1476,17 +1475,17 @@ void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         }
         for (int i = 0; i < vM.size(); i++) {
             if (ID == vM[i].recipientID && vM[i].isRead == 1) {
-                unreadMessages++;
+                unreadMessages++; //count how many messages that are unread by checking if the unread variable is = to 1 and recipiant id is = to the user id
             }
         }
         system("cls");
-        cout << "You have " << unreadMessages << " new messages" << endl;
+        cout << "You have " << unreadMessages << " new messages" << endl; //outputs how many un read messages
         cout << "1. View Unread messages " << endl << "2. View all recieved Messages" << endl << "3. Send Messages" << endl << "4. View all sent messages " << endl << "5. Go back " << endl << endl;
         cout << "Make your choice : ";
         cin >> choice;
         switch (choice) {
         case 1: {
-            if (unreadMessages == 0) {
+            if (unreadMessages == 0) { //if no unread messages displays it instead of going to function
                 system("cls");
                 cout << "You have no unread Messages!" << endl;
                 cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
@@ -1494,35 +1493,35 @@ void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
                 std::getline(cin, input);
                 viewMessages(ID, p, vP, vT);
             }
-            else {
+            else { // if there are unread mssage goes to function
                 viewUnreadMessages(vM, unreadMessages, ID, p, vP, vT);
             }
             break;
         }
         case 2: {
-            viewReceivedMessages(vM, ID, p, vP, vT);
+            viewReceivedMessages(vM, ID, p, vP, vT); //goes to recieve messages function
             break;
         }
         case 3: {
             system("cls");
-            sendMessages(ID, p, vP, vT);
+            sendMessages(ID, p, vP, vT); //goes to send messages function
             break;
         }
         case 4: {
-            viewSentMessages(vM, ID, p, vP, vT);
+            viewSentMessages(vM, ID, p, vP, vT); //goes to view sent messages function
             break;
         }
 
-        } while (choice != 5)
+        } while (choice != 5) //if choice !=5 it will stay in loop
 
             if (length == 5) {
-                sPLogin(p, vP);
+                sPLogin(p, vP); // if parent it will go to parent login
             }
-            else if (length == 4) {
+            else if (length == 4) { //if teacher it will go to teacher login
                 sTLogin(p, vT);
-            }
+            } 
             else {
-                sALogin();
+                sALogin(); //or it goes to admin login
             }
     }
 }
@@ -1534,13 +1533,14 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
     system("cls");
     cout << "\tUnread Messages" << endl;
     cout << "************************" << endl;
-    for (int i = 0; i < vM.size(); i++) {
-        if (vM[i].recipientID == ID && vM[i].isRead == 1) {
+    for (int i = 0; i < vM.size(); i++) { //for statemet to read all of the messages
+        if (vM[i].recipientID == ID && vM[i].isRead == 1) { // if unread and recipiant id and id matches then it will find the length to find out which file to open 
             length = to_string(vM[i].sentID).length();
+
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //opens teacher vector and if the ids match it will save their name and output
                         break;
                     }
                 }
@@ -1548,23 +1548,23 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
             else if (length == 5) {
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].sentID) {
-                        name = vP[j].Name;
+                        name = vP[j].Name; // same with teacher
                     }
                 }
             }
-            else {
+            else { // if length doesnt = any of thoese it must be admin
                 name = "Admin";
             }
             cout << "Message " << t << " from " << name << ": " << vM[i].message << endl;
             t++;
-            vM[i].isRead = 0;
+            vM[i].isRead = 0; //outputs message and changes the message o read
         }
 
     }
     ofstream file("messages.txt");
     if (file.is_open()) {
         for (int i = 0; i < vM.size(); i++) {
-            file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl;
+            file << vM[i].sentID << ',' << vM[i].recipientID << ',' << vM[i].isRead << ',' << vM[i].message << std::endl; //write the vector down to the file.
         }
     }
     cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore the remaining input
@@ -1576,7 +1576,7 @@ void viewUnreadMessages(vector<Messages>& vM, int unreadMessages, int ID, int p,
 }
 void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, vector <Teachers>& vT) {
     int t = 1;
-    string name = "hi";
+    string name;
     string input;
     system("cls");
     int length;
@@ -1591,7 +1591,7 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //same as unread for new messages
                         break;
                     }
                 }
@@ -1612,13 +1612,13 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
         }
     }
     cout << "\nOld Messages : " << endl << endl;
-    for (int i = vM.size() - 1; i > 0; i--) {
+    for (int i = vM.size() - 1; i > 0; i--) { //goes backwards from new to old rather than new to old
         if (vM[i].recipientID == ID) {
             length = to_string(vM[i].sentID).length();
             if (length == 4) {
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].sentID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //saves name after matching id
                         break;
                     }
                 }
@@ -1626,7 +1626,7 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             else if (length == 5) {
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].sentID) {
-                        name = vP[j].Name;
+                        name = vP[j].Name; //saves name after matching id
                         break;
                     }
                 }
@@ -1634,13 +1634,13 @@ void viewReceivedMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& 
             else {
                 name = "Admin";
             }
-            cout << "Message " << t << " from " << name << ": " << vM[i].message << endl;
+            cout << "Message " << t << " from " << name << ": " << vM[i].message << endl; //uputs message
             t++;
             vM[i].isRead = 0;
         }
     }
     if (t == 0) {
-        cout << "No messages" << endl;
+        cout << "No messages" << endl; //if counter = 0  no messages have been recieved
     }
     ofstream file("messages.txt");
     if (file.is_open()) {
@@ -1665,15 +1665,15 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
     for (int i = 0; i < vM.size(); i++) {
         if (vM[i].sentID == ID && vM[i].isRead == 1) {
             length = to_string(vM[i].recipientID).length();
-            if (length == 4) {
+            if (length == 4) { //if id is a teacher id
                 for (int j = 0; j < vT.size(); j++) {
                     if (vT[j].ID == vM[i].recipientID) {
-                        name = vT[j].Name;
+                        name = vT[j].Name; //same as view recieved messages except for this matches the users id with sent id and then locates the recipiant id to get the name 
                         break;
                     }
                 }
             }
-            else if (length == 5) {
+            else if (length == 5) { //if id is a paren id
                 for (int j = 0; j < vP.size(); j++) {
                     if (vP[j].ID == vM[i].recipientID) {
                         name = vP[j].Name;
@@ -1681,15 +1681,15 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
                 }
             }
             else {
-                name = "Admin";
+                name = "Admin"; //has to be admin if none of the above
             }
-            cout << "Message " << t << " to " << name << ": " << vM[i].message << endl;
+            cout << "Message " << t << " to " << name << ": " << vM[i].message << endl; //outputs messages
             t++;
         }
     }
 
-    if (t == 0) {
-        cout << "No messages" << endl;
+    if (t == 1) {
+        cout << "No messages" << endl; //if t = to what it is initialised as then it ouputs no sent messages
     }
     pressEnter();
     viewMessages(ID, p, vP, vT);
@@ -1698,9 +1698,9 @@ void viewSentMessages(vector<Messages>& vM, int ID, int p, vector<Parents>& vP, 
 // Class/report functions
 void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
     system("cls");
-    int t = 0;
+    int t = 0; //counter
     try {
-        if (int length = to_string(ID).length() == 4) {
+        if (int length = to_string(ID).length() == 4) { //since this is used by teachers and students checks if a teacher is using it
             cout << "Your class : " << endl;
             for (int i = 0; i < vS.size(); i++) {
                 if (vS[i].Class == vT[num].Class) {
@@ -1716,7 +1716,7 @@ void viewClass(int num, int ID, vector<Teachers>& vT, vector<Students>& vS) {
             sTLogin(num, vT);
         }
         else {
-            cout << "Your classmates : " << endl;
+            cout << "Your classmates : " << endl; //if a student opens the function simply finds other students with same class and outputs them
             for (int i = 0; i < vS.size(); i++) {
                 if (vS[i].Class == vS[num].Class && num != i) {
                     t++;
@@ -1772,7 +1772,7 @@ void viewReportAdmin() {
         if (sClass == (lastValue + 1)) {
             std::system("cls");
         }
-        bool validInput = false;
+        bool validInput = false; //checks for valid input
         do {
             for (const int& i : uniqueClasses) {
                 if (i == sClass) {
@@ -1794,7 +1794,7 @@ void viewReportAdmin() {
         std::vector<Students> inClass;
 
         if (sClass == 0) {
-            std::cout << "All Students Not In a Class " << std::endl << std::endl;
+            std::cout << "All Students Not In a Class " << std::endl << std::endl; //if no classes are assigned to students
         }
         else {
             std::cout << "Class " << sClass << std::endl << std::endl;
@@ -1802,10 +1802,10 @@ void viewReportAdmin() {
 
         for (const auto& student : vS) {
             if (student.Class == sClass) {
-                inClass.push_back(student);
+                inClass.push_back(student); //assigns the students which are in the already inputed class
             }
         }
-        std::sort(inClass.begin(), inClass.end(), compareByName);
+        std::sort(inClass.begin(), inClass.end(), compareByName); //sorts them
         cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
         for (int i = 0; i < vS.size(); i++) {
             if (vS[i].Class == sClass) {
@@ -3244,10 +3244,10 @@ bool compareByName(const Students& student1, const Students& student2)
 void pressEnter()
 {
 
-    std::cout << "Press Enter(or twice) to continue...";
+    std::cout << "Press Enter(or twice) to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cin.get();
-    std::system("cls");
+    std::cin.get(); //gets the input
+    std::system("cls"); //clear screen
 }
 // Function to perform numeric range check for choices
 int choiceCheck(int n)

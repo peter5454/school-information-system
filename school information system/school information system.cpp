@@ -120,23 +120,23 @@ void viewReport(int p, vector<Students>& vS);
 void viewChildReport(int ID, int num, vector<Parents>& vP);
 void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS);
 void updatePersonalInformation(int ID, int p, const AccountType accountType, bool admin = false);
-void sChangeInformation(const informationType informationType, int ID, int p, vector<Students>& vS, vector<Teachers>& vT, string output);
-void pChangeInformation(const informationType informationType, int ID, int p, vector<Parents>& vP, string output);
-void tChangeInformation(const informationType informationType, int ID, int p, vector<Teachers>& vT, string output);
+void sChangeInformation(vector<Students>& vS);
+void pChangeInformation(vector<Parents>& vP);
+void tChangeInformation(vector<Teachers>& vT);
 void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
-void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, const informationType& gradeType);
+void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, const int gradeType);
 void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
-void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT);
+void manageSchool(int ID, int p, vector<Students>& vS, vector<Parents>& vP, vector<Teachers>& vT);
 void manageSchoolInformation();
 void viewReportAdmin();
-void manageStudents();
-void manageParents();
-void manageTeachers();
+void manageStudents(vector<Students>& vS);
+void manageParents(vector<Parents>& vP);
+void manageTeachers(vector<Teachers>& vT);
 bool compareByName(const Students& student1, const Students& student2);
 void pressEnter();
 int choiceCheck(int n);
@@ -282,7 +282,7 @@ std::vector<Parents> createParentsVector()
     }
     else {
         string line;
-        while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+        while (std::getline(sInputFile, line)) { //Gathers all of the parents names, passwords and IDs then assigns them to their respected variables.
             istringstream iss(line);
             string value;
 
@@ -325,7 +325,7 @@ std::vector<Teachers> createTeachersVector()
         throw std::runtime_error("Failed to open teachers.txt for reading.");
     }
     string line;
-    while (std::getline(sInputFile, line)) { //Gathers all of the students names, passwords and IDs then assigns them to their respected variables.
+    while (std::getline(sInputFile, line)) { //Gathers all of the teachers names, passwords and IDs then assigns them to their respected variables.
         istringstream iss(line);
         string value;
 
@@ -525,7 +525,7 @@ void sTLogin(int p, vector<Teachers>& vT) {
             system("cls");
             cout << "\t" << "Welcome " << vT[p].Name << "!";
             cout << endl << endl;
-            cout << "1. View Class" << endl << "2. Update Student Grades" << endl << "3. View Reports " << endl << "4. Update Personal Information " << endl << "5. Messages" << endl << "6. Logout" << endl << "7. Exit" << endl << endl;
+            cout << "1. View Class" << endl << "2. Update Student Grades" << endl << "3. View Class Report " << endl << "4. Update Personal Information " << endl << "5. Messages" << endl << "6. Logout" << endl << "7. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(7);
@@ -620,27 +620,27 @@ void sTLogin(int p, vector<Teachers>& vT) {
                 switch (choice2) {
                 case 1: {
                     std::system("cls");
-                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, informationType::GRADE1);
+                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, 1);
                     break;
                 }
                 case 2: {
                     std::system("cls");
-                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, informationType::GRADE2);
+                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, 2);
                     break;
                 }
                 case 3: {
                     std::system("cls");
-                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, informationType::GRADE3);
+                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, 3);
                     break;
                 }
                 case 4: {
                     std::system("cls");
-                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, informationType::GRADE4);
+                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, 4);
                     break;
                 }
                 case 5: {
                     std::system("cls");
-                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, informationType::GRADE5);
+                    updateGrade(ID, p, vS, vP, vT, AccountType::TEACHER, 5);
                     break;
                 }
                 case 6: {
@@ -680,13 +680,14 @@ void sALogin() {
     try {
         do {
             Admins admin = readAdmin();
-            vector<Teachers> vT = createTeachersVector();
-            vector<Parents> vP = createParentsVector(); //creates the vectors
+            vector<Teachers> vT = createTeachersVector(); // Creates all vectors
+            vector<Parents> vP = createParentsVector();
+            vector<Students> vS = createStudentsVector();
             
             system("cls");
             cout << "\t" << "Welcome " << admin.Name << "!";
             cout << endl << endl;
-            cout << "1. Manage School (school information, students, parents, teachers and class" << endl << "2. Messages" << endl << "3. View Reports" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
+            cout << "1. Manage School (School Information, Students, Parents & Teachers)" << endl << "2. Messages" << endl << "3. View Class Reports" << endl << "4. Logout" << endl << "5. Exit" << endl << endl;
             cout << "Make your choice : ";
 
             choice = choiceCheck(5);
@@ -694,7 +695,7 @@ void sALogin() {
             switch (choice) { 
             case 1: {
                 std::system("cls");
-                manageSchool(admin.ID, 1, vP, vT);
+                manageSchool(admin.ID, 1, vS, vP, vT);
                 break;
             }
             case 2: {
@@ -819,6 +820,7 @@ void registerAccount()
         break;
     }
     case 4: {
+        std::system("cls");
         return;
     }
     }
@@ -1790,7 +1792,7 @@ void viewReportAdmin() {
         std::cout << "\tView reports" << std::endl;
         std::cout << "*********************************" << std::endl << std::endl;
 
-        int n = 1;
+        
         std::vector<Students> inClass;
 
         if (sClass == 0) {
@@ -1809,6 +1811,8 @@ void viewReportAdmin() {
         cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
         for (int i = 0; i < vS.size(); i++) {
             if (vS[i].Class == sClass) {
+                int n = 0;
+                average = 0;
                 t++;
                 cout << t << ". " << vS[i].Name;
                 placeCursor(screen, t + 5, 31);
@@ -1816,12 +1820,18 @@ void viewReportAdmin() {
                     if (grade > -1) {
                         std::cout << "  " << grade << "  ";
                         average += grade;
+                        ++n;
                     }
                     else {
                         std::cout << "  XX  ";
                     }
                 }
-                cout << "  " << average/t << endl;
+                if (n == 0) {
+                    cout << "  XX" << endl;
+                }
+                else {
+                    cout << "  " << average / n << endl;
+                }
             }
         }
 
@@ -1839,28 +1849,26 @@ void viewReport(int p, vector<Students>& vS) {
     int i = 0;
     float average = 0;
     cout << vS[p].Name << "'s report :" << endl << endl;
-    cout << "(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+    cout << " (G1)  (G2)  (G3)  (G4)  (G5)" << endl;
     for (int grade : {vS[p].Grade1, vS[p].Grade2, vS[p].Grade3, vS[p].Grade4, vS[p].Grade5}) {
         if (grade > -1) {
-            if (i == 0) {
-               std::cout << " " << grade << "  ";
-               i++;
-               average += grade;
-            }
-            else {
-                std::cout << "  " << grade << "  ";
-                i++;
-                average += grade;
-            }
+            std::cout << "  " << grade << "  ";
+            i++;
+            average += grade;
         }
         else {
-            std::cout << " none ";
+            std::cout << "  XX  ";
         }
     }
-    cout << "\n\nYour average is : " << average / i;
+    if (i > 0) {
+        cout << "\n\nYour average is : " << average / i;
+    }
+    else {
+        cout << "\n\nNo grades added yet.";
+    }
     cout << endl << endl;
     pressEnter();
-    sSLogin(p);
+    return;
 }
 void viewChildReport(int ID, int num, vector<Parents>& vP) {
     system("cls");
@@ -1923,22 +1931,30 @@ void viewChildReport(int ID, int num, vector<Parents>& vP) {
             }
             t++;
             cout << t << ". " << vS[currentChild].Name;
+            average = 0;
+            int n = 0;
             placeCursor(screen, t + 1, 31);
             for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
                 if (grade > -1) {
                     std::cout << "  " << grade << "  ";
                     average += grade;
+                    ++n;
                 }
                 else {
                     std::cout << "  XX  ";
                 }
             }
-            cout << "  " << average / t << endl;
+            if (n == 0) {
+                cout << "  XX" << endl;
+            }
+            else {
+                cout << "  " << average / n << endl;
+            }
         }
        
         cout << endl << endl;
         pressEnter();
-        sPLogin(num,vP);
+        return;
     }
     catch (const std::runtime_error& e) {
         std::cout << "Error: " << e.what() << std::endl;
@@ -1949,10 +1965,11 @@ void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
     int t = 0;
     int average = 0;
     cout << "Your class: " << endl;
-    cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)" << endl;
+    cout << "Grades: \t\t\t(G1)  (G2)  (G3)  (G4)  (G5)  (AVG)" << endl;
     for (int i = 0; i < vS.size(); i++) {
         if (vS[i].Class == vT[num].Class) {
             t++;
+            int n = 0;
             cout << t << ". " << vS[i].Name;
             placeCursor(screen, t + 1, 31);
             for (int grade : {vS[i].Grade1, vS[i].Grade2, vS[i].Grade3, vS[i].Grade4, vS[i].Grade5}) {
@@ -1964,7 +1981,12 @@ void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
                     std::cout << "  XX  ";
                 }
             }
-            cout << "  " << average / t << endl;
+            if (n > 0) {
+                cout << "  " << average / t << endl;
+            }
+            else {
+                cout << "  XX" << endl;
+            }
         }
     }
 
@@ -1982,6 +2004,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
         std::vector<Students> vS = createStudentsVector();
         std::vector<Parents> vP = createParentsVector();
         std::vector<Teachers> vT = createTeachersVector();
+        Teachers teacher;
         do {
             system("cls");
             std::cout << "\t" << "Which information do you want to change?";
@@ -2067,7 +2090,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
             }
             case 6: {
                 if (admin && accountType == AccountType::STUDENT) {
-                    updateGrade(ID, p, vS, vP, vT, accountType, informationType::GRADE1);
+                    updateGrade(ID, p, vS, vP, vT, accountType, 1);
                 }
                 else if (admin && accountType == AccountType::PARENT) {
                     updateChildID(ID, p, vS, vP, vT, accountType);
@@ -2076,25 +2099,25 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
             }
             case 7: {
                 if (admin && accountType == AccountType::STUDENT) {
-                    updateGrade(ID, p, vS, vP, vT, accountType, informationType::GRADE2);
+                    updateGrade(ID, p, vS, vP, vT, accountType, 2);
                 }
                 break;
             }
             case 8: {
                 if (admin && accountType == AccountType::STUDENT) {
-                    updateGrade(ID, p, vS, vP, vT, accountType, informationType::GRADE3);
+                    updateGrade(ID, p, vS, vP, vT, accountType, 3);
                 }
                 break;
             }
             case 9: {
                 if (admin && accountType == AccountType::STUDENT) {
-                    updateGrade(ID, p, vS, vP, vT, accountType, informationType::GRADE4);
+                    updateGrade(ID, p, vS, vP, vT, accountType, 4);
                 }
                 break;
             }
             case 10: {
                 if (admin && accountType == AccountType::STUDENT) {
-                    updateGrade(ID, p, vS, vP, vT, accountType, informationType::GRADE5);
+                    updateGrade(ID, p, vS, vP, vT, accountType, 5);
                 }
                 break;
             }
@@ -2107,88 +2130,20 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
         std::cout << "Error: " << e.what() << std::endl;
     }
 }
-void sChangeInformation(const informationType informationType, int ID, int p, vector<Students>& vS, vector<Teachers>& vT, string output) {
+void sChangeInformation(vector<Students>& vS) {
     ofstream outputFile("students.txt");
-    system("cls");
     for (int i = 0; i < vS.size(); i++) {
-        if (vS[i].ID == ID) {
-            if (informationType == informationType::ID) {
-                vS[i].ID = std::stoi(output);
-            }
-            else if (informationType == informationType::NAME) {
-                vS[i].Name = output;
-            }
-            else if (informationType == informationType::PASSWORD) {
-                vS[i].Password = output;
-            }
-            else if (informationType == informationType::ADDRESS) {
-                vS[i].Address = output;
-            }
-            else if (informationType == informationType::CLASS) {
-                vS[i].Class = std::stoi(output);
-            }
-            else if (informationType == informationType::GRADE1) {
-                vS[i].Grade1 = std::stoi(output);
-            }
-            else if (informationType == informationType::GRADE2) {
-                vS[i].Grade2 = std::stoi(output);
-            }
-            else if (informationType == informationType::GRADE3) {
-                vS[i].Grade3 = std::stoi(output);
-            }
-            else if (informationType == informationType::GRADE4) {
-                vS[i].Grade4 = std::stoi(output);
-            }
-            else if (informationType == informationType::GRADE5) {
-                vS[i].Grade5 = std::stoi(output);
-            }
-        }
         outputFile << vS[i].ID << "," << vS[i].Name << "," << vS[i].Password << "," << vS[i].Address << "," << vS[i].Class << "," << vS[i].Grade1 << "," << vS[i].Grade2 << "," << vS[i].Grade3 << "," << vS[i].Grade4 << "," << vS[i].Grade5 << endl;
     }
     outputFile.close();
-    cout << "Changes Saved!" << endl << endl;
+    cout << endl << "Changes Saved!" << endl << endl;
     pressEnter();
     return;
 }
-void pChangeInformation(const informationType informationType, int ID, int p, vector<Parents>& vP, string output) {
+void pChangeInformation(vector<Parents>& vP) {
     ofstream outputFile("parents.txt");
     system("cls");
     for (int i = 0; i < vP.size(); i++) {
-        if (vP[i].ID == ID) {
-            if (informationType == informationType::ID) {
-                vP[i].ID = std::stoi(output);
-            }
-            else if (informationType == informationType::NAME) {
-                vP[i].Name = output;
-            }
-            else if (informationType == informationType::PASSWORD) {
-                vP[i].Password = output;
-            }
-            else if (informationType == informationType::NAME) {
-                vP[i].Name = output;
-            }
-            else if (informationType == informationType::PASSWORD) {
-                vP[i].Password = output;
-            }
-            else if (informationType == informationType::ADDRESS) {
-                vP[i].Address = output;
-            }
-            else if (informationType == informationType::CONTACTNUMBER) {
-                vP[i].cNumber = std::stoi(output);
-            }
-            else if (informationType == informationType::CHILDID1) {
-                vP[i].childID = std::stoi(output);
-            }
-            else if (informationType == informationType::CHILDID2) {
-                vP[i].childID2 = std::stoi(output);
-            }
-            else if (informationType == informationType::CHILDID3) {
-                vP[i].childID3 = std::stoi(output);
-            }
-            else if (informationType == informationType::CHILDID4) {
-                vP[i].childID4 = std::stoi(output);
-            }
-        }
         outputFile << vP[i].ID << "," << vP[i].Name << "," << vP[i].Password << "," << vP[i].Address << "," << vP[i].cNumber << "," << vP[i].childID << "," << vP[i].childID2 << "," << vP[i].childID3 << "," << vP[i].childID4 << endl;
     }
     outputFile.close();
@@ -2196,36 +2151,10 @@ void pChangeInformation(const informationType informationType, int ID, int p, ve
     pressEnter();
     return;
 }
-void tChangeInformation(const informationType informationType, int ID, int p, vector<Teachers>& vT, string output) {
+void tChangeInformation(vector<Teachers>& vT) {
     ofstream outputFile("teachers.txt");
     system("cls");
     for (int i = 0; i < vT.size(); i++) {
-        if (vT[i].ID == ID) {
-            if (informationType == informationType::ID) {
-                vT[i].ID = std::stoi(output);
-            }
-            else if (informationType == informationType::NAME) {
-                vT[i].Name = output;
-            }
-            else if (informationType == informationType::PASSWORD) {
-                vT[i].Password = output;
-            }
-            else if (informationType == informationType::NAME) {
-                vT[i].Name = output;
-            }
-            else if (informationType == informationType::PASSWORD) {
-                vT[i].Password = output;
-            }
-            else if (informationType == informationType::ADDRESS) {
-                vT[i].Address = output;
-            }
-            else if (informationType == informationType::CONTACTNUMBER) {
-                vT[i].cNumber = std::stoi(output);
-            }
-            else if (informationType == informationType::CLASS) {
-                vT[i].Class = std::stoi(output);
-            }
-        }
         outputFile << vT[i].ID << "," << vT[i].Name << "," << vT[i].Password << "," << vT[i].Address << "," << vT[i].cNumber << "," << vT[i].Class << endl;
     }
     outputFile.close();
@@ -2287,49 +2216,55 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
     std::cout << std::string(60, ' ');
 
     if (accountType == AccountType::STUDENT) {
-        sChangeInformation(informationType::NAME, ID, p, vS, vT, str);
+        vS[p].Name = str;
+        sChangeInformation(vS);
     }
     else if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::NAME, ID, p, vT, str);
+        vT[p].Name = str;
+        tChangeInformation(vT);
     }
     else if (accountType == AccountType::PARENT) {
-        pChangeInformation(informationType::NAME, ID, p, vP, str);
+        vP[p].Name = str;
+        pChangeInformation(vP);
     }
 }
 void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
 {
-    string str;
+    string newPass;
     placeCursor(screen, 0, 0);
     cout << "Enter a new password must be more than 8 characters or write ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
     cout << "Password: ";
-    std::getline(cin >> ws, str);
+    std::getline(cin >> ws, newPass);
 
-    if (str == "NULL") {
+    if (newPass == "NULL") {
         return;
     }
 
-    while (str.length() < 8) {
+    while (newPass.length() < 8) {
         system("cls");
         placeCursor(screen, 0, 0);
         cout << "Password needs to be at least 8 characters or enter ""NULL"" to cancel. ";
         placeCursor(screen, 2, 0);
         cout << "Password: ";
         placeCursor(screen, 2, 10);
-        std::getline(std::cin >> std::ws, str);
-        if (str == "NULL") {
+        std::getline(std::cin >> std::ws, newPass);
+        if (newPass == "NULL") {
             return;
         }
     }
 
     if (accountType == AccountType::STUDENT) {
-        sChangeInformation(informationType::PASSWORD, ID, p, vS, vT, str);
+        vS[p].Password = newPass;
+        sChangeInformation(vS);
     }
     else if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::PASSWORD, ID, p, vT, str);
+        vT[p].Password = newPass;
+        tChangeInformation(vT);
     }
     else if (accountType == AccountType::PARENT) {
-        pChangeInformation(informationType::PASSWORD, ID, p, vP, str);
+        vP[p].Password = newPass;
+        pChangeInformation(vP);
     }
 
 }
@@ -2382,70 +2317,75 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
     address = adNum + " " + adName;
 
     if (accountType == AccountType::STUDENT) {
-        sChangeInformation(informationType::ADDRESS, ID, p, vS, vT, address);
+        vS[p].Address = address;
+        sChangeInformation(vS);
     }
     else if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::ADDRESS, ID, p, vT, address);
+        vT[p].Address = address;
+        tChangeInformation(vT);
     }
     else if (accountType == AccountType::PARENT) {
-        pChangeInformation(informationType::ADDRESS, ID, p, vP, address);
+        vP[p].Address = address;
+        pChangeInformation(vP);
     }
 
 }
 void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
 {
-    std::string str;
+    std::string newCNum;
     placeCursor(screen, 0, 0);
     cout << "Enter a new Contact Number minimum length of 7 digits or write ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
     cout << "Contact Number: ";
-    std::getline(cin >> ws, str);
-    if (str == "NULL") {
+    std::getline(cin >> ws, newCNum);
+    if (newCNum == "NULL") {
         return;
     }
-    while (!onlyNumbers(str) || str.length() < 7) {
+    while (!onlyNumbers(newCNum) || newCNum.length() < 7) {
         placeCursor(screen, 0, 0);
         cout << "Invalid input. The input should consist of only numbers with a minimum length of 7 digits.";
         placeCursor(screen, 2, 0);
         cout << "Contact Number:                                 ";
         placeCursor(screen, 2, 16);
-        std::getline(std::cin >> std::ws, str);
-        if (str == "NULL") {
+        std::getline(std::cin >> std::ws, newCNum);
+        if (newCNum == "NULL") {
             return;
         }
     }
 
     if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::CONTACTNUMBER, ID, p, vT, str);
+        vT[p].cNumber = std::stoi(newCNum);
+        tChangeInformation(vT);
     }
     else if (accountType == AccountType::PARENT) {
-        pChangeInformation(informationType::CONTACTNUMBER, ID, p, vP, str);
+        vP[p].cNumber = std::stoi(newCNum);
+        pChangeInformation(vP);
     }
 
 }
 void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
 {
-    std::string str;
+    std::string newClass;
 
     std::cout << "\tUpdating Class or write ""NULL"" to cancel" << std::endl;
 
     placeCursor(screen, 2, 0);
     std::cout << "Class (1-9): ";
-    std::getline(std::cin >> std::ws, str);
+    std::getline(std::cin >> std::ws, newClass);
     while (true) {
-        if (str == "NULL") {
+        if (newClass == "NULL") {
             return;
         }
 
-        while (!onlyNumbers(str)) {
+        while (!onlyNumbers(newClass)) {
             placeCursor(screen, 4, 0);
             std::cout << "Invalid class. Please only use a single digit.";
             placeCursor(screen, 2, 0);
             std::cout << "Class (1-9):                          ";
             placeCursor(screen, 2, 12);
-            std::getline(std::cin >> std::ws, str);
+            std::getline(std::cin >> std::ws, newClass);
 
-            if (str == "NULL") {
+            if (newClass == "NULL") {
                 return;
             }
         }
@@ -2453,7 +2393,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         if (accountType == AccountType::TEACHER) {
             bool validClass = true;
             for (int i = 0; i < vT.size(); i++) {
-                if (vT[i].Class == stoi(str) && i != p) {
+                if (vT[i].Class == stoi(newClass) && i != p) {
                     validClass = false;
                     break;
                 }
@@ -2469,7 +2409,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
             placeCursor(screen, 2, 0);
             std::cout << "Class (1-9):                          ";
             placeCursor(screen, 2, 12);
-            std::getline(std::cin >> std::ws, str);
+            std::getline(std::cin >> std::ws, newClass);
         }
         else {
             break; // Exit the while loop for non-teacher account types
@@ -2479,13 +2419,15 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     std::cout << std::string(60, ' ');
 
     if (accountType == AccountType::STUDENT) {
-        sChangeInformation(informationType::CLASS, ID, p, vS, vT, str);
+        vS[p].Class = std::stoi(newClass);
+        sChangeInformation(vS);
     }
     else if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::CLASS, ID, p, vT, str);
+        vT[p].Class = std::stoi(newClass);
+        tChangeInformation(vT);
     }
 }
-void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, const informationType& gradeType)
+void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType, const int gradeType)
 {
     std::string newGrade;
 
@@ -2512,8 +2454,17 @@ void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
     placeCursor(screen, 4, 0);
     std::cout << std::string(60, ' ');
 
+    int counter = 1;
+    int* grades[] = { &vS[p].Grade1, &vS[p].Grade2, &vS[p].Grade3, &vS[p].Grade4, &vS[p].Grade5 };
 
-    sChangeInformation(gradeType, ID, p, vS, vT, newGrade);
+    for (int* grade : grades) {
+        if (counter == gradeType) {
+            *grade = std::stoi(newGrade);
+            break;
+        }
+        counter++;
+    }
+    sChangeInformation(vS);
 
 }
 void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
@@ -2522,13 +2473,13 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
     int n = 2;
     std::string newCID;
 
-    std::cout << "\tUpdating Child ID" << std::endl;
+    std::cout << "\tUpdating Child ID's" << std::endl;
     
     placeCursor(screen, 2, 0);
     
     std::cout << "0. Cancel" << std::endl;
     std::cout << "1. Add New" << std::endl;
-    std::wcout << "    Or \nDelete:" << std::endl;
+    std::cout << "   Or \nDelete:" << std::endl;
 
     for (int childID : { vP[p].childID, vP[p].childID2, vP[p].childID3, vP[p].childID4 } ) {
         if (std::to_string(childID).length() == 6) {
@@ -2551,13 +2502,16 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         return;
         break;
     }
+    // Add new
     case 1: {
         if (vP[p].childID4 != 0) {
             std::cout << "Sorry, children limit reached." << std::endl;
             pressEnter();
             break;
         }
+        std::system("cls");
         std::cout << "\tAdding new child ID or write ""NULL"" to cancel" << std::endl;
+        std::cout << "Parent Account: " << vP[p].Name << std::endl;
         std::cout << "\nEnter new ID: ";
         std::cin >> newCID;
         if (newCID == "NULL") {
@@ -2566,9 +2520,9 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         // ID number/length validation
         while (!onlyNumbers(newCID) || newCID.length() != 6) {
             std::cout << "Student ID needs to be exactly 6 digits" << std::endl;
-            placeCursor(screen, 2, 0);
+            placeCursor(screen, 3, 0);
             std::cout << "Enter new ID:                           ";
-            placeCursor(screen, 2, 15);
+            placeCursor(screen, 3, 15);
             std::cin >> newCID;
             if (newCID == "NULL") {
                 return;
@@ -2588,40 +2542,27 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
                 }
             }
             if (isValid) { break; }
-            placeCursor(screen, 4, 0);
+            placeCursor(screen, 5, 0);
             std::cout << "ID does not match any current students. (The input should consist of 6 numbers only)";
-            placeCursor(screen, 2, 0);
+            placeCursor(screen, 3, 0);
             std::cout << "Child's Student ID:                ";
-            placeCursor(screen, 2, 15);
+            placeCursor(screen, 3, 15);
             std::cin >> newCID;
         }
         counter = 1;
-        for (int childID : { vP[p].childID, vP[p].childID2, vP[p].childID3, vP[p].childID4 }) {
+        int* cIDs[] = { &vP[p].childID, &vP[p].childID2, &vP[p].childID3, &vP[p].childID4 };
+        for (int* childID : cIDs) {
             if (childID == 0) {
-                childID = std::stoi(newCID);
+                *childID = std::stoi(newCID);
                 break;
             }
-        }
-        if (counter == 1) {
-            cIDType = informationType::CHILDID1;
-
-        }
-        else if (counter == 2) {
-            cIDType = informationType::CHILDID2;
-
-        }
-        else if (counter == 3) {
-            cIDType = informationType::CHILDID3;
-        }
-        else if (counter == 4) {
-            cIDType = informationType::CHILDID4;
+            counter++;
         }
         break;
     }
 
     case 2: {
-        cIDType = informationType::CHILDID1;
-        newCID = "0";
+        vP[p].childID = 0;
         if (vP[p].childID2 == 0) {
             break;
         }
@@ -2634,8 +2575,7 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         break;
     }
     case 3: {
-        cIDType = informationType::CHILDID2;
-        newCID = "0";
+        vP[p].childID2 = 0;
         if (vP[p].childID3 == 0) {
             break;
         }
@@ -2647,8 +2587,7 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         break;
     }
     case 4: {
-        cIDType = informationType::CHILDID3;
-        newCID = "0";
+        vP[p].childID3 = 0;
         if (vP[p].childID4 == 0) {
             break;
         }
@@ -2659,12 +2598,11 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         break;
     }
     case 5: {
-        cIDType = informationType::CHILDID4;
-        newCID = "0";
+        vP[p].childID4 = 0;
         break;
     }
     }
-    sChangeInformation(cIDType, ID, p, vS, vT, newCID);
+    pChangeInformation(vP);
     return;
 }
 void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
@@ -2773,24 +2711,27 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     }
  
     if (accountType == AccountType::STUDENT) {
-        sChangeInformation(informationType::ID, ID, p, vS, vT, newID);
+        vS[p].ID = std::stoi(newID);
+        sChangeInformation(vS);
     }
     else if (accountType == AccountType::TEACHER) {
-        tChangeInformation(informationType::ID, ID, p, vT, newID);
+        vT[p].ID = std::stoi(newID);
+        tChangeInformation(vT);
     }
     else if (accountType == AccountType::PARENT) {
-        pChangeInformation(informationType::ID, ID, p, vP, newID);
+        vP[p].ID = std::stoi(newID);
+        pChangeInformation(vP);
     }
 }
 
 // Admin functions
-void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
+void manageSchool(int ID, int p, vector<Students>& vS, vector<Parents>& vP, vector<Teachers>& vT) {
     int choice;
     do {
         system("cls");
         cout << "\t" << "Manage School ";
         cout << endl << endl;
-        cout << "1. Manage School information" << endl << "2. Manage students" << endl << "3. Manage parents" << endl << "4. Manage teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
+        cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Parents" << endl << "4. Manage Teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
         cout << "Make your choice : ";
 
         choice = choiceCheck(7);
@@ -2803,17 +2744,17 @@ void manageSchool(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
         }
         case 2: {
             std::system("cls");
-            manageStudents();
+            manageStudents(vS);
             break;
         }
         case 3: {
             std::system("cls");
-            manageParents();
+            manageParents(vP);
             break;
         }
         case 4: {
             std::system("cls");
-            manageTeachers();
+            manageTeachers(vT);
             break;
         }
         }
@@ -2938,299 +2879,281 @@ void manageSchoolInformation()
         }
     } while (choice != 4);
 }
-void manageStudents()
+void manageStudents(vector<Students>& vS)
 {
-    // Create vector of all students
-    try {
-        std::vector<Students> vS = createStudentsVector();
+    // Menu for searching students
+    int choice;
+    string sID;
+    int sClass;
+    do {
+        std::cout << "\tManaging Students" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+        std::cout << "1. Search students by ID" << std::endl << "2. Search students by class" << std::endl << "3. Cancel" << std::endl;
+        choice = choiceCheck(3);
 
-        // Menu for searching students
-        int choice;
-        string sID;
-        int sClass;
-        do {
+        switch (choice) {
+        case 1: {
+            // Student ID search
+            vS = createStudentsVector();
+            std::system("cls");
             std::cout << "\tManaging Students" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "1. Search students by ID" << std::endl << "2. Search students by class" << std::endl << "3. Cancel" << std::endl;
-            choice = choiceCheck(3);
-
-            switch (choice) {
-            case 1: {
-                // Student ID search
+            std::cout << "Enter Student ID (or enter \'0\' to cancel): ";
+            std::cin >> sID;
+            if (sID == "0") {
                 std::system("cls");
-                std::cout << "\tManaging Students" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-                std::cout << "Enter Student ID (or enter \'0\' to cancel): ";
-                std::cin >> sID;
-                if (sID == "0") {
-                    std::system("cls");
-                    break;
-                }
-                while (!onlyNumbers(sID) || sID.length() != 6) {
-                    std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
-                    std::cout << "Enter Student ID:";
-                    std::cin >> sID;
-                }
-                // // Get student position from vector of all students by matching ID
-                int p;
-                int counter = 0;
-                for (auto& student : vS) {
-                    if (student.ID == std::stoi(sID)) {
-                        p = counter;
-                    }
-                    counter++;
-                }
-                updatePersonalInformation(std::stoi(sID), p, AccountType::STUDENT, true);
                 break;
             }
-            case 2: {
-                // Student class search
+            while (!onlyNumbers(sID) || sID.length() != 6) {
+                std::cout << "Not a valid Student ID (must contain 6 numbers only)" << std::endl;
+                std::cout << "Enter Student ID:";
+                std::cin >> sID;
+            }
+            // // Get student position from vector of all students by matching ID
+            int p;
+            int counter = 0;
+            for (auto& student : vS) {
+                if (student.ID == std::stoi(sID)) {
+                    p = counter;
+                }
+                counter++;
+            }
+            updatePersonalInformation(std::stoi(sID), p, AccountType::STUDENT, true);
+            break;
+        }
+        case 2: {
+            // Student class search
+            vS = createStudentsVector();
+            std::system("cls");
+            std::cout << "\tManaging Students" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+            std::vector<int> classes;
+            for (const Students& c : vS) {
+                classes.push_back(c.Class);
+            }
+            if (classes.empty()) {
+                std::cout << "No Classes Found." << std::endl;
+                pressEnter();
+                break;
+            }
+            // Get unique class numbers and sort them for display
+            std::set<int> uniqueClasses(classes.begin(), classes.end());
+            std::sort(classes.begin(), classes.end());
+            for (const int& i : uniqueClasses) {
+                if (i == 0) {
+                    std::cout << i << ". New Students (Not in a class)" << std::endl;
+                }
+                else if (i > 0) {
+                    std::cout << i << ". Class " << i << std::endl;
+                }
+            }
+            int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
+            std::cout << lastValue + 1 << ". Cancel" << std::endl;
+            std::cout << std::endl << "Class: ";
+            std::cin >> sClass;
+            if (sClass == (lastValue + 1)) {
                 std::system("cls");
-                std::cout << "\tManaging Students" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-                std::vector<int> classes;
-                for (const Students& c : vS) {
-                    classes.push_back(c.Class);
-                }
-                if (classes.empty()) {
-                    std::cout << "No Classes Found." << std::endl;
-                    pressEnter();
-                    break;
-                }
-                // Get unique class numbers and sort them for display
-                std::set<int> uniqueClasses(classes.begin(), classes.end());
-                std::sort(classes.begin(), classes.end());
+                break;
+            }
+            bool validInput = false;
+            do {
                 for (const int& i : uniqueClasses) {
-                    if (i == 0) {
-                        std::cout << i << ". New Students (Not in a class)" << std::endl;
-                    }
-                    else if (i > 0) {
-                        std::cout << i << ". Class " << i << std::endl;
-                    }
-                }
-                int lastValue = *(--uniqueClasses.end()); // Get last value in unique set
-                std::cout << lastValue + 1 << ". Cancel" << std::endl;
-                std::cout << std::endl << "Class: ";
-                std::cin >> sClass;
-                if (sClass == (lastValue + 1)) {
-                    std::system("cls");
-                    break;
-                }
-                bool validInput = false;
-                do {
-                    for (const int& i : uniqueClasses) {
-                        if (i == sClass) {
-                            validInput = true;
-                            break;
-                        }
-                    }
-                    if (!validInput) {
-                        std::cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
-                        std::cin >> sClass;
-                    }
-                } while (!validInput);
-
-                system("cls");
-                std::cout << "\tManaging Students" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-
-                int n = 1;
-                std::vector<Students> inClass;
-
-                if (sClass == 0) {
-                    std::cout << "All Students Not In a Class " << std::endl << std::endl;
-                }
-                else {
-                    std::cout << "Class " << sClass << std::endl << std::endl;
-                }
-
-                for (const auto& student : vS) {
-                    if (student.Class == sClass) {
-                        inClass.push_back(student);
-                    }
-                }
-                std::sort(inClass.begin(), inClass.end(), compareByName);
-
-                // Display student info in class
-                std::cout << "Option \t ID \t\t Name \t\t\tClass \t\t Address \t\t(G1) (G2) (G3) (G4) (G5)" << endl;
-                for (const auto& student : inClass) {
-                    std::cout << n++ << ".\t";
-                    if (student.Class == sClass) {
-                        std::cout << student.ID << "\t\t " << student.Name;
-                        if (student.Name.length() < 15) {
-                            std::cout << "\t\t";
-                        }
-                        else {
-                            std::cout << "\t";
-                        }
-
-                        std::cout << student.Class << "\t\t " << student.Address;
-                        if (student.Address.length() < 15) {
-                            std::cout << "\t\t";
-                        }
-                        else {
-                            std::cout << "\t";
-                        }
-                        // Loop to print grades
-                        for (int grade : {student.Grade1, student.Grade2, student.Grade3, student.Grade4, student.Grade5}) {
-                            if (grade > -1) {
-                                std::cout << " " << grade << "  ";
-                            }
-                            else {
-                                std::cout << " XX  ";
-                            }
-                        }
-
-                        std::cout << std::endl;
-                    }
-                }
-                std::cout << n << ". Cancel" << std::endl;
-                std::cout << std::endl << std::endl;
-
-                int sChange;
-                std::cout << "Enter student to manage: ";
-
-                sChange = choiceCheck(n);
-                if (sChange == n) {
-                    std::system("cls");
-                    break;
-                }
-                // Get student position from vector of all students by matching ID
-                int ID = inClass[sChange - 1].ID;
-                int p = 0;
-                int counter = 0;
-                for (auto& student : vS) {
-                    if (student.ID == ID) {
-                        p = counter;
+                    if (i == sClass) {
+                        validInput = true;
                         break;
                     }
-                    counter++;
                 }
-                // Pass student to update info function
-                updatePersonalInformation(ID, p, AccountType::STUDENT, true);
-                break;
+                if (!validInput) {
+                    std::cout << "Class " << sClass << " not found.\nPlease enter a valid input: ";
+                    std::cin >> sClass;
+                }
+            } while (!validInput);
+
+            system("cls");
+            std::cout << "\tManaging Students" << std::endl;
+            std::cout << "*********************************" << std::endl << std::endl;
+
+            int n = 1;
+            std::vector<Students> inClass;
+
+            if (sClass == 0) {
+                std::cout << "All Students Not In a Class " << std::endl << std::endl;
             }
-            case 3: {
+            else {
+                std::cout << "Class " << sClass << std::endl << std::endl;
+            }
+
+            for (const auto& student : vS) {
+                if (student.Class == sClass) {
+                    inClass.push_back(student);
+                }
+            }
+            std::sort(inClass.begin(), inClass.end(), compareByName);
+
+            // Display student info in class
+            std::cout << "Option \t ID \t\t Name \t\t\tClass \t\t Address \t\t(G1) (G2) (G3) (G4) (G5)" << endl;
+            for (const auto& student : inClass) {
+                std::cout << n++ << ".\t";
+                if (student.Class == sClass) {
+                    std::cout << student.ID << "\t\t " << student.Name;
+                    if (student.Name.length() < 15) {
+                        std::cout << "\t\t";
+                    }
+                    else {
+                        std::cout << "\t";
+                    }
+
+                    std::cout << student.Class << "\t\t " << student.Address;
+                    if (student.Address.length() < 15) {
+                        std::cout << "\t\t";
+                    }
+                    else {
+                        std::cout << "\t";
+                    }
+                    // Loop to print grades
+                    for (int grade : {student.Grade1, student.Grade2, student.Grade3, student.Grade4, student.Grade5}) {
+                        if (grade > -1) {
+                            std::cout << " " << grade << "  ";
+                        }
+                        else {
+                            std::cout << " XX  ";
+                        }
+                    }
+
+                    std::cout << std::endl;
+                }
+            }
+            std::cout << n << ". Cancel" << std::endl;
+            std::cout << std::endl << std::endl;
+
+            int sChange;
+            std::cout << "Enter student to manage: ";
+
+            sChange = choiceCheck(n);
+            if (sChange == n) {
                 std::system("cls");
                 break;
             }
+            // Get student position from vector of all students by matching ID
+            int ID = inClass[sChange - 1].ID;
+            int p = 0;
+            int counter = 0;
+            for (auto& student : vS) {
+                if (student.ID == ID) {
+                    p = counter;
+                    break;
+                }
+                counter++;
             }
-        } while (choice != 3);
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
+            // Pass student to update info function
+            updatePersonalInformation(ID, p, AccountType::STUDENT, true);
+            break;
+        }
+        case 3: {
+            std::system("cls");
+            break;
+        }
+        }
+    } while (choice != 3);
 }
-void manageParents() {
-    try {
-        std::vector<Parents> vP = createParentsVector();
+void manageParents(vector<Parents>& vP) 
+{
+    // Menu for searching students
+    int choice;
+    string pID;
+    do {
+        std::cout << "\tManaging Parents" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+        std::cout << "1. Search Parents by ID" << std::endl << "2. Cancel" << std::endl;
+        std::cout << "Make your choice : ";
+        choice = choiceCheck(2);
 
-        // Menu for searching students
-        int choice;
-        string pID;
-        do {
+        switch (choice) {
+        case 1: {
+            // Student ID search
+            std::system("cls");
             std::cout << "\tManaging Parents" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "1. Search Parents by ID" << std::endl << "2. Cancel" << std::endl;
-            std::cout << "Make your choice : ";
-            choice = choiceCheck(2);
-
-            switch (choice) {
-            case 1: {
-                // Student ID search
+            std::cout << "Enter Parent ID (or enter \'0\' to cancel): ";
+            std::cin >> pID;
+            if (pID == "0") {
                 std::system("cls");
-                std::cout << "\tManaging Parents" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-                std::cout << "Enter Parent ID (or enter \'0\' to cancel): ";
+                break;
+            }
+            while (!onlyNumbers(pID) || pID.length() != 5) {
+                std::cout << "Not a valid Parent ID (must contain 5 numbers only)" << std::endl;
+                std::cout << "Enter Parent ID:";
                 std::cin >> pID;
-                if (pID == "0") {
-                    std::system("cls");
-                    break;
-                }
-                while (!onlyNumbers(pID) || pID.length() != 5) {
-                    std::cout << "Not a valid Parent ID (must contain 5 numbers only)" << std::endl;
-                    std::cout << "Enter Parent ID:";
-                    std::cin >> pID;
-                }
-                // // Get student position from vector of all students by matching ID
-                int p;
-                int counter = 0;
-                for (auto& Parents : vP) {
-                    if (Parents.ID == std::stoi(pID)) {
-                        p = counter;
-                    }
-                    counter++;
-                }
-                updatePersonalInformation(std::stoi(pID), p, AccountType::PARENT, true);
-                break;
             }
+            // // Get student position from vector of all students by matching ID
+            int p;
+            int counter = 0;
+            for (auto& Parents : vP) {
+                if (Parents.ID == std::stoi(pID)) {
+                    p = counter;
+                }
+                counter++;
+            }
+            updatePersonalInformation(std::stoi(pID), p, AccountType::PARENT, true);
+            break;
+        }
 
-            case 2: {
-                std::system("cls");
-                break;
-            }
-            }
-        } while (choice != 2);
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
+        case 2: {
+            std::system("cls");
+            break;
+        }
+        }
+    } while (choice != 2);
+
 }
-void manageTeachers() {
-    // Create vector of all students
-    try {
-        std::vector<Teachers> vT = createTeachersVector();
+void manageTeachers(vector<Teachers>& vT)
+{
+    // Menu for searching students
+    int choice;
+    string tID;
+    do {
+        std::cout << "\tManaging Teachers" << std::endl;
+        std::cout << "*********************************" << std::endl << std::endl;
+        std::cout << "1. Search Teachers by ID" << std::endl << "2. Cancel" << std::endl;
+        std::cout << "Make your choice : ";
+        choice = choiceCheck(2);
 
-        // Menu for searching students
-        int choice;
-        string tID;
-        do {
+        switch (choice) {
+        case 1: {
+            // Student ID search
+            std::system("cls");
             std::cout << "\tManaging Teachers" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::cout << "1. Search Teachers by ID" << std::endl << "2. Cancel" << std::endl;
-            std::cout << "Make your choice : ";
-            choice = choiceCheck(2);
-
-            switch (choice) {
-            case 1: {
-                // Student ID search
+            std::cout << "Enter Teacher ID (or enter \'0\' to cancel): ";
+            std::cin >> tID;
+            if (tID == "0") {
                 std::system("cls");
-                std::cout << "\tManaging Teachers" << std::endl;
-                std::cout << "*********************************" << std::endl << std::endl;
-                std::cout << "Enter Teacher ID (or enter \'0\' to cancel): ";
+                break;
+            }
+            while (!onlyNumbers(tID) || tID.length() != 4) {
+                std::cout << "Not a valid Teacher ID (must contain 4 numbers only)" << std::endl;
+                std::cout << "Enter Teacher ID:";
                 std::cin >> tID;
-                if (tID == "0") {
-                    std::system("cls");
-                    break;
-                }
-                while (!onlyNumbers(tID) || tID.length() != 4) {
-                    std::cout << "Not a valid Teacher ID (must contain 4 numbers only)" << std::endl;
-                    std::cout << "Enter Teacher ID:";
-                    std::cin >> tID;
-                }
-                // // Get student position from vector of all students by matching ID
-                int p;
-                int counter = 0;
-                for (auto& Teachers : vT) {
-                    if (Teachers.ID == std::stoi(tID)) {
-                        p = counter;
-                    }
-                    counter++;
-                }
-                updatePersonalInformation(std::stoi(tID), p, AccountType::TEACHER, true);
-                break;
             }
+            // // Get student position from vector of all students by matching ID
+            int p;
+            int counter = 0;
+            for (auto& Teachers : vT) {
+                if (Teachers.ID == std::stoi(tID)) {
+                    p = counter;
+                }
+                counter++;
+            }
+            updatePersonalInformation(std::stoi(tID), p, AccountType::TEACHER, true);
+            break;
+        }
 
-            case 2: {
-                std::system("cls");
-                break;
-            }
-            }
-        } while (choice != 2);
-    }
-    catch (const std::runtime_error& e) {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
+        case 2: {
+            std::system("cls");
+            break;
+        }
+        }
+    } while (choice != 2);
 }
 
 // General functions

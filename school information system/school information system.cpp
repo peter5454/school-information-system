@@ -139,7 +139,7 @@ void manageStudents();
 void manageParents();
 void manageTeachers();
 bool compareByName(const Students& student1, const Students& student2);
-void pressEnter();
+void pressEnter(int type = 1);
 int choiceCheck(int n);
 bool isAlphabet(const std::string& input);
 bool containsNumber(const std::string& input);
@@ -2215,7 +2215,7 @@ void sChangeInformation(vector<Students>& vS) {
         }
         outputFile.close();
         std::cout << "\nChanges Saved!" << endl << endl; // outputs changes saved
-        pressEnter();
+        pressEnter(0);
         return;
     }
     catch (const std::runtime_error& e) {
@@ -2237,7 +2237,7 @@ void pChangeInformation(vector<Parents>& vP, bool noPrint) {
         outputFile.close();
         if (!noPrint) { // Doesn't print these when prompted
             std::cout << "\nChanges Saved!" << endl << endl;
-            pressEnter();
+            pressEnter(0);
         }
         return;
     }
@@ -2258,7 +2258,7 @@ void tChangeInformation(vector<Teachers>& vT)/*teacher change information*/ {
         }
         outputFile.close();
         std::cout << "\nChanges Saved!" << endl << endl; //svae changes
-        pressEnter();
+        pressEnter(0);
         return;
     }
     catch (const std::runtime_error& e) {
@@ -2345,17 +2345,19 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
     }
 
     while (newPass.length() < 8) { // minimum 8 characters check
-        system("cls");
-        placeCursor(screen, 0, 0);
+        placeCursor(screen, 4, 0);
         std::cout << "Password needs to be at least 8 characters or enter ""NULL"" to cancel. ";
         placeCursor(screen, 2, 0);
-        std::cout << "Password: ";
+        std::cout << "Password:                   ";
         placeCursor(screen, 2, 10);
         std::getline(std::cin >> std::ws, newPass);
         if (newPass == "NULL") {
             return;
         }
     }
+    placeCursor(screen, 4, 0);
+    std::cout << std::string(80, ' ');
+    placeCursor(screen, 4, 0);
     // change vector and write change to file
     if (accountType == AccountType::STUDENT) {
         vS[p].Password = newPass;
@@ -2385,8 +2387,9 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         return;
     }
     while (!containsNumber(adNum)) { // Invalid input message when the street number doesn't contain a number
-        placeCursor(screen, 0, 0);
-        cout << "Invalid input. Must contain at least one number."; // Prompt user to enter the street name
+        placeCursor(screen, 4, 0);
+        cout << "Invalid input. Must contain at least one number.";
+         // Prompt user to enter the street name
         placeCursor(screen, 2, 0);
         std::cout << "Street Number:          ";
         placeCursor(screen, 2, 15);
@@ -2394,9 +2397,10 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         if (adNum == "NULL") {
             return;
         }
+        
     }
-    placeCursor(screen, 13, 0);
-    std::cout << "                                                   ";
+    placeCursor(screen, 4, 0);
+    std::cout << std::string(80, ' '); // clear error message
 
     // Address name input
     placeCursor(screen, 3, 0);
@@ -2407,7 +2411,7 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
 
     }
     while (!isAlphabet(adName)) {// Invalid name message when the street name contains non-alphabetic characters
-        placeCursor(screen, 0, 0);
+        placeCursor(screen, 5, 0);
         std::cout << "Invalid name. Please only use alphabet characters. ";
         placeCursor(screen, 3, 0);
         std::cout << "Street Name:                                       ";
@@ -2417,6 +2421,9 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
             return;
         }
     }
+    placeCursor(screen, 5, 0);
+    std::cout << std::string(80, ' '); // clear error message
+
     address = adNum + " " + adName; // adds the two strings together with a space in the middle
     //sends user to their respected update information based on account types
     if (accountType == AccountType::STUDENT) {
@@ -2445,7 +2452,7 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
         return;
     }
     while (!onlyNumbers(newCNum) || newCNum.length() < 7) { //if they dont input a value which is all numbers or more than 7 charcters
-        placeCursor(screen, 0, 0);
+        placeCursor(screen, 4, 0);
         std::cout << "Invalid input. The input should consist of only numbers with a minimum length of 7 digits.";
         placeCursor(screen, 2, 0);
         std::cout << "Contact Number:                                 ";
@@ -2455,6 +2462,9 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
             return;
         }
     }
+    placeCursor(screen, 4, 0);
+    std::cout << std::string(80, ' '); // clear error message
+
     //sends the user to their respected change infomation based on account types
     if (accountType == AccountType::TEACHER) {
         vT[p].cNumber = newCNum;
@@ -2518,7 +2528,8 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         }
     }
     placeCursor(screen, 4, 0);
-    std::cout << std::string(60, ' ');
+    std::cout << std::string(60, ' '); // clear error message
+
     //send the user to their respective change information based on the users
     if (accountType == AccountType::STUDENT) {
         vS[p].Class = std::stoi(newClass);
@@ -2554,7 +2565,7 @@ void updateGrade(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
         }
     }
     placeCursor(screen, 4, 0);
-    std::cout << std::string(60, ' ');
+    std::cout << std::string(60, ' '); // clear error message
 
     int counter = 1;
     int* grades[] = { &vS[p].Grade1, &vS[p].Grade2, &vS[p].Grade3, &vS[p].Grade4, &vS[p].Grade5 };
@@ -2573,20 +2584,21 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
 {
     int n = 2;
     std::string newCID;
+    vP = createParentsVector();; // refresh parent vector
 
     std::cout << "\tUpdating Child ID's" << std::endl;
     
     placeCursor(screen, 2, 0);
     
-    std::cout << "0. Cancel" << std::endl;
     std::cout << "1. Add New" << std::endl;
+    std::cout << "2. Cancel" << std::endl;
     std::cout << "   Or \nDelete:" << std::endl;
 
     for (int childID : { vP[p].childID, vP[p].childID2, vP[p].childID3, vP[p].childID4 } ) {
         if (std::to_string(childID).length() == 6) {
             for (const auto& student : vS) {
                 if (student.ID == childID) {
-                    std::cout << n++ << ". Child: " << student.ID << " : " << student.Name << std::endl;
+                    std::cout << ++n << ". Child: " << student.ID << " : " << student.Name << std::endl;
                 }
             }
         }
@@ -2596,13 +2608,8 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
     int counter;
     std::vector<int> studentIDs = readExistingIDs("students.txt");
 
-    // Cancel
     switch (select)
     {
-    case 0: {
-        return;
-        break;
-    }
     // Add new
     case 1: {
         if (vP[p].childID4 != 0) {
@@ -2646,23 +2653,45 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
             placeCursor(screen, 5, 0);
             std::cout << "ID does not match any current students. (The input should consist of 6 numbers only)";
             placeCursor(screen, 3, 0);
-            std::cout << "Child's Student ID:                ";
+            std::cout << "Enter New ID:                     ";
             placeCursor(screen, 3, 15);
             std::cin >> newCID;
         }
+        placeCursor(screen, 5, 0);
+        std::cout << std::string(80, ' '); // clear error message
         counter = 1;
-        int* cIDs[] = { &vP[p].childID, &vP[p].childID2, &vP[p].childID3, &vP[p].childID4 };
-        for (int* childID : cIDs) {
-            if (childID == 0) {
-                *childID = std::stoi(newCID); //updates the ids
+
+        for (int childID : {vP[p].childID, vP[p].childID2, vP[p].childID3, vP[p].childID4}) {
+            if (childID == 0 || childID == stoi(newCID)) {
                 break;
             }
             counter++;
         }
+        if (counter == 1) {
+            vP[p].childID = stoi(newCID);
+            break;
+        }
+        else if (counter == 2) {
+            vP[p].childID2 = stoi(newCID);
+            break;
+        }
+        else if (counter == 3) {
+            vP[p].childID3 = stoi(newCID);
+            break;
+        }
+        else if (counter == 4) {
+            vP[p].childID4 = stoi(newCID);
+            break;
+        }
         break;
     }
-
+    // Cancel
     case 2: {
+        return;
+        break;
+    }
+    // delete childID1
+    case 3: {
         vP[p].childID = 0;
         if (vP[p].childID2 == 0) {
             break;
@@ -2675,7 +2704,8 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         }
         break;
     }
-    case 3: {
+    // delete childID2
+    case 4: {
         vP[p].childID2 = 0;
         if (vP[p].childID3 == 0) {
             break;
@@ -2687,7 +2717,8 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         }
         break;
     }
-    case 4: {
+    // delete childID3
+    case 5: {
         vP[p].childID3 = 0;
         if (vP[p].childID4 == 0) {
             break;
@@ -2698,11 +2729,13 @@ void updateChildID(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         }
         break;
     }
-    case 5: {
+    // delete childID4
+    case 6: {
         vP[p].childID4 = 0;
         break;
     }
     }
+
     pChangeInformation(vP); //goes to this function to output the updated vector in the file
     return;
 }
@@ -3032,9 +3065,7 @@ void manageSchoolInformation()
                 }
                 outputFile.close();
                 std::cout << "Name changed successfully!" << std::endl;
-                std::cout << "Press Enter to continue...";
-                std::cin.get();
-                std::system("cls");
+                pressEnter(0);
                 break;
             }
             else {
@@ -3420,11 +3451,12 @@ bool compareByName(const Students& student1, const Students& student2)
     return student1.Name < student2.Name;
 }
 // Function for 'press enter to continue'
-void pressEnter()
+void pressEnter(int type)
 {
-
     std::cout << "Press Enter(once or twice) to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (type == 1) {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     std::cin.get(); //gets the input
     std::system("cls"); //clear screen
 }

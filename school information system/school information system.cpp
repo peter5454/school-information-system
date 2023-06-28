@@ -3046,7 +3046,7 @@ void manageSchoolInformation()
 
     do {
         std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl;
-        std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Cancel" << std::endl;
+        std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Cancel" << std::endl << endl;
         cout << "Make your pick: ";
         choice = choiceCheck(4);
 
@@ -3058,7 +3058,7 @@ void manageSchoolInformation()
             std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
             std::cout << "New Name or type 'NULL' to exit: ";
             std::getline(std::cin >> std::ws, schName);
-            if (schName == "NULL") {
+            if (schName == "NULL") { //if name is null go back to manage school information
                 manageSchoolInformation();
             } else{
                 admin.SchoolName = schName;
@@ -3077,7 +3077,7 @@ void manageSchoolInformation()
                     outputFile << line << std::endl;
                 }
                 outputFile.close();
-                std::cout << "Name changed successfully!" << std::endl;
+                std::cout << "Name changed successfully!" << std::endl; // outputs name changed succesfully if file is open 
                 pressEnter(0);
                 break;
             }
@@ -3117,7 +3117,7 @@ void manageSchoolInformation()
                     n++;
                 }
                 std::cout << news.size() + 1 << ". Cancel" << std::endl;
-                std::cout << std::endl << "What item do you want to delete? ";
+                std::cout << std::endl << "What item do you want to delete? "; //prompts the user to delete and item
                 toRemove = choiceCheck(news.size() + 1);
                 if (toRemove == news.size() + 1) {
                     std::system("cls");

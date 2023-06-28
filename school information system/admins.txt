@@ -1,1 +1,1 @@
-123,Admin,admin123,regular high school
+123,Admin,admin123,Regular Primary School

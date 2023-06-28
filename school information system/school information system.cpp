@@ -2812,8 +2812,27 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     }
  
     if (accountType == AccountType::STUDENT) {
+        // Update student vector / file
         vS[p].ID = std::stoi(newID);
+        // update child ID from parent vector / file
+        for (Parents& parent : vP) {
+            Parents modifiedParent = parent;  // Make a copy of the parent object
+            if (modifiedParent.childID == ID) {
+                modifiedParent.childID = std::stoi(newID);
+            }
+            if (modifiedParent.childID2 == ID) {
+                modifiedParent.childID2 = std::stoi(newID);
+            }
+            if (modifiedParent.childID3 == ID) {
+                modifiedParent.childID3 = std::stoi(newID);
+            }
+            if (modifiedParent.childID4 == ID) {
+                modifiedParent.childID4 = std::stoi(newID);
+            }
+            parent = modifiedParent;  // Replace the original object with the modified copy
+        }
         sChangeInformation(vS);
+        pChangeInformation(vP);
     }
     else if (accountType == AccountType::TEACHER) {
         vT[p].ID = std::stoi(newID);

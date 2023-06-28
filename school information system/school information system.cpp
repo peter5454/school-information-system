@@ -443,7 +443,8 @@ void login(int cUser, static int tries, int correctID)
     }
     default: {
         system("cls");
-        mainMenu(tries); //passes back tries
+        tries++;
+        login(0,tries,0); //passes back tries
         break;
     }
     }

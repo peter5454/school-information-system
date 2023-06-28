@@ -383,8 +383,12 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your ID : " << correctID;
         ID = correctID;
         placeCursor(screen, 5, 0);
-        cout << "Enter your Password : ";
+        cout << "Enter your Password or '0' to exit : ";
         cin >> password;
+        if (password == "0") {
+            system("cls");
+            mainMenu(tries);
+        }
     }
     else if (tries > 0) { // if the user entered incorrect id and password
         cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl;
@@ -393,8 +397,12 @@ void login(int cUser, static int tries, int correctID)
         placeCursor(screen, 3, 5);
         std::cout << "********************************************";
         placeCursor(screen, 4, 0);
-        cout << "Enter your ID : ";
+        cout << "Enter your ID or 0 to exit: ";
         cin >> ID;
+        if (ID == 0) {
+            system("cls");
+            mainMenu(tries);
+        }
         placeCursor(screen, 5, 0);
         cout << "Enter your Password : ";
         cin >> password;
@@ -405,8 +413,12 @@ void login(int cUser, static int tries, int correctID)
         placeCursor(screen, 1, 5);
         std::cout << "********************************************";
         placeCursor(screen, 2, 0);
-        cout << "Enter your ID : ";
+        cout << "Enter your ID or 0 to exit : ";
         cin >> ID;
+        if (ID == 0) {
+            system("cls");
+            mainMenu(tries);
+        }
         placeCursor(screen, 3, 0);
         cout << "Enter your Password : ";
         cin >> password;
@@ -430,12 +442,7 @@ void login(int cUser, static int tries, int correctID)
         break;
     }
     default: {
-        tries++;
         system("cls");
-        cout << "\tincorrect ID and Password! You have " << 3 - tries << " tries left" << endl << endl; // clear screen and output in order to display above the main menu
-        if (3 - tries == 0) {
-            exit(0);
-        }
         mainMenu(tries); //passes back tries
         break;
     }

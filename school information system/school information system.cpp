@@ -3453,7 +3453,7 @@ bool compareByName(const Students& student1, const Students& student2)
 // Function for 'press enter to continue'
 void pressEnter(int type)
 {
-    std::cout << "Press Enter(once or twice) to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
+    std::cout << "Press Enter to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
     if (type == 1) {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }

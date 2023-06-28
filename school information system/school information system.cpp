@@ -3334,15 +3334,17 @@ void manageParents()
 {
     // Menu for searching parents
     int choice;
+    int p;
+    int counter;
     string pID;
     vector<int> parentIDs = readExistingIDs("parents.txt");
     vector<Parents> vP = createParentsVector();
     do {
         std::cout << "\tManaging Parents" << std::endl;
         std::cout << "*********************************" << std::endl << std::endl;
-        std::cout << "1. Search Parents by ID" << std::endl << "2. Cancel" << std::endl;
+        std::cout << "1. Search Parents by ID" << std::endl << "2. View All" << std::endl << "3. Cancel" << std::endl;
         std::cout << "Make your choice : ";
-        choice = choiceCheck(2);
+        choice = choiceCheck(3);
 
         switch (choice) {
         case 1: {
@@ -3372,8 +3374,7 @@ void manageParents()
                 }
             } while (!onlyNumbers(pID) || pID.length() != 5 || !validID);
             // // Get parent position from vector of all parents by matching ID
-            int p;
-            int counter = 0;
+            counter = 0;
             for (auto& Parents : vP) {
                 if (Parents.ID == std::stoi(pID)) {
                     p = counter;
@@ -3387,10 +3388,19 @@ void manageParents()
 
         case 2: {
             std::system("cls");
+            p = 0;
+            int choice2;
+            std::cout << "Viewing All Parents to Manage" << std::endl << std::endl;
+            for (Parents& parent : vP) {
+                std::cout << p++ + 1 << ". " << parent.Name << std::endl;
+            }
+            std::cout << "\nChoice: ";
+            choice2 = choiceCheck(p);
+            updatePersonalInformation(vP[choice2 - 1].ID, choice2 - 1, AccountType::PARENT, true);
             break;
         }
         }
-    } while (choice != 2);
+    } while (choice != 3);
 
 }
 void manageTeachers()
@@ -3403,9 +3413,9 @@ void manageTeachers()
     do {
         std::cout << "\tManaging Teachers" << std::endl;
         std::cout << "*********************************" << std::endl << std::endl;
-        std::cout << "1. Search Teachers by ID" << std::endl << "2. Cancel" << std::endl;
+        std::cout << "1. Search Teachers by ID" << std::endl << "2. View All" << std::endl << "3. Cancel" << std::endl;
         std::cout << "Make your choice : ";
-        choice = choiceCheck(2);
+        choice = choiceCheck(3);
 
         switch (choice) {
         case 1: {
@@ -3450,10 +3460,19 @@ void manageTeachers()
 
         case 2: {
             std::system("cls");
+            int p = 0;
+            int choice2;
+            std::cout << "Viewing All Teachers to Manage" << std::endl << std::endl;
+            for (Teachers& teacher : vT) {
+                std::cout << p++ + 1 << ". " << teacher.Name << std::endl;
+            }
+            std::cout << "\nChoice: ";
+            choice2 = choiceCheck(p);
+            updatePersonalInformation(vT[choice2 - 1].ID, choice2 - 1, AccountType::TEACHER, true);
             break;
         }
         }
-    } while (choice != 2);
+    } while (choice != 3);
 }
 
 // General functions
@@ -3466,7 +3485,7 @@ bool compareByName(const Students& student1, const Students& student2)
 // Function for 'press enter to continue'
 void pressEnter(int type)
 {
-    std::cout << "Press Enter to continue..."; //asks for input ( bug where you need to press enter twice thats why it is in title)
+    std::cout << "Press Enter to continue..."; //asks for input
     if (type == 1) {
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }

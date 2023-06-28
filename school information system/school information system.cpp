@@ -3054,9 +3054,15 @@ void manageSchoolInformation()
             // Change school name
         case 1: {
             std::system("cls");
+            string schName;
             std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl << std::endl;
-            std::cout << "New Name: ";
-            std::getline(std::cin >> std::ws, admin.SchoolName);
+            std::cout << "New Name or type 'NULL' to exit: ";
+            std::getline(std::cin >> std::ws, schName);
+            if (schName == "NULL") {
+                manageSchoolInformation();
+            } else{
+                admin.SchoolName = schName;
+            }
 
             if (!std::cin.eof()) {
                 std::string newLine = std::to_string(admin.ID) + "," + admin.Name + "," + admin.Password + "," + admin.SchoolName;

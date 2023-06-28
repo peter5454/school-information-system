@@ -444,7 +444,7 @@ void login(int cUser, static int tries, int correctID)
     default: {
         system("cls");
         tries++;
-        login(0,tries,0); //passes back tries
+        login(0,tries,0); //goes back to login
         break;
     }
     }

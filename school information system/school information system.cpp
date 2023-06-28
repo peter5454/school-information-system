@@ -386,6 +386,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your Password or '0' to exit : ";
         cin >> password;
         if (password == "0") {
+            system("cls");
             mainMenu(tries);
         }
     }

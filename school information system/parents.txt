@@ -6,7 +6,7 @@
 31555,ex re,olpkfdsfsd,09 asd,3213213,113587,113587,113587,113587
 32567,wowee hurah,afadfljdsfsd,2331s df,1234123,113587,113587,113587,113587
 32714,adfslj adsd,alskddfpo,12 asdf,1234123,113587,113587,113587,113587
-21708,Harry Jones,password12345,67 Parish St,123456,109168,109168,109168,109168
+21708,Harry Jones,password12345,67 Parish St,123456,109168,109168,109168,0
 37577,Matt Mann,mypassword,12 Grey Street,902100,132245,0,0,0
 13951,Perry Whitebottom,perryonwills,63 Willsworth Way,21056789,0,0,0,0
 15800,Steve McQueen,mypassword,12d Pleasant Way,800900,116789,0,0,0

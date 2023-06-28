@@ -2025,24 +2025,47 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
             std::cout << "User: " << vS[p].ID << std::endl << std::endl;
             std::cout << "Name: " << vS[p].Name << std::endl;
             std::cout << "Password: " << vS[p].Password << std::endl;
-            std::cout << "Address: " << vS[p].Address << std::endl << std::endl;
+            std::cout << "Address: " << vS[p].Address << std::endl;
+            if (admin) {
+                std::cout << "Class: " << vS[p].Class << std::endl;
+                n = 1;
+                for (int grade : {vS[p].Grade1, vS[p].Grade2, vS[p].Grade3, vS[p].Grade4, vS[p].Grade5 }) {
+                    if (grade > -1) {
+                        std::cout << "Grade " << n++ << ": " << grade << std::endl;
+                    }
+                    else {
+                        std::cout << "Grade " << n++ << ": " << "XX" << std::endl;
+                    }
+                }
+            }
         }
         else if (accountType == AccountType::PARENT) {
             std::cout << "User: " << vP[p].ID << std::endl << std::endl;
             std::cout << "Name: " << vP[p].Name << std::endl;
             std::cout << "Password: " << vP[p].Password << std::endl;
             std::cout << "Address: " << vP[p].Address << std::endl;
-            std::cout << "Contact Number: " << vP[p].cNumber << std::endl << std::endl;
+            std::cout << "Contact Number: " << vP[p].cNumber << std::endl;
+            if (admin) {
+                n = 1;
+                for (int ID : {vP[p].childID, vP[p].childID2, vP[p].childID3, vP[p].childID4 }) {
+                    if (ID > 0) {
+                        std::cout << "Child ID " << n++ << ": " << ID << std::endl;
+                    }
+                }
+            }
         }
         else if (accountType == AccountType::TEACHER) {
             std::cout << "User: " << vT[p].ID << std::endl << std::endl;
             std::cout << "Name: " << vT[p].Name << std::endl;
             std::cout << "Password: " << vT[p].Password << std::endl;
             std::cout << "Address: " << vT[p].Address << std::endl;
-            std::cout << "Contact Number: " << vT[p].cNumber << std::endl << std::endl;
+            std::cout << "Contact Number: " << vT[p].cNumber << std::endl;
+            if (admin) {
+                std::cout << "Class: " << vT[p].Class << std::endl;
+            }
         }
 
-        std::cout << "Which information do you want to change ?" << std::endl << std::endl;
+        std::cout << "\nWhich information do you want to change ?" << std::endl << std::endl;
         std::cout << "Option" << std::endl;
 
         n = 1;

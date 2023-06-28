@@ -399,6 +399,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your ID or 0 to exit: ";
         cin >> ID;
         if (ID == 0) {
+            system("cls");
             mainMenu(tries);
         }
         placeCursor(screen, 5, 0);
@@ -414,6 +415,7 @@ void login(int cUser, static int tries, int correctID)
         cout << "Enter your ID or 0 to exit : ";
         cin >> ID;
         if (ID == 0) {
+            system("cls");
             mainMenu(tries);
         }
         placeCursor(screen, 3, 0);
@@ -439,6 +441,7 @@ void login(int cUser, static int tries, int correctID)
         break;
     }
     default: {
+        system("cls");
         mainMenu(tries); //passes back tries
         break;
     }

@@ -3006,7 +3006,7 @@ void manageSchoolInformation()
 
     do {
         std::cout << "\tManaging School" << std::endl << "*******************************" << std::endl;
-        std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Exit" << std::endl;
+        std::cout << "1. Change School Name" << std::endl << "2. Add News & Events" << std::endl << "3. Remove New & Events" << std::endl << "4. Cancel" << std::endl;
 
         choice = choiceCheck(4);
 

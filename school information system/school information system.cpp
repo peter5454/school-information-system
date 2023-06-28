@@ -121,7 +121,7 @@ void viewChildReport(int ID, int num, vector<Parents>& vP);
 void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS);
 void updatePersonalInformation(int ID, int p, const AccountType accountType, bool admin = false);
 void sChangeInformation(vector<Students>& vS);
-void pChangeInformation(vector<Parents>& vP);
+void pChangeInformation(vector<Parents>& vP, bool noPrint = false);
 void tChangeInformation(vector<Teachers>& vT);
 void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
 void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType);
@@ -2012,7 +2012,7 @@ void viewClassReport(int num, vector<Teachers>& vT, vector<Students>& vS) {
 void updatePersonalInformation(int ID, int p, const AccountType accountType, bool admin) {
     int choice;
     int n;
-
+    // Refresh all account vectors
     std::vector<Students> vS = createStudentsVector();
     std::vector<Parents> vP = createParentsVector();
     std::vector<Teachers> vT = createTeachersVector();
@@ -2020,7 +2020,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
     do {
         std::system("cls");
         std::cout << "\t" << "Changing Information" << std::endl << std::endl;
-
+        // Display user info depending on selected account type
         if (accountType == AccountType::STUDENT) {
             std::cout << "User: " << vS[p].ID << std::endl << std::endl;
             std::cout << "Name: " << vS[p].Name << std::endl;
@@ -2064,7 +2064,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
                 std::cout << "Class: " << vT[p].Class << std::endl;
             }
         }
-
+        // Display numbered options the user can edit
         std::cout << "\nWhich information do you want to change ?" << std::endl << std::endl;
         std::cout << "Option" << std::endl;
 
@@ -2097,7 +2097,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
         }
         std::cout << n << ". Cancel" << std::endl << std::endl;
         std::cout << "Choice: ";
-
+        // Switch that performs different actions based on what type of user account
         choice = choiceCheck(n);
         std::system("cls");
         switch (choice) {
@@ -2206,6 +2206,7 @@ void updatePersonalInformation(int ID, int p, const AccountType accountType, boo
     return;
 }
 void sChangeInformation(vector<Students>& vS) {
+    // Opens file and overwites entire document according to current student vector
     ofstream outputFile("students.txt");
     try {
         if (!outputFile.is_open()) {
@@ -2224,7 +2225,8 @@ void sChangeInformation(vector<Students>& vS) {
         std::cout << "\nError: " << e.what() << std::endl;
     }
 }
-void pChangeInformation(vector<Parents>& vP) {
+void pChangeInformation(vector<Parents>& vP, bool noPrint) {
+    // Opens file and overwites entire document according to current parent vector
     ofstream outputFile("parents.txt");
     try {
         if (!outputFile.is_open()) {
@@ -2236,8 +2238,10 @@ void pChangeInformation(vector<Parents>& vP) {
             outputFile << vP[i].ID << "," << vP[i].Name << "," << vP[i].Password << "," << vP[i].Address << "," << vP[i].cNumber << "," << vP[i].childID << "," << vP[i].childID2 << "," << vP[i].childID3 << "," << vP[i].childID4 << endl;
         }
         outputFile.close();
-        std::cout << "\nChanges Saved!" << endl << endl;
-        pressEnter();
+        if (!noPrint) { // Doesn't print these when prompted
+            std::cout << "\nChanges Saved!" << endl << endl;
+            pressEnter();
+        }
         return;
     }
     catch (const std::runtime_error& e) {
@@ -2269,7 +2273,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
     std::string fname;
     std::string lname;
     std::cout << "\tUpdating Name or write ""NULL"" to cancel" << std::endl << std::endl;
-
+    // first name input
     std::cout << "First Name:                    Last Name:" << std::endl;
     placeCursor(screen, 2, 12);
     std::getline(std::cin >> std::ws, fname);
@@ -2282,7 +2286,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
         std::system("cls");
         return;
     }
-    while (!isAlphabet(fname)) {
+    while (!isAlphabet(fname)) { // Validation check
         placeCursor(screen, 4, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
         placeCursor(screen, 2, 0);
@@ -2305,7 +2309,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
         return;
     }
 
-    while (!isAlphabet(lname)) {
+    while (!isAlphabet(lname)) { // Validation check
         placeCursor(screen, 4, 0);
         std::cout << "Invalid name. Please only use alphabet characters.";
         placeCursor(screen, 2, 30);
@@ -2317,6 +2321,7 @@ void updateName(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& 
     placeCursor(screen, 4, 0);
     std::cout << std::string(60, ' ');
 
+    // change vector and write change to file
     if (accountType == AccountType::STUDENT) {
         vS[p].Name = str;
         sChangeInformation(vS);
@@ -2334,28 +2339,28 @@ void updatePassword(int ID, int p, std::vector<Students>& vS, std::vector<Parent
 {
     string newPass;
     placeCursor(screen, 0, 0);
-    cout << "Enter a new password must be more than 8 characters or write ""NULL"" to cancel";
+    std::cout << "Enter a new password must be more than 8 characters or write ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
-    cout << "Password: ";
+    std::cout << "Password: ";
     std::getline(cin >> ws, newPass);
 
     if (newPass == "NULL") {
         return;
     }
 
-    while (newPass.length() < 8) {
+    while (newPass.length() < 8) { // minimum 8 characters check
         system("cls");
         placeCursor(screen, 0, 0);
-        cout << "Password needs to be at least 8 characters or enter ""NULL"" to cancel. ";
+        std::cout << "Password needs to be at least 8 characters or enter ""NULL"" to cancel. ";
         placeCursor(screen, 2, 0);
-        cout << "Password: ";
+        std::cout << "Password: ";
         placeCursor(screen, 2, 10);
         std::getline(std::cin >> std::ws, newPass);
         if (newPass == "NULL") {
             return;
         }
     }
-
+    // change vector and write change to file
     if (accountType == AccountType::STUDENT) {
         vS[p].Password = newPass;
         sChangeInformation(vS);
@@ -2376,18 +2381,18 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
     std::string adNum;
     std::string adName;
     placeCursor(screen, 0, 0);
-    cout << "Enter a new address or write ""NULL"" to cancel";
+    std::cout << "Enter a new address or write ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
-    cout << "Street Number : ";
-    std::getline(std::cin >> std::ws, adNum);
+    std::cout << "Street Number : ";
+    std::getline(std::cin >> std::ws, adNum); // address number input
     if (adNum == "NULL") {
         return;
     }
     while (!containsNumber(adNum)) {
         placeCursor(screen, 0, 0);
-        cout << "Invalid input. Must contain at least one number.";
+        std::cout << "Invalid input. Must contain at least one number.";
         placeCursor(screen, 2, 0);
-        cout << "Street Number:          ";
+        std::cout << "Street Number:          ";
         placeCursor(screen, 2, 15);
         std::getline(std::cin >> std::ws, adNum);
         if (adNum == "NULL") {
@@ -2399,7 +2404,7 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
 
     // Address name input
     placeCursor(screen, 3, 0);
-    cout << "Street Name: ";
+    std::cout << "Street Name: ";
     std::getline(std::cin >> std::ws, adName);
     if (adName == "NULL") {
         return;
@@ -2417,7 +2422,7 @@ void updateAddress(int ID, int p, std::vector<Students>& vS, std::vector<Parents
         }
     }
     address = adNum + " " + adName;
-
+    // change vector and write change to file
     if (accountType == AccountType::STUDENT) {
         vS[p].Address = address;
         sChangeInformation(vS);
@@ -2436,25 +2441,25 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
 {
     std::string newCNum;
     placeCursor(screen, 0, 0);
-    cout << "Enter a new Contact Number minimum length of 7 digits or write ""NULL"" to cancel";
+    std::cout << "Enter a new Contact Number minimum length of 7 digits or write ""NULL"" to cancel";
     placeCursor(screen, 2, 0);
-    cout << "Contact Number: ";
+    std::cout << "Contact Number: "; // new contact input
     std::getline(cin >> ws, newCNum);
     if (newCNum == "NULL") {
         return;
     }
-    while (!onlyNumbers(newCNum) || newCNum.length() < 7) {
+    while (!onlyNumbers(newCNum) || newCNum.length() < 7) { // validation check
         placeCursor(screen, 0, 0);
-        cout << "Invalid input. The input should consist of only numbers with a minimum length of 7 digits.";
+        std::cout << "Invalid input. The input should consist of only numbers with a minimum length of 7 digits.";
         placeCursor(screen, 2, 0);
-        cout << "Contact Number:                                 ";
+        std::cout << "Contact Number:                                 ";
         placeCursor(screen, 2, 16);
         std::getline(std::cin >> std::ws, newCNum);
         if (newCNum == "NULL") {
             return;
         }
     }
-
+    // change vector and write change to file
     if (accountType == AccountType::TEACHER) {
         vT[p].cNumber = newCNum;
         tChangeInformation(vT);
@@ -2463,7 +2468,6 @@ void updateContactNumber(int ID, int p, std::vector<Students>& vS, std::vector<P
         vP[p].cNumber = newCNum;
         pChangeInformation(vP);
     }
-
 }
 void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP, std::vector<Teachers>& vT, const AccountType accountType)
 {
@@ -2473,7 +2477,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
 
     placeCursor(screen, 2, 0);
     std::cout << "Class (1-9): ";
-    std::getline(std::cin >> std::ws, newClass);
+    std::getline(std::cin >> std::ws, newClass); // new class input
     while (true) {
         if (newClass == "NULL") {
             return;
@@ -2492,7 +2496,7 @@ void updateClass(int ID, int p, std::vector<Students>& vS, std::vector<Parents>&
             }
         }
 
-        if (accountType == AccountType::TEACHER) {
+        if (accountType == AccountType::TEACHER) { // 
             bool validClass = true;
             for (int i = 0; i < vT.size(); i++) {
                 if (vT[i].Class == stoi(newClass) && i != p) {
@@ -2728,8 +2732,8 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     }
     // ID number/length validation
     if (accountType == AccountType::STUDENT) {
-        while (!onlyNumbers(newID) || newID.length() != 6) {
-            std::cout << "Student ID needs to be exactly 6 digits" << std::endl;
+        while (!onlyNumbers(newID) || newID.length() != 6 || newID[0] == '0') {
+            std::cout << "Student ID needs to be exactly 6 digits and cannot start with '0'" << std::endl;
             placeCursor(screen, 3, 0);
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
@@ -2756,8 +2760,8 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     }
     // ID number/length validation
     else if (accountType == AccountType::TEACHER) {
-        while (!onlyNumbers(newID) || newID.length() != 4) {
-            std::cout << "Teacher ID needs to be exactly 4 digits" << std::endl;
+        while (!onlyNumbers(newID) || newID.length() != 4 || newID[0] == '0') {
+            std::cout << "Teacher ID needs to be exactly 4 digits and cannot start with '0'" << std::endl;
             placeCursor(screen, 3, 0);
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
@@ -2784,8 +2788,8 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
     }
     // ID number/length validation
     else if (accountType == AccountType::PARENT) {
-        while (!onlyNumbers(newID) || newID.length() != 5) {
-            std::cout << "Parent ID needs to be exactly 5 digits" << std::endl;
+        while (!onlyNumbers(newID) || newID.length() != 5 || newID[0] == '0') {
+            std::cout << "Parent ID needs to be exactly 5 digits and cannot start with '0'" << std::endl;
             placeCursor(screen, 3, 0);
             std::cout << "New ID:                           ";
             placeCursor(screen, 3, 8);
@@ -2831,8 +2835,8 @@ void updateID(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& vP
             }
             parent = modifiedParent;  // Replace the original object with the modified copy
         }
+        pChangeInformation(vP, true);
         sChangeInformation(vS);
-        pChangeInformation(vP);
     }
     else if (accountType == AccountType::TEACHER) {
         vT[p].ID = std::stoi(newID);
@@ -2871,13 +2875,40 @@ int deleteUser(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& v
                 throw std::runtime_error("Failed to open file for writing.");
                 return 0;
             }
+            // Overwrites student file from vector, but leaves out the current selected students account
             if (accountType == AccountType::STUDENT) {
                 for (int i = 0; i < vS.size(); i++) {
                     if (vS[i].ID != vS[p].ID) {
                         outputFile << vS[i].ID << "," << vS[i].Name << "," << vS[i].Password << "," << vS[i].Address << "," << vS[i].Class << "," << vS[i].Grade1 << "," << vS[i].Grade2 << "," << vS[i].Grade3 << "," << vS[i].Grade4 << "," << vS[i].Grade5 << endl;
                     }
                 }
+                // update child ID from parent vector / file
+                for (Parents& parent : vP) {
+                    Parents modifiedParent = parent;  // Make a copy of the parent object
+                    if (modifiedParent.childID == ID) {
+                        modifiedParent.childID = modifiedParent.childID2;
+                        modifiedParent.childID2 = modifiedParent.childID3;
+                        modifiedParent.childID3 = modifiedParent.childID4;
+                        modifiedParent.childID4 = 0;
+                    }
+                    if (modifiedParent.childID2 == ID) {
+                        modifiedParent.childID2 = modifiedParent.childID3;
+                        modifiedParent.childID3 = modifiedParent.childID4;
+                        modifiedParent.childID4 = 0;
+                    }
+                    if (modifiedParent.childID3 == ID) {
+                        modifiedParent.childID3 = modifiedParent.childID4;
+                        modifiedParent.childID4 = 0;
+                    }
+                    if (modifiedParent.childID4 == ID) {
+                        modifiedParent.childID4 = 0;
+                    }
+                    parent = modifiedParent;  // Replace the original object with the modified copy
+                }
+                pChangeInformation(vP, true);
+                sChangeInformation(vS);
             }
+            // Overwrites file (same as student)
             else if (accountType == AccountType::PARENT) {
                 for (int i = 0; i < vP.size(); i++) {
                     if (vP[i].ID != vP[p].ID) {
@@ -2885,6 +2916,7 @@ int deleteUser(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& v
                     }
                 }
             }
+            // Overwrites file (same as student)
             else if (accountType == AccountType::TEACHER) {
                 for (int i = 0; i < vT.size(); i++) {
                     if (vT[i].ID != vT[p].ID) {
@@ -2917,11 +2949,12 @@ int deleteUser(int ID, int p, std::vector<Students>& vS, std::vector<Parents>& v
 void manageSchool() {
     int choice;
     do {
+        // Menu for admin managing school
         system("cls");
-        cout << "\t" << "Manage School ";
-        cout << endl << endl;
-        cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Parents" << endl << "4. Manage Teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
-        cout << "Make your choice : ";
+        std::cout << "\t" << "Manage School ";
+        std::cout << endl << endl;
+        std::cout << "1. Manage School Information" << endl << "2. Manage Students" << endl << "3. Manage Parents" << endl << "4. Manage Teachers" << endl << "5. Cancel" << endl << "6. Exit" << endl << endl;
+        std::cout << "Make your choice : ";
 
         choice = choiceCheck(7);
 
@@ -3049,7 +3082,7 @@ void manageSchoolInformation()
                     std::system("cls");
                     break;
                 }
-                std::vector<std::string> updatedNews;
+                std::vector<std::string> updatedNews; // New vector with chosen line deleted
                 for (const auto& line : news) {
                     if (line != news[toRemove - 1]) {
                         updatedNews.push_back(line);
@@ -3108,7 +3141,7 @@ void manageStudents()
                 }
             } while (!onlyNumbers(sID) || sID.length() != 6 || !validID);
 
-            // // Get student position from vector of all students by matching ID
+            // Get student position from vector of all students by matching ID
             int p;
             int counter = 0;
             for (auto& student : vS) {
@@ -3122,11 +3155,12 @@ void manageStudents()
             break;
         }
         case 2: {
+            vS = createStudentsVector(); // Refresh student vector
             // Student class search
             std::system("cls");
             std::cout << "\tManaging Students" << std::endl;
             std::cout << "*********************************" << std::endl << std::endl;
-            std::vector<int> classes;
+            std::vector<int> classes; // Create vector of classes with students in them
             for (const Students& c : vS) {
                 classes.push_back(c.Class);
             }
@@ -3156,7 +3190,7 @@ void manageStudents()
             }
             bool validInput = false;
             do {
-                for (const int& i : uniqueClasses) {
+                for (const int& i : uniqueClasses) { // Checks if class is valid
                     if (i == sClass) {
                         validInput = true;
                         break;
@@ -3401,7 +3435,7 @@ void pressEnter()
 int choiceCheck(int n)
 {
     int choice;
-    while (!(std::cin >> choice) || choice < 1 || choice > n) {
+    while (!(std::cin >> choice) || choice < 1 || choice > n) { 
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout << "Invalid choice. Please enter a number (1 - " << n << "): ";

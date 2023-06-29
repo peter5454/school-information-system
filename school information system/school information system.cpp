@@ -1501,7 +1501,7 @@ void viewMessages(int ID, int p, vector<Parents>& vP, vector<Teachers>& vT) {
             m.isRead = stoi(value);
 
 
-            std::getline(iss, m.message, ',');
+            std::getline(iss, m.message, '\n');
 
             vM.push_back(m);
         }

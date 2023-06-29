@@ -13,3 +13,4 @@
 123,24564,1,hi
 123,24564,1,hi
 12345,123,0,hello admin
+1234,123,0,Hey, can you add me to a class, please

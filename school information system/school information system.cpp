@@ -1326,6 +1326,11 @@ void sendMessages(int ID, int num, vector<Parents>& vP, vector<Teachers>& vT) {
             }
             else {
                 system("cls");
+                if (vT[num].Class == 0) {
+                    cout << "You are not assigned a class (message an admin)" << endl;
+                    pressEnter();
+                    return;
+                }
                 cout << "Send message to parents of your students" << endl;
                 cout << "Enter ID for parent (e.g., 01042) or enter '0' return: ";
                 cin >> pID;

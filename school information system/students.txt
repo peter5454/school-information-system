@@ -1,4 +1,4 @@
-123456,Emily Davis,password,1C Mac Terrace,2,40,-1,66,-1,55
+123456,Emily Davis,password,1C Mac Terrace,2,40,55,66,-1,-1
 125698,Benjamin Hughes,password,22 Gerrity Ave,1,-1,-1,-1,-1,-1
 123585,Lyle Kyles,password,99 Somewhere Place,2,88,-1,80,-1,50
 654321,James Anderson,password,67 None St,2,94,83,36,77,67

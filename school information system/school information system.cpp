@@ -68,24 +68,6 @@ enum class AccountType
     PARENT,
     ADMIN
 };
-enum class informationType
-{
-    ID,
-    NAME,
-    PASSWORD,
-    ADDRESS,
-    CONTACTNUMBER,
-    CLASS,
-    GRADE1,
-    GRADE2,
-    GRADE3,
-    GRADE4,
-    GRADE5,
-    CHILDID1,
-    CHILDID2,
-    CHILDID3,
-    CHILDID4
-};
 
 // Function declarations
 void mainMenu(int);
